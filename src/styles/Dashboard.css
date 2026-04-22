@@ -1,0 +1,301 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ===== BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-container {
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  position: relative;
+  background-color: #f5f6fa;
+  color: #1a1a2e;
+}
+
+/* ===== THEMES ===== */
+.staff-theme {
+  background-color: #f5f6fa;
+}
+
+.user-theme {
+  background-color: #f5f6fa;
+}
+
+/* ===== NAVBAR ===== */
+.dashboard-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8eaf0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  font-size: 20px;
+}
+
+.brand-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #1a1a2e;
+  letter-spacing: -0.3px;
+}
+
+.nav-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-role {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.staff-badge {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+}
+
+.user-badge {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.nav-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.signout-btn {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signout-btn:hover {
+  background: #f9fafb;
+  color: #1a1a2e;
+  border-color: #9ca3af;
+}
+
+/* ===== MAIN CONTENT ===== */
+.dashboard-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 40px;
+}
+
+/* ===== WELCOME SECTION ===== */
+.welcome-section {
+  margin-bottom: 48px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid #e8eaf0;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.greeting-label {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+
+.welcome-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  color: #1a1a2e;
+  letter-spacing: -0.5px;
+}
+
+.highlight-name {
+  color: #4338ca;
+}
+
+.user-theme .highlight-name {
+  color: #16a34a;
+}
+
+.welcome-subtitle {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.welcome-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  border: 1px solid #e8eaf0;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.stat-icon {
+  font-size: 14px;
+}
+
+/* ===== MENU SECTION ===== */
+.section-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ===== MENU CARDS ===== */
+.menu-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #e8eaf0;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: fadeIn 0.4s ease forwards;
+  animation-delay: var(--delay);
+  opacity: 0;
+}
+
+.menu-card:hover {
+  border-color: var(--card-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.card-icon-wrapper {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: #f5f6fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.menu-card:hover .card-icon-wrapper {
+  background: var(--card-color);
+}
+
+.card-icon {
+  font-size: 22px;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.card-description {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.card-arrow {
+  font-size: 18px;
+  color: #d1d5db;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.menu-card:hover .card-arrow {
+  color: var(--card-color);
+  transform: translateX(3px);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .dashboard-nav {
+    padding: 0 20px;
+  }
+
+  .dashboard-main {
+    padding: 32px 20px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-username {
+    display: none;
+  }
+}

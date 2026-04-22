@@ -37,9 +37,9 @@ function SignIn() {
       
       // Redirect based on role
       if (result.role === 'STAFF') {
-        navigate('/dashboard');
+        navigate('/staff-home');
       } else {
-        navigate('/user-dashboard');
+        navigate('/user-home');
       }
     } catch (err) {
       setError(err.message || 'Signin failed. Please try again.');

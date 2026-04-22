@@ -17,7 +17,7 @@ export const authService = {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.text();
         throw new Error(error || 'Signin failed');
       }
 
@@ -27,7 +27,9 @@ export const authService = {
         localStorage.setItem('authToken', data.token);
       }
       // Store user data
-      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
       return data;
     } catch (error) {
       console.error('Signin error:', error);
@@ -54,7 +56,7 @@ export const authService = {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.text();
         throw new Error(error || 'User registration failed');
       }
 
@@ -64,7 +66,9 @@ export const authService = {
         localStorage.setItem('authToken', data.token);
       }
       // Store user data
-      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
       return data;
     } catch (error) {
       console.error('User signup error:', error);
@@ -90,7 +94,7 @@ export const authService = {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.text();
         throw new Error(error || 'Staff registration failed');
       }
 
@@ -100,7 +104,9 @@ export const authService = {
         localStorage.setItem('authToken', data.token);
       }
       // Store user data
-      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
       return data;
     } catch (error) {
       console.error('Staff signup error:', error);
@@ -111,6 +117,8 @@ export const authService = {
   // Logout
   logout: () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
     localStorage.removeItem('user');
   },
 
@@ -135,7 +143,7 @@ export const authService = {
     const token = localStorage.getItem('authToken');
     return {
       'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...(token && { Authorization: `Bearer ${token}` }),
     };
   },
 
