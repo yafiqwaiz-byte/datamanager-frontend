@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>TNB Northern Region Stations</name>
+    <Style id="icon-1899-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>TNB SEBERANG JAYA</name>
+      <description><![CDATA[description: BA: 6231 | Subzone: SBJ<br>no: 1<br>ba: 6231<br>subzone: SBJ]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6231 | Subzone: SBJ</value>
+        </Data>
+        <Data name="no">
+          <value>1</value>
+        </Data>
+        <Data name="ba">
+          <value>6231</value>
+        </Data>
+        <Data name="subzone">
+          <value>SBJ</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.3976604,5.3924586,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB SRI MANJUNG</name>
+      <description><![CDATA[description: BA: 6227 | Subzone: A2<br>no: 2<br>ba: 6227<br>subzone: A2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6227 | Subzone: A2</value>
+        </Data>
+        <Data name="no">
+          <value>2</value>
+        </Data>
+        <Data name="ba">
+          <value>6227</value>
+        </Data>
+        <Data name="subzone">
+          <value>A2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.6600374,4.193984,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB PULAU PINANG</name>
+      <description><![CDATA[description: BA: 6260 | Subzone: P1<br>no: 3<br>ba: 6260<br>subzone: P1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6260 | Subzone: P1</value>
+        </Data>
+        <Data name="no">
+          <value>3</value>
+        </Data>
+        <Data name="ba">
+          <value>6260</value>
+        </Data>
+        <Data name="subzone">
+          <value>P1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.3229742,5.4200146,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB SUNGAI PETANI</name>
+      <description><![CDATA[description: BA: 6290 | Subzone: SGP/KLM<br>no: 4<br>ba: 6290<br>subzone: SGP/KLM]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6290 | Subzone: SGP/KLM</value>
+        </Data>
+        <Data name="no">
+          <value>4</value>
+        </Data>
+        <Data name="ba">
+          <value>6290</value>
+        </Data>
+        <Data name="subzone">
+          <value>SGP/KLM</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.4852197,5.6394721,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB ALOR SETAR</name>
+      <description><![CDATA[description: BA: 6240 | Subzone: ALS/KAN<br>no: 5<br>ba: 6240<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6240 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>5</value>
+        </Data>
+        <Data name="ba">
+          <value>6240</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.3724498,6.1216424,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB NIBONG TEBAL</name>
+      <description><![CDATA[description: BA: 6232 | Subzone: P2<br>no: 6<br>ba: 6232<br>subzone: P2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6232 | Subzone: P2</value>
+        </Data>
+        <Data name="no">
+          <value>6</value>
+        </Data>
+        <Data name="ba">
+          <value>6232</value>
+        </Data>
+        <Data name="subzone">
+          <value>P2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.4844455,5.1825407,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB IPOH</name>
+      <description><![CDATA[description: BA: 6210 | Subzone: A1<br>no: 7<br>ba: 6210<br>subzone: A1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6210 | Subzone: A1</value>
+        </Data>
+        <Data name="no">
+          <value>7</value>
+        </Data>
+        <Data name="ba">
+          <value>6210</value>
+        </Data>
+        <Data name="subzone">
+          <value>A1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.0720541,4.5894151,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB ULU KINTA</name>
+      <description><![CDATA[description: BA: 6219 | Subzone: A1<br>no: 8<br>ba: 6219<br>subzone: A1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6219 | Subzone: A1</value>
+        </Data>
+        <Data name="no">
+          <value>8</value>
+        </Data>
+        <Data name="ba">
+          <value>6219</value>
+        </Data>
+        <Data name="subzone">
+          <value>A1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.1578928,4.666425,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB TELUK INTAN</name>
+      <description><![CDATA[description: BA: 6250 | Subzone: A2<br>no: 9<br>ba: 6250<br>subzone: A2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6250 | Subzone: A2</value>
+        </Data>
+        <Data name="no">
+          <value>9</value>
+        </Data>
+        <Data name="ba">
+          <value>6250</value>
+        </Data>
+        <Data name="subzone">
+          <value>A2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.0208912,4.0216806,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB KULIM</name>
+      <description><![CDATA[description: BA: 6294 | Subzone: SGP/KLM<br>no: 10<br>ba: 6294<br>subzone: SGP/KLM]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6294 | Subzone: SGP/KLM</value>
+        </Data>
+        <Data name="no">
+          <value>10</value>
+        </Data>
+        <Data name="ba">
+          <value>6294</value>
+        </Data>
+        <Data name="subzone">
+          <value>SGP/KLM</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.5447751,5.3688898,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB TAIPING</name>
+      <description><![CDATA[description: BA: 6220 | Subzone: A3<br>no: 11<br>ba: 6220<br>subzone: A3]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6220 | Subzone: A3</value>
+        </Data>
+        <Data name="no">
+          <value>11</value>
+        </Data>
+        <Data name="ba">
+          <value>6220</value>
+        </Data>
+        <Data name="subzone">
+          <value>A3</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.7358964,4.861909,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BATU GAJAH</name>
+      <description><![CDATA[description: BA: 6221 | Subzone: A1<br>no: 12<br>ba: 6221<br>subzone: A1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6221 | Subzone: A1</value>
+        </Data>
+        <Data name="no">
+          <value>12</value>
+        </Data>
+        <Data name="ba">
+          <value>6221</value>
+        </Data>
+        <Data name="subzone">
+          <value>A1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.0408236,4.4726819,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BAGAN SERAI</name>
+      <description><![CDATA[description: BA: 6224 | Subzone: A3<br>no: 13<br>ba: 6224<br>subzone: A3]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6224 | Subzone: A3</value>
+        </Data>
+        <Data name="no">
+          <value>13</value>
+        </Data>
+        <Data name="ba">
+          <value>6224</value>
+        </Data>
+        <Data name="subzone">
+          <value>A3</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.542626,5.0058412,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB KAMPAR</name>
+      <description><![CDATA[description: BA: 6211 | Subzone: A1<br>no: 14<br>ba: 6211<br>subzone: A1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6211 | Subzone: A1</value>
+        </Data>
+        <Data name="no">
+          <value>14</value>
+        </Data>
+        <Data name="ba">
+          <value>6211</value>
+        </Data>
+        <Data name="subzone">
+          <value>A1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.1455475,4.3268103,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB GERIK</name>
+      <description><![CDATA[description: BA: 6223 | Subzone: A3<br>no: 15<br>ba: 6223<br>subzone: A3]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6223 | Subzone: A3</value>
+        </Data>
+        <Data name="no">
+          <value>15</value>
+        </Data>
+        <Data name="ba">
+          <value>6223</value>
+        </Data>
+        <Data name="subzone">
+          <value>A3</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.1366932,5.4496497,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB KUALA KANGSAR</name>
+      <description><![CDATA[description: BA: 6222 | Subzone: A3<br>no: 16<br>ba: 6222<br>subzone: A3]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6222 | Subzone: A3</value>
+        </Data>
+        <Data name="no">
+          <value>16</value>
+        </Data>
+        <Data name="ba">
+          <value>6222</value>
+        </Data>
+        <Data name="subzone">
+          <value>A3</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.9383801,4.7693623,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BIDOR</name>
+      <description><![CDATA[description: BA: 6212 | Subzone: A1<br>no: 17<br>ba: 6212<br>subzone: A1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6212 | Subzone: A1</value>
+        </Data>
+        <Data name="no">
+          <value>17</value>
+        </Data>
+        <Data name="ba">
+          <value>6212</value>
+        </Data>
+        <Data name="subzone">
+          <value>A1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.284904,4.1155871,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BALING</name>
+      <description><![CDATA[description: BA: 6292 | Subzone: SGP/KLM<br>no: 18<br>ba: 6292<br>subzone: SGP/KLM]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6292 | Subzone: SGP/KLM</value>
+        </Data>
+        <Data name="no">
+          <value>18</value>
+        </Data>
+        <Data name="ba">
+          <value>6292</value>
+        </Data>
+        <Data name="subzone">
+          <value>SGP/KLM</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.9176441,5.6737235,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB SG. SIPUT</name>
+      <description><![CDATA[description: BA: 6225 | Subzone: A3<br>no: 19<br>ba: 6225<br>subzone: A3]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6225 | Subzone: A3</value>
+        </Data>
+        <Data name="no">
+          <value>19</value>
+        </Data>
+        <Data name="ba">
+          <value>6225</value>
+        </Data>
+        <Data name="subzone">
+          <value>A3</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.079172,4.8286532,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB TANJONG MALIM</name>
+      <description><![CDATA[description: BA: 6213 | Subzone: A1<br>no: 20<br>ba: 6213<br>subzone: A1]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6213 | Subzone: A1</value>
+        </Data>
+        <Data name="no">
+          <value>20</value>
+        </Data>
+        <Data name="ba">
+          <value>6213</value>
+        </Data>
+        <Data name="subzone">
+          <value>A1</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          101.517958,3.6938969,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB SERI ISKANDAR</name>
+      <description><![CDATA[description: BA: 6218 | Subzone: A2<br>no: 21<br>ba: 6218<br>subzone: A2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6218 | Subzone: A2</value>
+        </Data>
+        <Data name="no">
+          <value>21</value>
+        </Data>
+        <Data name="ba">
+          <value>6218</value>
+        </Data>
+        <Data name="subzone">
+          <value>A2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.9619233,4.360837,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BANDAR BAHARU</name>
+      <description><![CDATA[description: BA: 6295 | Subzone: SGP/KLM<br>no: 22<br>ba: 6295<br>subzone: SGP/KLM]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6295 | Subzone: SGP/KLM</value>
+        </Data>
+        <Data name="no">
+          <value>22</value>
+        </Data>
+        <Data name="ba">
+          <value>6295</value>
+        </Data>
+        <Data name="subzone">
+          <value>SGP/KLM</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.6107257,5.2041217,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB PENDANG</name>
+      <description><![CDATA[description: BA: 6246 | Subzone: ALS/KAN<br>no: 23<br>ba: 6246<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6246 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>23</value>
+        </Data>
+        <Data name="ba">
+          <value>6246</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.4797874,5.9904224,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB KUALA NERANG</name>
+      <description><![CDATA[description: BA: 6245 | Subzone: ALS/KAN<br>no: 24<br>ba: 6245<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6245 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>24</value>
+        </Data>
+        <Data name="ba">
+          <value>6245</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.6101715,6.2551432,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB SIK</name>
+      <description><![CDATA[description: BA: 6293 | Subzone: SGP/KLM<br>no: 25<br>ba: 6293<br>subzone: SGP/KLM]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6293 | Subzone: SGP/KLM</value>
+        </Data>
+        <Data name="no">
+          <value>25</value>
+        </Data>
+        <Data name="ba">
+          <value>6293</value>
+        </Data>
+        <Data name="subzone">
+          <value>SGP/KLM</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.7471161,5.8173911,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BERTAM</name>
+      <description><![CDATA[description: BA: 6230 | Subzone: P2<br>no: 26<br>ba: 6230<br>subzone: P2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6230 | Subzone: P2</value>
+        </Data>
+        <Data name="no">
+          <value>26</value>
+        </Data>
+        <Data name="ba">
+          <value>6230</value>
+        </Data>
+        <Data name="subzone">
+          <value>P2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.4475569,5.5138082,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB HUTAN MELINTANG</name>
+      <description><![CDATA[description: BA: 6252 | Subzone: A2<br>no: 27<br>ba: 6252<br>subzone: A2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6252 | Subzone: A2</value>
+        </Data>
+        <Data name="no">
+          <value>27</value>
+        </Data>
+        <Data name="ba">
+          <value>6252</value>
+        </Data>
+        <Data name="subzone">
+          <value>A2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.9391162,3.8984409,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB BAYAN BARU</name>
+      <description><![CDATA[description: BA: 6261 | Subzone: P2<br>no: 28<br>ba: 6261<br>subzone: P2]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6261 | Subzone: P2</value>
+        </Data>
+        <Data name="no">
+          <value>28</value>
+        </Data>
+        <Data name="ba">
+          <value>6261</value>
+        </Data>
+        <Data name="subzone">
+          <value>P2</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.2858588,5.3261641,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB GUAR CHEMPEDAK</name>
+      <description><![CDATA[description: BA: 6244 | Subzone: ALS/KAN<br>no: 29<br>ba: 6244<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6244 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>29</value>
+        </Data>
+        <Data name="ba">
+          <value>6244</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.4525594,5.8585583,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB LANGKAWI</name>
+      <description><![CDATA[description: BA: 6243 | Subzone: ALS/KAN<br>no: 30<br>ba: 6243<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6243 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>30</value>
+        </Data>
+        <Data name="ba">
+          <value>6243</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          99.8502753,6.3275966,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB JITRA</name>
+      <description><![CDATA[description: BA: 6242 | Subzone: ALS/KAN<br>no: 31<br>ba: 6242<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6242 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>31</value>
+        </Data>
+        <Data name="ba">
+          <value>6242</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.4209057,6.275637,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TNB KANGAR</name>
+      <description><![CDATA[description: BA: 6201 | Subzone: ALS/KAN<br>no: 32<br>ba: 6201<br>subzone: ALS/KAN]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="description">
+          <value>BA: 6201 | Subzone: ALS/KAN</value>
+        </Data>
+        <Data name="no">
+          <value>32</value>
+        </Data>
+        <Data name="ba">
+          <value>6201</value>
+        </Data>
+        <Data name="subzone">
+          <value>ALS/KAN</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          100.2057286,6.4444969,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
