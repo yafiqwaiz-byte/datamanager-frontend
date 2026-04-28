@@ -10,7 +10,13 @@ function UserHome() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get user info from localStorage (saved during signin)
+   
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/signin');
+      return;
+    }
+     // Get user info from localStorage (saved during signin)
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const username = localStorage.getItem('username') || 'User';
 

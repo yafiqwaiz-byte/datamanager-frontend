@@ -16,7 +16,17 @@ function UserDataPage() {
         const username = localStorage.getItem('username') || 'User';
         setUserName(user.fullName || username);
 
-        axios.get('/api/forms/my-submissions')
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            navigate('/signin');
+            return;
+        }
+
+        axios.get('/api/forms/my-submissions', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 setSubmissions(response.data);  // ← fixed
                 setLoading(false);

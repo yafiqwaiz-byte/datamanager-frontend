@@ -110,7 +110,8 @@ const PERAK = [
 const MAP_LAYERS = {
   street:    { label:'Street',    icon:'🗺️', description:'2D Street Map',    url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',                                                                 attribution:'&copy; OpenStreetMap contributors', maxZoom:19 },
   satellite: { label:'Satellite', icon:'🛰️', description:'3D Satellite View', url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',                    attribution:'Tiles &copy; Esri',                 maxZoom:19 },
- 
+  terrain:   { label:'Terrain',   icon:'⛰️', description:'2D Terrain Map',    url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',                                                                  attribution:'Map data: &copy; OpenStreetMap',    maxZoom:17 },
+  states:    { label:'States',    icon:'🏛️', description:'2D State Zones',    url:'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',                                              attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:19 },
 };
 
 function parseKML(kmlText) {

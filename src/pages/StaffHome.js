@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TemplateFormModal from '../components/TemplateFormModal';
 import '../styles/Dashboard.css';
+import {
+  getTemplates,createTemplate,updateTemplate,
+  toggleTemplate,deleteTemplate
+} from '../services/templateService';
 
 function StaffHome() {
   const [staffName, setStaffName] = useState('');
@@ -47,6 +52,14 @@ function StaffHome() {
       color: '#4f46e5'
     },
     {
+      id:'templates',
+      icon:'📝',
+      title:'Form Templates',
+      description:'Create and manage form templates for users to fill in',
+      action:()=> navigate('/staff/tempates'),
+      color: '#e11d48'
+    },
+    {
       id: 'upload-file',
       icon: '📂',
       title: 'Upload File',
@@ -69,6 +82,14 @@ function StaffHome() {
       description: 'Export filtered and processed tables to various formats',
       action: () => navigate('/staff/export'),
       color: '#d97706'
+    },
+    {
+      id: 'tnb-station',
+      icon: '🗺️',
+      title: 'TNB Northen Map',
+      description: 'View the map of TNB Northen station with BA number and subzone information',
+      action: () => navigate('/northern-tnb-station'),
+      color: '#7c3aed'
     }
   ];
 
