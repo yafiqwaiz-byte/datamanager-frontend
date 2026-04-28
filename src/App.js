@@ -5,6 +5,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import StaffHome from './pages/StaffHome';
 import UserHome from './pages/UserHome';
+import StaffTemplates from './pages/StaffTemplates';
 import CompleteProfile from './pages/CompleteProfile';
 import UserFormPage from './pages/UserFormPage';
 import FormRenderer from './pages/FormRenderer';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/user/form/:id" element={<FormRenderer/>} />
         <Route path="/user/data" element={<UserDataPage />} />
         <Route path="/northern-tnb-station" element={<NorthenTNBStation />} />
+        <Route path="/staff/templates" element ={<StaffTemplates/>} />
         
         {/* Add your other routes here */}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
