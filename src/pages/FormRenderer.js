@@ -18,7 +18,17 @@ function FormRenderer() {
     const username = localStorage.getItem('username') || 'User';
     setUserName(user.fullName || username);
 
-    axios.get(`/api/forms/templates/${id}`)
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/signin');
+      return;
+    }
+
+    axios.get(`http://localhost:8080/api/forms/templates/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => {
         setTemplate(res.data);
         const initial = {};
@@ -49,31 +59,37 @@ function FormRenderer() {
 
     setSubmitting(true);
 
+   const token = localStorage.getItem('authToken');
+
     const formData = new FormData();
     formData.append('templateId', template.templateId);
     formData.append('inputMethod', 'form');
 
     template.fields.forEach(field => {
-      const value = answers[field.fieldId];
-      if ((field.fieldType === 'attachimage' || field.fieldType === 'attachfile') && value instanceof File) {
-        formData.append(`file_${field.fieldId}`, value);
-      } else {
-        formData.append(`answer_${field.fieldId}`, value || '');
-      }
+        const value = answers[field.fieldId];
+        if ((field.fieldType === 'attachimage' || field.fieldType === 'attachfile') 
+                && value instanceof File) {
+            formData.append(`file_${field.fieldId}`, value);
+        } else {
+            formData.append(`answer_${field.fieldId}`, value || '');
+        }
     });
 
-    axios.post('/api/forms/submit', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    axios.post('http://localhost:8080/api/forms/submit', formData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            
+        }
     })
-      .then(() => {
+    .then(() => {
         alert('Form submitted successfully!');
         navigate('/user/data');
-      })
-      .catch(() => {
+    })
+    .catch(() => {
         alert('Submission failed. Please try again.');
         setSubmitting(false);
-      });
-  };
+    });
+};
 
   const renderField = (field) => {
     const baseStyle = {

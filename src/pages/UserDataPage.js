@@ -22,7 +22,7 @@ function UserDataPage() {
             return;
         }
 
-        axios.get('/api/forms/my-submissions', {
+        axios.get('http://localhost:8080/api/forms/my-submissions', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -110,7 +110,7 @@ function UserDataPage() {
                 <div className="nav-info">
                     <span className="nav-role user-badge">USER</span>
                     <span className="nav-username">{userName}</span>
-                    <button className="signout-btn" onClick={() => navigate('/user/home')}>← Back</button>
+                    <button className="signout-btn" onClick={() => navigate('/user-home')}>← Back</button>
                 </div>
             </nav>
 

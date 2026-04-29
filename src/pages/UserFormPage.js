@@ -21,7 +21,7 @@ function UserFormPage() {
         const username = localStorage.getItem('username') || 'User';
         setUserName(user.fullName || username);
 
-        axios.get('/api/forms/templates', {
+        axios.get('http://localhost:8080/api/forms/templates', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(res => {
@@ -54,7 +54,7 @@ function UserFormPage() {
                 <div className="nav-info">
                     <span className="nav-role user-badge">USER</span>
                     <span className="nav-username">{userName}</span>
-                    <button className="signout-btn" onClick={() => navigate('/user/home')}>← Back</button>
+                    <button className="signout-btn" onClick={() => navigate('/user-home')}>← Back</button>
                 </div>
             </nav>
 
