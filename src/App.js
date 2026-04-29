@@ -11,6 +11,7 @@ import UserFormPage from './pages/UserFormPage';
 import FormRenderer from './pages/FormRenderer';
 import UserDataPage from './pages/UserDataPage';
 import NorthenTNBStation from './pages/NorthenTNBStation';
+import StaffFetchData from './pages/StaffFetchData';
 // import Dashboard from './pages/Dashboard';
 // import UserDashboard from './pages/UserDashboard';
 import 'leaflet/dist/leaflet.css';
@@ -30,7 +31,7 @@ function App() {
         <Route path="/user/data" element={<UserDataPage />} />
         <Route path="/northern-tnb-station" element={<NorthenTNBStation />} />
         <Route path="/staff/templates" element ={<StaffTemplates/>} />
-        
+        <Route path="/staff/fetch-data" element ={<StaffFetchData/>}/>
         {/* Add your other routes here */}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         {/* <Route path="/user-dashboard" element={<UserDashboard />} /> */}

@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TemplateFormModal from '../components/TemplateFormModal';
 import '../styles/Dashboard.css';
-import {
-  getTemplates,createTemplate,updateTemplate,
-  toggleTemplate,deleteTemplate
-} from '../services/templateService';
+
 
 function StaffHome() {
   const [staffName, setStaffName] = useState('');
@@ -56,7 +53,7 @@ function StaffHome() {
       icon:'📝',
       title:'Form Templates',
       description:'Create and manage form templates for users to fill in',
-      action:()=> navigate('/staff/tempates'),
+      action:()=> navigate('/staff/templates'),
       color: '#e11d48'
     },
     {
