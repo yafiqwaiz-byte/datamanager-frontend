@@ -22,17 +22,104 @@ export const authService = {
       }
 
       const data = await response.json();
-      // Store JWT token
       if (data.token) {
         localStorage.setItem('authToken', data.token);
       }
-      // Store user data
       localStorage.setItem('username', data.username);
       localStorage.setItem('role', data.role);
       localStorage.setItem('user', JSON.stringify(data.user || {}));
       return data;
     } catch (error) {
       console.error('Signin error:', error);
+      throw error;
+    }
+  },
+
+  // Google Signin
+  signinWithGoogle: async (idToken, role = 'USER') => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/accounts/signin/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken, role }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Google signin failed');
+      }
+
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
+
+      // Save extra info for complete profile page if new user
+      if (data.newUser) {
+        localStorage.setItem('fullName', data.fullName || '');
+        localStorage.setItem('email', data.email || '');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Google signin error:', error);
+      throw error;
+    }
+  },
+
+  // Complete User Profile (after Google signin)
+  completeUserProfile: async (profileData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/accounts/complete-profile/user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to complete profile');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
+      return data;
+    } catch (error) {
+      console.error('Complete user profile error:', error);
+      throw error;
+    }
+  },
+
+  // Complete Staff Profile (after Google signin)
+  completeStaffProfile: async (profileData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/accounts/complete-profile/staff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to complete profile');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('user', JSON.stringify(data.user || {}));
+      return data;
+    } catch (error) {
+      console.error('Complete staff profile error:', error);
       throw error;
     }
   },
@@ -61,11 +148,9 @@ export const authService = {
       }
 
       const data = await response.json();
-      // Store JWT token
       if (data.token) {
         localStorage.setItem('authToken', data.token);
       }
-      // Store user data
       localStorage.setItem('username', data.username);
       localStorage.setItem('role', data.role);
       localStorage.setItem('user', JSON.stringify(data.user || {}));
@@ -99,11 +184,9 @@ export const authService = {
       }
 
       const data = await response.json();
-      // Store JWT token
       if (data.token) {
         localStorage.setItem('authToken', data.token);
       }
-      // Store user data
       localStorage.setItem('username', data.username);
       localStorage.setItem('role', data.role);
       localStorage.setItem('user', JSON.stringify(data.user || {}));
@@ -120,6 +203,8 @@ export const authService = {
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     localStorage.removeItem('user');
+    localStorage.removeItem('fullName');
+    localStorage.removeItem('email');
   },
 
   // Get current user
