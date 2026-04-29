@@ -1,60 +1,59 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/TemplateFormModal.css';
 
-const emptyFields =() => ({
-    fieldlabel: '',
-    fieldtype: 'text',
-    isrequired: 'false',
-    fieldorder: '1',
+const emptyField = () => ({
+    fieldLabel: '',
+    fieldType: 'text',
+    isRequired: false,
+    fieldOrder: 1,
     placeholder: '',
 });
 
-export default function TemplateFormModal({isOpen,onClose,onSubmit,templateData}) {
+export default function TemplateFormModal({ template, onSave, onClose }) {
 
     const [templateName, setTemplateName] = useState('');
     const [description, setDescription] = useState('');
     const [isActive, setIsActive] = useState(true);
-    const [fields, setFields] = useState([emptyFields()]);
+    const [fields, setFields] = useState([emptyField()]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (templateData) {
-            setTemplateName(templateData.templatename);
-            setDescription(templateData.description);
-            setIsActive(templateData.isactive);
-            setFields(templateData.fields.length > 0 ? templateData.fields : [emptyFields()]);
-        } }, [templateData]);
-        
-        const addField = () => {
-            setFields([...fields,{...emptyFields(),fieldorder: (fields.length + 1)}]);
-        };
+        if (template) {
+            setTemplateName(template.templateName);
+            setDescription(template.description);
+            setIsActive(template.isActive);
+            setFields(template.fields && template.fields.length > 0 ? template.fields : [emptyField()]);
+        }
+    }, [template]);
 
-        const removeField = (index) => {
-            setFields(fields.filter((_, i) => i !== index)
-            .map((field, i) => ({ ...field, fieldorder: i + 1 })));
-        };
+    const addField = () => {
+        setFields([...fields, { ...emptyField(), fieldOrder: fields.length + 1 }]);
+    };
 
-        const updateField = (index, key, value) => {
-            setFields(fields.map((field, i) => i === index ? { ...field, [key]: value } : field));
-        };
+    const removeField = (index) => {
+        setFields(fields.filter((_, i) => i !== index)
+            .map((field, i) => ({ ...field, fieldOrder: i + 1 })));
+    };
 
-        const handleSubmit = async () => {
+    const updateField = (index, key, value) => {
+        setFields(fields.map((field, i) => i === index ? { ...field, [key]: value } : field));
+    };
 
-            if (!templateName.trim()) 
-                return alert('Template name is required');
-            setLoading(true);
-            try {
-                await onSave({ templateName,description,isActive,fields});
-                onClose();
-            }catch(e){
-                alert(e.message);
-            }finally{
-                setLoading(false);
-            }
-        };
+    const handleSubmit = async () => {
+        if (!templateName.trim()) return alert('Template name is required');
+        setLoading(true);
+        try {
+            await onSave({ templateName, description, isActive, fields });
+            onClose();
+        } catch (e) {
+            alert(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        return (
-             <div className='overlay'>
+    return (
+        <div className='overlay'>
             <div className='modal'>
                 <div className='modal-header'>
                     <h2 className='modal-title'>
@@ -102,14 +101,58 @@ export default function TemplateFormModal({isOpen,onClose,onSubmit,templateData}
                                 <option value="number">Number</option>
                                 <option value="email">Email</option>
                                 <option value="date">Date</option>
-                                <option value="select">Dropdown</option>
+                                <option value="datetime">Date & Time</option>
+                                <option value="textarea">Text Area</option>
+                                <option value="phone">Phone</option>
+                                <option value="dropdown">Dropdown</option>
+                                <option value="radio">Radio</option>
+                                <option value="checkbox">Checkbox</option>
+                                <option value="yesno">Yes / No</option>
+                                <option value="rating">Rating</option>
+                                <option value="attachimage">Attach Image</option>
+                                <option value="attachfile">Attach File</option>
                             </select>
-                            <input className='field-placeholder-input'
-                                placeholder="Placeholder"
-                                value={field.placeholder}
-                                onChange={e => updateField(index, 'placeholder', e.target.value)} />
+                             <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <input className='field-placeholder-input'
+                                placeholder={
+                                    ['dropdown', 'radio', 'checkbox'].includes(field.fieldType)
+                                        ? 'e.g. Option A, Option B, Option C'
+                                        : ['attachimage', 'attachfile', 'yesno', 'rating'].includes(field.fieldType)
+                                        ? 'Not required for this type'
+                                        : 'Placeholder text'
+                                }
+                                    value={field.placeholder}
+                                    disabled={['attachimage', 'attachfile', 'yesno', 'rating'].includes(field.fieldType)}
+                                    onChange={e => updateField(index, 'placeholder', e.target.value)} />
+                                {['dropdown', 'radio', 'checkbox'].includes(field.fieldType) && (
+                                    <span style={{ fontSize: 11, color: '#888' }}>
+                                        💡 Separate options with commas
+                                    </span>
+                                )}
+                                {['attachimage'].includes(field.fieldType) && (
+                                    <span style={{ fontSize: 11, color: '#888' }}>
+                                        💡 User will upload an image
+                                    </span>
+                                )}
+                                {['attachfile'].includes(field.fieldType) && (
+                                    <span style={{ fontSize: 11, color: '#888' }}>
+                                        💡 User will upload a file (PDF, DOC, XLSX)
+                                    </span>
+                                )}
+                                {['yesno'].includes(field.fieldType) && (
+                                    <span style={{ fontSize: 11, color: '#888' }}>
+                                        💡 User will choose Yes or No
+                                    </span>
+                                )}
+                                {['rating'].includes(field.fieldType) && (
+                                    <span style={{ fontSize: 11, color: '#888' }}>
+                                        💡 User will rate from 1 to 5 stars
+                                    </span>
+                                )}
+                            </div>
+                            
                             <label className='required-label'>
-                                <input type="checkbox" checked={field.isRequired}
+                                <input type="checkbox" checked={field.isRequired || false}
                                     onChange={e => updateField(index, 'isRequired', e.target.checked)} />
                                 {' '}Required
                             </label>
@@ -128,6 +171,4 @@ export default function TemplateFormModal({isOpen,onClose,onSubmit,templateData}
             </div>
         </div>
     );
-
 }
-        

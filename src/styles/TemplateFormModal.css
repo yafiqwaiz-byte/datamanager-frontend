@@ -227,3 +227,9 @@
     background: #93c5fd;
     cursor: not-allowed;
 }
+
+.field-placeholder-input:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
