@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllSubmissions } from '../services/templateService';
 import '../styles/Dashboard.css';
+import ExcelJS from 'exceljs';
 
 function StaffFetchData() {
     const [submissions, setSubmissions] = useState([]);
@@ -44,27 +45,76 @@ function StaffFetchData() {
             return 0;
         });
 
-    const handleExportCSV = () => {
-        if (!filtered.length) return;
-        const headers = ['Template', 'Submitted At', 'Status', 'Input Method', 'Answers'];
-        const rows = filtered.map(s => [
-            s.templateName,
-            new Date(s.submittedAt).toLocaleString('en-MY'),
-            s.status,
-            s.inputMethod,
-            s.answers.map(a => `${a.fieldLabel}: ${a.answerValue || ''}`).join(' | ')
-        ]);
-        const csv = [headers, ...rows].map(r => r.map(v =>
-            `"${String(v).replace(/"/g, '""')}"`
-        ).join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
+    const handleExportExcel = async() =>{
+        if (!filtered.length)return;
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Submissions');
+
+        worksheet.columns = [
+            {header: 'Template',key: 'template',width:25},
+            {header: 'Submitted At',key: 'submittedAt',width:23},
+            {header: 'Status',key: 'status',width:14},
+            {header: 'Input Method',key: 'inputMethod',width:14},
+            {header: 'Answers',key: 'answers',width:60},
+        ];
+
+        worksheet.getRow(1).eachCell(cell =>{
+            cell.font ={ bold:true, color:{ argb:'FFFFFFFF'}};
+            cell.fill ={ type:'pattern', pattern:'solid', fgColor:{argb:'FF4338CA'}};
+            cell.alignment ={ vertical:'middle', horizontal:'center'};
+        });
+
+        worksheet.getRow(1).height = 30;
+
+        filtered.forEach(sub => {
+            const row =worksheet.addRow({
+              template:sub.templateName,
+              submittedAt:new Date(sub.submittedAt).toLocaleString('en-MY'),
+              status: sub.status,
+              inputMethod: sub.inputMethod,
+              answers:sub.answers.map(a => `${a.fieldLabel}: ${a.answerValue} ||''}`).join('|')
+            });
+            row.eachCell(cell =>{ cell.alignment = { vertical:'middle',wrapText:true};});
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer],{
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `all_submissions_${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
+        const doc = document.createElement('a');
+        doc.href = url;
+        doc.download = `submissions_${new Date().toISOString().slice(0,10)}.xlsx`;
+        doc.click();
         URL.revokeObjectURL(url);
     };
+
+    const renderAnswerValue = (value) => {
+    if (!value) return <span style={{ color: '#9ca3af' }}>—</span>;
+
+    if (value.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i)) {
+        return (
+            <a href={`http://localhost:8080/${value}`}
+                target="_blank" rel="noreferrer"
+                style={{ color: '#7c3aed', textDecoration: 'underline' }}>
+                🖼 View Image
+            </a>
+        );
+    }
+
+    if (value.match(/\.(pdf|doc|docx|xlsx|csv|txt)$/i)) {
+        return (
+            <a href={`http://localhost:8080/${value}`}
+                target="_blank" rel="noreferrer"
+                style={{ color: '#7c3aed', textDecoration: 'underline' }}>
+                📄 View File
+            </a>
+        );
+    }
+
+    return <span style={{ color: '#111' }}>{value}</span>;
+};
 
     return (
         <div className="dashboard-container staff-theme">
@@ -90,9 +140,9 @@ function StaffFetchData() {
                         <h1 className="welcome-heading">User Submissions</h1>
                         <p className="welcome-subtitle">{filtered.length} of {submissions.length} submissions</p>
                     </div>
-                    <button onClick={handleExportCSV}
+                    <button onClick={handleExportExcel}
                         style={{ padding: '10px 20px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 500, fontSize: 14 }}>
-                        ⬇ Export CSV
+                        ⬇ Export Excel
                     </button>
                 </section>
 
@@ -152,11 +202,11 @@ function StaffFetchData() {
                                     </div>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px' }}>
                                         {sub.answers.map(a => (
-                                            <div key={a.answerId} style={{ fontSize: 13 }}>
-                                                <span style={{ color: '#6b7280', fontWeight: 500 }}>{a.fieldLabel}: </span>
-                                                <span style={{ color: '#111' }}>{a.answerValue || '—'}</span>
-                                            </div>
-                                        ))}
+                                        <div key={a.answerId} style={{ fontSize: 13 }}>
+                                            <span style={{ color: '#6b7280', fontWeight: 500 }}>{a.fieldLabel}: </span>
+                                            {renderAnswerValue(a.answerValue)}
+                                        </div>
+                                    ))}
                                     </div>
                                 </div>
                             ))}

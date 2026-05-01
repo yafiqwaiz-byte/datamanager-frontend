@@ -77,7 +77,7 @@ export const toggleTemplate = async (id) => {
 export const getTemplateSubmissions = async(templateId) =>{
     try{
         const response = await fetch(
-             `http://localhost:8080/api/staff/templates/${templateId}/submissions`,
+             `http://localhost:8080/api/forms/templates/${templateId}/submissions`,
             { headers:getAuthHeader()}
         );
         if (!response.ok) throw new Error('Failed to fetch submissions');

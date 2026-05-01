@@ -40,7 +40,7 @@ function FormRenderer() {
         setError('Failed to load form. Please try again.');
         setLoading(false);
       });
-  }, [id]);
+  }, [id,navigate]);
 
   const handleChange = (fieldId, value) => {
     setAnswers(prev => ({ ...prev, [fieldId]: value }));
@@ -49,18 +49,20 @@ function FormRenderer() {
   const handleSubmit = () => {
     // Required field validation
     const missing = template.fields
-      .filter(f => f.isRequired && !answers[f.fieldId])
+      .filter(f => {
+        if(!f.isRequired) return false;
+        const val = answers[f.fieldId];
+        if(Array.isArray(val)) return val.length === 0;
+        return !val;
+      })
       .map(f => f.fieldLabel);
-
-    if (missing.length > 0) {
-      alert(`Please fill in required fields: ${missing.join(', ')}`);
-      return;
+       if (missing.length > 0) {
+        alert(`Please fill in required fields: ${missing.join(', ')}`);
+        return;
     }
-
+      
     setSubmitting(true);
-
-   const token = localStorage.getItem('authToken');
-
+    const token = localStorage.getItem('authToken');
     const formData = new FormData();
     formData.append('templateId', template.templateId);
     formData.append('inputMethod', 'form');
@@ -68,10 +70,14 @@ function FormRenderer() {
     template.fields.forEach(field => {
         const value = answers[field.fieldId];
         if ((field.fieldType === 'attachimage' || field.fieldType === 'attachfile') 
-                && value instanceof File) {
-            formData.append(`file_${field.fieldId}`, value);
-        } else {
-            formData.append(`answer_${field.fieldId}`, value || '');
+                && value) {
+            if (Array.isArray(value)){
+              value.forEach(file => formData.append(`file_${field.fieldId}`,file));
+            } else if (value instanceof File){
+              formData.append(`file_${field.fieldId}`,value);
+            } else {
+              formData.append(`answer_${field.fieldId}`,value || '');
+            }
         }
     });
 
@@ -91,7 +97,8 @@ function FormRenderer() {
     });
 };
 
-  const renderField = (field) => {
+  
+    const renderField = (field) => {
     const baseStyle = {
       width: '100%',
       padding: '10px',
@@ -216,26 +223,31 @@ function FormRenderer() {
           <div>
             <input
               type="file"
+              multiple
               accept="image/*"
               style={{ ...baseStyle, padding: '6px' }}
               onChange={e => {
-                const file = e.target.files[0];
-                if (file) handleChange(field.fieldId, file);
+                const files = Array.from(e.target.files);
+                if (files.length > 0) handleChange(field.fieldId, files);
               }}
             />
-            {answers[field.fieldId] && typeof answers[field.fieldId] === 'object' && (
-              <div style={{ marginTop: '10px' }}>
-                <img
-                  src={URL.createObjectURL(answers[field.fieldId])}
-                  alt="Preview"
-                  style={{ maxWidth: '200px', maxHeight: '200px', borderRadius: '8px', border: '1px solid #ccc' }}
-                />
-                <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-                  {answers[field.fieldId].name}
-                </p>
-              </div>
-            )}
+            {answers[field.fieldId] && Array.isArray(answers[field.fieldId]) && (
+              <div style={{ display:'flex', flexWrap: 'wrap', gap:8, marginTop:10}}>
+                {answers[field.fieldId].map((file,i) =>(
+                 <div key={i} style={{ textAlign:'center'}}>
+                  <img 
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${i+1}`}
+                      style={{ width:85, height:85,objectFit:'cover', borderRadius:7,border:'1px solid #ccc'}} 
+                      />
+                      <p style={{ fontSize:11, color: '#666', marginTop:4, maxWidth:75, wordBreak:'break-all'}}>
+                        {file.name}
+                      </p>
+                 </div>     
+                ))}
           </div>
+            )}
+          </div>  
         );
 
       case 'attachfile':
