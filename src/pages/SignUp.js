@@ -17,6 +17,8 @@ function SignUp() {
     // Staff fields
     department: '',
     position: '',
+    securityQuestion: '',
+    securityAnswer: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -56,6 +58,11 @@ function SignUp() {
       return false;
     }
 
+    if (!formData.securityQuestion || !formData.securityAnswer){
+      setError('Please set a security question and answer');
+      return false;
+    }
+
     if (userType === 'user') {
       if (!formData.companyName || !formData.phoneNo || !formData.address) {
         setError('Please fill in all user profile fields');
@@ -85,6 +92,8 @@ function SignUp() {
       const accountData = {
         username: formData.username,
         password: formData.password,
+        securityQuestion: formData.securityQuestion,
+        securityAnswer: formData.securityAnswer,
       };
 
       let result;
@@ -107,7 +116,7 @@ function SignUp() {
 
       console.log('Signup successful:', result);
       // Redirect to signin page or dashboard
-      navigate(userType === 'staff' ? '/dashboard' : '/user-dashboard');
+      navigate(userType === 'staff' ? '/staff-home' : '/user-home');
     } catch (err) {
       setError(err.message || 'Signup failed. Please try again.');
       console.error('Signup error:', err);
@@ -182,6 +191,37 @@ function SignUp() {
                 placeholder="Confirm password"
                 required
               />
+            </div>
+
+            <div className="form-group">
+            <label htmlFor="securityQuestion">Security Question *</label>
+            <select
+                id="securityQuestion"
+                name="securityQuestion"
+                value={formData.securityQuestion}
+                onChange={handleChange}
+                required
+            >
+                <option value="">-- Select a security question --</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                <option value="What city were you born in?">What city were you born in?</option>
+                <option value="What is your childhood nickname?">What is your childhood nickname?</option>
+                <option value="What was the name of your primary school?">What was the name of your primary school?</option>
+            </select>
+            </div>
+
+            <div className="form-group">
+            <label htmlFor="securityAnswer">Security Answer *</label>
+            <input
+                type="text"
+                id="securityAnswer"
+                name="securityAnswer"
+                value={formData.securityAnswer}
+                onChange={handleChange}
+                placeholder="Enter your answer"
+                required
+            />
             </div>
           </fieldset>
 

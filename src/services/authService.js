@@ -135,6 +135,8 @@ export const authService = {
         body: JSON.stringify({
           username: accountData.username,
           password: accountData.password,
+          securityQuestion: accountData.securityQuestion,
+          securityAnswer: accountData.securityAnswer,
           fullName: userData.fullName,
           companyName: userData.companyName,
           phoneNo: userData.phoneNo,
@@ -172,6 +174,8 @@ export const authService = {
         body: JSON.stringify({
           username: accountData.username,
           password: accountData.password,
+          securityQuestion: accountData.securityQuestion,
+          securityAnswer: accountData.securityAnswer,
           fullName: staffData.fullName,
           department: staffData.department,
           position: staffData.position,
