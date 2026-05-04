@@ -90,26 +90,31 @@ function StaffFetchData() {
         URL.revokeObjectURL(url);
     };
 
-    const renderAnswerValue = (value) => {
+const renderAnswerValue = (value) => {
     if (!value) return <span style={{ color: '#9ca3af' }}>—</span>;
 
-    if (value.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i)) {
-        return (
-            <a href={`http://localhost:8080/${value}`}
-                target="_blank" rel="noreferrer"
-                style={{ color: '#7c3aed', textDecoration: 'underline' }}>
-                🖼 View Image
-            </a>
-        );
-    }
+    const parts = value.split(',').map(v => v.trim()).filter(Boolean);
 
-    if (value.match(/\.(pdf|doc|docx|xlsx|csv|txt)$/i)) {
+    if (parts.some(p => p.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i) || 
+                        p.match(/\.(pdf|doc|docx|xlsx|csv|txt)$/i))) {
         return (
-            <a href={`http://localhost:8080/${value}`}
-                target="_blank" rel="noreferrer"
-                style={{ color: '#7c3aed', textDecoration: 'underline' }}>
-                📄 View File
-            </a>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {parts.map((path, i) => (
+                    path.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i) ? (
+                        <a key={i} href={`http://localhost:8080/${path}`}
+                            target="_blank" rel="noreferrer"
+                            style={{ color: '#7c3aed', textDecoration: 'underline' }}>
+                            🖼 {parts.length > 1 ? `Image ${i + 1}` : 'View Image'}
+                        </a>
+                    ) : (
+                        <a key={i} href={`http://localhost:8080/${path}`}
+                            target="_blank" rel="noreferrer"
+                            style={{ color: '#7c3aed', textDecoration: 'underline' }}>
+                            📄 {parts.length > 1 ? `File ${i + 1}` : 'View File'}
+                        </a>
+                    )
+                ))}
+            </div>
         );
     }
 

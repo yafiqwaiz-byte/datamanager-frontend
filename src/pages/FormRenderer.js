@@ -75,10 +75,11 @@ function FormRenderer() {
               value.forEach(file => formData.append(`file_${field.fieldId}`,file));
             } else if (value instanceof File){
               formData.append(`file_${field.fieldId}`,value);
+            } 
             } else {
               formData.append(`answer_${field.fieldId}`,value || '');
             }
-        }
+        
     });
 
     axios.post('http://localhost:8080/api/forms/submit', formData, {

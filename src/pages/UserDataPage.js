@@ -57,30 +57,37 @@ function UserDataPage() {
         return value.match(/\.(pdf|doc|docx|xls|xlsx|txt)$/i);
     };
 
-    // ← renderValue and the if blocks were broken/outside the function, fixed below
     const renderAnswerValue = (value) => {
-        if (!value) return <span style={{ color: 'gray' }}>No data</span>;
+    if (!value) return <span style={{ color: 'gray' }}>No data</span>;
 
-        if (isImagePath(value)) {
-            return (
-                <a href={`http://localhost:8080/${value}`} target="_blank" rel="noreferrer"
-                    style={{ color: '#7c3aed', textDecoration: 'underline' }}>
-                    🖼 View Image
-                </a>
-            );
-        }
+    const parts = value.split(',').map(v => v.trim()).filter(Boolean);
 
-        if (isFilePath(value)) {
-            return (
-                <a href={`http://localhost:8080/${value}`} target="_blank" rel="noreferrer"
-                    style={{ color: '#7c3aed', textDecoration: 'underline' }}>
-                    📄 View File
-                </a>
-            );
-        }
+    if (parts.some(p => p.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i) ||
+                        p.match(/\.(pdf|doc|docx|xlsx|csv|txt)$/i))) {
+        return (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {parts.map((path, i) => (
+                    path.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i) ? (
+                        <a key={i} href={`http://localhost:8080/${path}`}
+                            target="_blank" rel="noreferrer"
+                            style={{ color: '#7c3aed', textDecoration: 'underline' }}>
+                            🖼 {parts.length > 1 ? `Image ${i + 1}` : 'View Image'}
+                        </a>
+                    ) : (
+                        <a key={i} href={`http://localhost:8080/${path}`}
+                            target="_blank" rel="noreferrer"
+                            style={{ color: '#7c3aed', textDecoration: 'underline' }}>
+                            📄 {parts.length > 1 ? `File ${i + 1}` : 'View File'}
+                        </a>
+                    )
+                ))}
+            </div>
+        );
+    }
 
-        return <span>{value}</span>;
-    };
+    return <span>{value}</span>;
+};
+
 
     const getStatusStyle = (status) => {  // ← was 'renderStatus' but called as 'getStatusStyle'
         switch (status) {
