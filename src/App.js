@@ -12,6 +12,7 @@ import FormRenderer from './pages/FormRenderer';
 import UserDataPage from './pages/UserDataPage';
 import NorthenTNBStation from './pages/NorthenTNBStation';
 import StaffFetchData from './pages/StaffFetchData';
+import ForgotPassword from './pages/ForgotPassowrd';
 // import Dashboard from './pages/Dashboard';
 // import UserDashboard from './pages/UserDashboard';
 import 'leaflet/dist/leaflet.css';
@@ -24,6 +25,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/staff-home" element={<StaffHome />} />
         <Route path="/user-home" element={<UserHome />} />
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
         <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route path="/user/form" element={<UserFormPage />} />

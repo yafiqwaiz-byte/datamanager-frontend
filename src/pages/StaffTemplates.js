@@ -81,7 +81,7 @@ function StaffTemplates(){
         }
     };
 
-const handleExportExcel = async () => {
+    const handleExportExcel = async () => {
     if (!submissions.length) return;
 
     const workbook = new ExcelJS.Workbook();
@@ -135,7 +135,7 @@ const handleExportExcel = async () => {
             const paths = (answerMap[f] || '').split(',').filter(Boolean);
             if (paths.length > maxImages) maxImages = paths.length;
         });
-        const ROW_HEIGHT = 80 * maxImages;
+        const ROW_HEIGHT = 120 * maxImages;
 
         const rowData = {
             submissionId: sub.submissionId,
@@ -161,10 +161,12 @@ const handleExportExcel = async () => {
             for (let imgIdx = 0; imgIdx < paths.length; imgIdx++) {
                 const filePath = paths[imgIdx].trim();
                 try {
-                    const imageUrl = `http://localhost:8080/${filePath}`;
+                    const imageUrl = `http://localhost:8080/${filePath.trim().replace(/\/\//g, '/')}`;
                     const res = await fetch(imageUrl, {
+                        mode: 'cors',
                         headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
                     });
+                    if(!res.ok) throw new Error(`HTTP ${res.status}`);
                     const blob = await res.blob();
                     const arrayBuffer = await blob.arrayBuffer();
 
@@ -175,15 +177,16 @@ const handleExportExcel = async () => {
                     });
 
                     const col = 3 + colIdx;
-                    const imgHeight = 1 / paths.length; // divide cell equally per image
+                    const imgHeightPx = Math.floor((ROW_HEIGHT/paths.length)*0.75)
+                    const offsetTop = imgIdx * imgHeightPx;
 
                     worksheet.addImage(imageId, {
-                        tl: { col: col, row: rowIndex - 1 + (imgIdx * imgHeight) },
-                        br: { col: col + 1, row: rowIndex - 1 + ((imgIdx + 1) * imgHeight) },
-                        editAs: 'oneCell',
+                         tl: { col: col, row: rowIndex - 1, nativeColOff: 0, nativeRowOff: offsetTop * 9525 },
+                         ext: { width: 120, height: imgHeightPx },
+                         editAs: 'oneCell',
                     });
                 } catch (e) {
-                    console.error('Failed to embed image:', e);
+                    console.error('Failed to embed image:',filePath, e);
                 }
             }
         }
