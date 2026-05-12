@@ -1,0 +1,128 @@
+.generated-letters-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.generated-letters-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    color: #1a1a2e;
+}
+
+.generated-letters-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.generated-letters-info {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.generated-letters-success {
+    color: #155724;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.generated-letters-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.generated-letters-btn:hover:not(:disabled) {
+    background: #4338ca;
+}
+
+.generated-letters-btn:disabled {
+    background: #a5a3e8;
+    cursor: not-allowed;
+}
+
+.generated-letters-download-row {
+    display: flex;
+    gap: 12px;
+}
+
+.generated-letters-btn-docx {
+    flex: 1;
+    padding: 12px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.generated-letters-btn-docx:hover {
+    background: #1d4ed8;
+}
+
+.generated-letters-btn-pdf {
+    flex: 1;
+    padding: 12px;
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.generated-letters-btn-pdf:hover {
+    background: #b91c1c;
+}
+
+.generated-letters-header {
+    margin-bottom: 24px;
+}
+
+.generated-letters-back {
+    background: none;
+    border: none;
+    color: #4f46e5;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.generated-letters-back:hover {
+    text-decoration: underline;
+}
+
+.generated-letters-btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.generated-letters-btn-secondary:hover {
+    background: #e5e7eb;
+}
