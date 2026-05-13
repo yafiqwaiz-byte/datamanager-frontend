@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
-function UserFormPage() {
+export default function UserFormPage() {
     const [templates, setTemplates] = useState([]);
     const [userName, setUserName] = useState('');
     const [loading, setLoading] = useState(true);
@@ -98,4 +98,3 @@ function UserFormPage() {
     );
 }
 
-export default UserFormPage;

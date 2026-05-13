@@ -1,7 +1,7 @@
 
 const BASE_URL = 'http://localhost:8080/api';
 
-const getAuthHeadders = () => {
+const getAuthHeaders = () => {
         const token = localStorage.getItem('authToken');
         return { 'Authorization': `Bearer ${token}` };
     };
@@ -14,7 +14,7 @@ export const uploadTemplate = async (staffId, templateName, file) => {
 
     const response = await fetch(`${BASE_URL}/letters/templates/upload`, {
         method: 'POST',
-        headers: getAuthHeadders(),
+        headers: getAuthHeaders(),
         body: formData,
     });
 
@@ -25,27 +25,27 @@ export const uploadTemplate = async (staffId, templateName, file) => {
     return response.json();
 };
 
-export const getAllTempalates = async () => {
-    const response = await fetch(`${BASE_URL}/letters/templates/all`,{ headers: getAuthHeadders() });
+export const getAllTemplates = async () => {
+    const response = await fetch(`${BASE_URL}/letters/templates/all`,{ headers: getAuthHeaders() });
     return response.json();
 };
 
 export const getTemplatePreview = async (templateId) => {
     const token = localStorage.getItem('authToken');
-    const res = await fetch(`${BASE_URL}/letters/template/preview/${templateId}`,
-        { headers: { 'Authorization': `Bearer ${token}` } }
+    const res = await fetch(`${BASE_URL}/letters/templates/preview/${templateId}`,
+        { headers: getAuthHeaders()}
     );
-    return res.json;
+    return res.json();
 };
 
 export const savePlaceholders = async (templateId,placeholders) => {
     const token = localStorage.getItem('authToken');
 
-    const res = await fetch(`${BASE_URL}/letters/template/placeholders/${templateId}`,
+    const res = await fetch(`${BASE_URL}/letters/templates/placeholders/${templateId}`,
         {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                ...getAuthHeaders(),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(placeholders)
@@ -54,8 +54,8 @@ export const savePlaceholders = async (templateId,placeholders) => {
     return res.json();
 };
 
-export const getTempalateByStaff = async (staffId) => {
-    const response = await fetch(`${BASE_URL}/letters/templates/staff/${staffId}`,{ headers: getAuthHeadders() });
+export const getTemplateByStaff = async (staffId) => {
+    const response = await fetch(`${BASE_URL}/letters/templates/staff/${staffId}`,{ headers: getAuthHeaders() });
     return response.json();
 };
 
@@ -65,7 +65,7 @@ export const uploadOCrImage = async (uploadId,file) => {
 
     const response = await fetch(`${BASE_URL}/ocr/process/${uploadId}`, {
         method: 'POST',
-        headers: getAuthHeadders(),
+        headers: getAuthHeaders(),
         body: formData,
     });
     return response.json();
@@ -74,7 +74,7 @@ export const uploadOCrImage = async (uploadId,file) => {
 export const autoMap = async (ocrId, templateId) => {
     const response = await fetch(`${BASE_URL}/letters/mapping/auto?ocrId=${ocrId}&templateId=${templateId}`,
          { method: 'POST',
-              headers: getAuthHeadders(),
+              headers: getAuthHeaders(),
           });
     return response.json();
 };
@@ -82,14 +82,14 @@ export const autoMap = async (ocrId, templateId) => {
  export const confirmMapping = async (mappingId, correctedFields) => {
     const res = await fetch(`${BASE_URL}/letters/mapping/confirm/${mappingId}`, {
         method: 'PUT',
-        headers: { ...getAuthHeadders(),'Content-Type': 'application/json' },
+        headers: { ...getAuthHeaders(),'Content-Type': 'application/json' },
         body: JSON.stringify({ correctedFields }),
     });
     return res.json();
 };
 
  export const generateLetter = async (mappingId) => { 
-    const res = await fetch(`${BASE_URL}/letters/generate/${mappingId}`, { method: 'POST', headers: getAuthHeadders() });
+    const res = await fetch(`${BASE_URL}/letters/generate/${mappingId}`, { method: 'POST', headers: getAuthHeaders() });
     return res.json();
 };
 

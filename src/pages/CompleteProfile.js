@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import '../styles/Auth.css';
 
-function CompleteProfile() {
+export default function CompleteProfile() {
   const [role, setRole] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -148,4 +148,4 @@ function CompleteProfile() {
     </div>
   );
 }
-export default CompleteProfile;
+

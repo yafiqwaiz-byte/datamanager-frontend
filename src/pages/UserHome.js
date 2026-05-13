@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
 
-function UserHome() {
+export default function UserHome() {
   const [userName, setUserName] = useState('');
   const [userData, setUserData] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -146,4 +146,3 @@ function UserHome() {
   );
 }
 
-export default UserHome;

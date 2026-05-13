@@ -9,7 +9,7 @@ import {
 import '../styles/Dashboard.css';
 import ExcelJS from 'exceljs';
 
-function StaffTemplates(){
+export default function StaffTemplates(){
 
     const [templates,setTemplates]= useState([]);
     const [loading,setLoading]= useState(true);
@@ -476,4 +476,3 @@ const tdStyle = {
     padding: '11px 14px', borderBottom: '1px solid #f3f4f6', color: '#374151'
 };
 
-export default StaffTemplates;

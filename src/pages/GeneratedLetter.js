@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import '../styles/GeneratedLetters.css';
+import '../styles/GeneratedLetter.css';
 
 const BASE_URL = "http://localhost:8080/api";
 

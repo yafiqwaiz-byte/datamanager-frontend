@@ -6,7 +6,7 @@ import '../styles/Auth.css';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
-function SignIn() {
+export default function SignIn() {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -202,4 +202,3 @@ function SignIn() {
   );
 }
 
-export default SignIn;

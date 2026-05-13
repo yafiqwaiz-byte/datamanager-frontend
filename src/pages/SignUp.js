@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import '../styles/Auth.css';
 
-function SignUp() {
+export default function SignUp() {
   const [userType, setUserType] = useState('user'); // 'user' or 'staff'
   const [formData, setFormData] = useState({
     username: '',
@@ -335,4 +335,3 @@ function SignUp() {
   );
 }
 
-export default SignUp;

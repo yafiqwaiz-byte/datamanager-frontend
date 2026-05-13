@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import axios from 'axios';
 
-function UserDataPage() {
+export default function UserDataPage() {
     const [submissions, setSubmissions] = useState([]);  // ← was 'submission' (singular), caused submissions.length error
     const [userName, setUserName] = useState('');
     const [loading, setLoading] = useState(true);
@@ -233,4 +233,3 @@ function UserDataPage() {
     );  // ← missing closing bracket for return was also an issue
 }       // ← function was not properly closed
 
-export default UserDataPage;

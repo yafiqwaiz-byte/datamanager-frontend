@@ -4,7 +4,7 @@ import { getAllSubmissions } from '../services/templateService';
 import '../styles/Dashboard.css';
 import ExcelJS from 'exceljs';
 
-function StaffFetchData() {
+export default function StaffFetchData() {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -73,7 +73,7 @@ function StaffFetchData() {
               submittedAt:new Date(sub.submittedAt).toLocaleString('en-MY'),
               status: sub.status,
               inputMethod: sub.inputMethod,
-              answers:sub.answers.map(a => `${a.fieldLabel}: ${a.answerValue} ||''}`).join('|')
+              answers: sub.answers.map(a => `${a.fieldLabel}: ${a.answerValue || ''}`).join(' | ')
             });
             row.eachCell(cell =>{ cell.alignment = { vertical:'middle',wrapText:true};});
         });
@@ -97,7 +97,11 @@ const renderAnswerValue = (value) => {
 
     if (parts.some(p => p.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i) || 
                         p.match(/\.(pdf|doc|docx|xlsx|csv|txt)$/i))) {
-        return (
+        
+    
+    
+    
+                            return (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {parts.map((path, i) => (
                     path.match(/\.(jpeg|jpg|png|gif|bmp|svg)$/i) ? (
@@ -120,6 +124,22 @@ const renderAnswerValue = (value) => {
 
     return <span style={{ color: '#111' }}>{value}</span>;
 };
+
+    const inputStyle = {
+        padding: '8px 12px',
+        border: '1px solid #ddd',
+        borderRadius: 8,
+        fontSize: 13,
+        background: '#fff'
+    };
+
+    const cardStyle = {
+        background: 'white',
+        borderRadius: 12,
+        padding: 20,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+        border: '1px solid #e5e7eb'
+    };
 
     return (
         <div className="dashboard-container staff-theme">
@@ -221,15 +241,7 @@ const renderAnswerValue = (value) => {
             </main>
         </div>
     );
+
+
+
 }
-
-const inputStyle = {
-    padding: '8px 12px', border: '1px solid #ddd',
-    borderRadius: 8, fontSize: 13, background: '#fff'
-};
-
-const cardStyle = {
-    background: 'white', borderRadius: 12, padding: 20,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #e5e7eb'
-};
-export default StaffFetchData;

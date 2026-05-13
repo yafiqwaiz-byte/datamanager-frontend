@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Dashboard.css';
 
-function FormRenderer() {
+export default function FormRenderer() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [template, setTemplate] = useState(null);
@@ -356,4 +356,3 @@ function FormRenderer() {
   );
 }
 
-export default FormRenderer;

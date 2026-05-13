@@ -4,7 +4,7 @@ import TemplateFormModal from '../components/TemplateFormModal';
 import '../styles/Dashboard.css';
 
 
-function StaffHome() {
+export default function StaffHome() {
   const [staffName, setStaffName] = useState('');
   const [staffData, setStaffData] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -46,7 +46,7 @@ function StaffHome() {
       title: 'Fetch User Data',
       description: 'View and manage data submitted by users via forms or OCR input',
       action: () => navigate('/staff/fetch-data'),
-      color: '#4f46e5'
+      color: '#51b948f2'
     },
     {
       id:'templates',
@@ -62,7 +62,7 @@ function StaffHome() {
       title: 'Upload File',
       description: 'Insert CSV or XLSX files for data cleaning and processing',
       action: () => navigate('/staff/upload'),
-      color: '#0891b2'
+      color: '#10b0d7'
     },
     {
       id: 'dashboard',
@@ -79,6 +79,30 @@ function StaffHome() {
       description: 'Export filtered and processed tables to various formats',
       action: () => navigate('/staff/export'),
       color: '#d97706'
+    },
+     {
+        id: 'letter-template',      // ← new
+        icon: '✉️',
+        title: 'Letter Template',
+        description: 'Upload Word templates with placeholders for auto letter generation',
+        action: () => navigate('/staff/letter/upload-template'),
+        color: '#1a4854'
+    },
+    {
+        id: 'letter-review',        // ← new
+        icon: '🗂️',
+        title: 'Review Field Mapping',
+        description: 'Review and confirm OCR field mappings before generating letters',
+        action: () => navigate('/staff/letter/review'),
+        color: '#6d20f1'
+    },
+    {
+        id: 'letter-generate',      // ← new
+        icon: '📨',
+        title: 'Generated Letters',
+        description: 'Generate and download completed letters in DOCX or PDF format',
+        action: () => navigate('/staff/letter/generate'),
+        color: '#be185d'
     },
     {
       id: 'tnb-station',
@@ -164,4 +188,6 @@ function StaffHome() {
     </div>
   );
 }
-export default StaffHome;
+
+
+
