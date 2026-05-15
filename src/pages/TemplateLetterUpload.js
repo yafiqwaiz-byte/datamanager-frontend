@@ -14,7 +14,7 @@ export default function TemplateLetterUpload() {
     const [message, setMessage] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const [templateId, setTemplateId] = useState(null); 
+    const [letterTemplateId, setLetterTemplateId] = useState(null);  // ← Changed
     const [htmlPreview, setHtmlPreview] = useState(null);
     const [placeholders, setPlaceholders] = useState([]);
     const [step, setStep] = useState(1);
@@ -29,17 +29,13 @@ export default function TemplateLetterUpload() {
 
         try {
             const token = localStorage.getItem('authToken');
-            const staffId = JSON.parse(
-                localStorage.getItem('user') || '{}'
-            ).staffId;
 
             const formData = new FormData();
-            formData.append("staffId", staffId);
             formData.append("templateName", templateName);
             formData.append("file", file);
 
             const uploadRes = await axios.post(
-               `${BASE_URL}/letters/template/upload`,
+               `${BASE_URL}/letters/templates/upload`,
                formData,
                {
                 headers: {
@@ -50,10 +46,10 @@ export default function TemplateLetterUpload() {
             );
 
             const savedTemplate = uploadRes.data;
-            setTemplateId(savedTemplate.templateId);
+            setLetterTemplateId(savedTemplate.letterTemplateId);  // ← Changed
 
             const previewRes = await axios.get(
-                `${BASE_URL}/letters/template/preview/${savedTemplate.templateId}`,
+                `${BASE_URL}/letters/templates/preview/${savedTemplate.letterTemplateId}`,  // ← Changed
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
@@ -124,7 +120,7 @@ export default function TemplateLetterUpload() {
         try {
             const token = localStorage.getItem('authToken');
             await axios.post(
-                `${BASE_URL}/letters/template/placeholders/${templateId}`,
+                `${BASE_URL}/letters/templates/placeholders/${letterTemplateId}`,  // ← Changed
                 placeholders,
                 {
                     headers: {
@@ -358,7 +354,7 @@ export default function TemplateLetterUpload() {
                                 setFile(null);
                                 setPlaceholders([]);
                                 setHtmlPreview(null);
-                                setTemplateId(null);
+                                setLetterTemplateId(null);  // ← Changed
                                 setMessage(null);
                             }}
                         >
