@@ -20,6 +20,8 @@ export default function StaffTemplates(){
     const [submissionsLoading,setSubmissionsLoading]= useState(false);
     const [searchTerm,setSearchTerm]= useState('');
     const [sortBy,setSortBy] = useState('date');
+    const [currentPage,setCurrentPage] = useState(0);
+    const [totalPages,setTotalPages] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => { fetchTemplates();},[]);
@@ -37,13 +39,19 @@ export default function StaffTemplates(){
     };
 
     const handleSave = async(data) =>{
+        try{
         if (editingTemplate){
             await updateTemplate(editingTemplate.templateId,data);
         }else {
             await createTemplate(data);
         }
-        fetchTemplates();
+         await fetchTemplates();
         setEditingTemplate(null);
+        setShowModal(false);
+    } catch (e) {
+        console.error('Save failed:' , e);
+        alert('Failed to save template,Please try again');
+    }
         };
     
 
@@ -63,17 +71,21 @@ export default function StaffTemplates(){
         fetchTemplates();
     };
 
-    const handleViewSubmissions = async (templates)=> {
-        if (selectedTemplate?.templateId === templates.templateId){
+    const handleViewSubmissions = async (templates,page = 0)=> {
+        if (selectedTemplate?.templateId === templates.templateId && page === 0){
             setSelectedTemplate(null);
             setSubmissions([]);
+            setCurrentPage(0);
+            setTotalPages(0);
             return;
         }
         setSelectedTemplate(templates);
         setSubmissionsLoading(true);
         try{
-            const data = await getTemplateSubmissions(templates.templateId);
-            setSubmissions(data);
+            const data = await getTemplateSubmissions(templates.templateId,page,10);
+            setSubmissions(data.content);
+            setTotalPages(data.page.totalPages);
+            setCurrentPage(data.page.number);
         } catch (e){
             console.error(e);
         } finally{
@@ -440,6 +452,38 @@ export default function StaffTemplates(){
                                                 })}
                                             </tbody>
                                         </table>
+                                        {totalPages > 1 && (
+                                            <div className="pagination-container">
+                                                <button
+                                                    className={`pagination-btn ${currentPage === 0 ? 'disabled' : ''}`}
+                                                    onClick={() => handleViewSubmissions(selectedTemplate, currentPage - 1)}
+                                                    disabled={currentPage === 0}>
+                                                    ← Prev
+                                                </button>
+
+                                                {Array.from({ length: totalPages }, (_, i) => i)
+                                                    .filter(i => i === 0 || i === totalPages - 1 || Math.abs(i - currentPage) <= 2)
+                                                    .map((i, idx, arr) => (
+                                                        <React.Fragment key={i}>
+                                                            {idx > 0 && arr[idx - 1] !== i - 1 && (
+                                                                <span style={{ color: '#9ca3af', padding: '0 4px' }}>...</span>
+                                                            )}
+                                                            <button
+                                                                className={`pagination-btn ${currentPage === i ? 'active' : ''}`}
+                                                                onClick={() => handleViewSubmissions(selectedTemplate, i)}>
+                                                                {i + 1}
+                                                            </button>
+                                                        </React.Fragment>
+                                                    ))
+                                                }
+                                                <button
+                                                    className={`pagination-btn ${currentPage >= totalPages - 1 ? 'disabled' : ''}`}
+                                                    onClick={() => handleViewSubmissions(selectedTemplate, currentPage + 1)}
+                                                    disabled={currentPage >= totalPages - 1}>
+                                                    Next →
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

@@ -74,10 +74,10 @@ export const toggleTemplate = async (id) => {
     }
 };
 
-export const getTemplateSubmissions = async(templateId) =>{
+export const getTemplateSubmissions = async(templateId,page = 0,size =10) =>{
     try{
         const response = await fetch(
-             `http://localhost:8080/api/staff/templates/${templateId}/submissions`,
+             `http://localhost:8080/api/staff/templates/${templateId}/submissions?page=${page}&size=${size}`,
             { headers:getAuthHeader()}
         );
         if (!response.ok) throw new Error('Failed to fetch submissions');
@@ -101,10 +101,10 @@ export const deleteTemplate = async (id) => {
     }
 };
 
-export const getAllSubmissions = async () => {
+export const getAllSubmissions = async (page = 0,size = 10) => {
     try {
         const response = await fetch(
-            'http://localhost:8080/api/staff/templates/submissions/all',
+            `http://localhost:8080/api/staff/templates/submissions/all?page=${page}&size=${size}`,
             { headers: getAuthHeader() }
         );
         if (!response.ok) throw new Error('Failed to fetch submissions');

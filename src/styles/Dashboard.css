@@ -299,3 +299,68 @@
     display: none;
   }
 }
+
+/* ===== PAGINATION ===== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e8eaf0;
+}
+
+.pagination-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(.disabled) {
+  background: #f5f6fa;
+  border-color: #9ca3af;
+  color: #1a1a2e;
+}
+
+.pagination-btn.disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.pagination-info {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE PAGINATION ===== */
+@media (max-width: 768px) {
+  .pagination-container {
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .pagination-btn {
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+}
+
+.pagination-btn.active {
+    background: #4338ca;
+    color: #ffffff;
+    border-color: #4338ca;
+    font-weight: 600;
+}

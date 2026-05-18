@@ -11,14 +11,21 @@ export default function StaffFetchData() {
     const [sortBy, setSortBy] = useState('date');
     const [filterTemplate, setFilterTemplate] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements,setTotalElements] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => { fetchAll(); }, []);
 
-    const fetchAll = async () => {
+    const fetchAll = async (page = 0) => {
+        setLoading(true);
         try {
-            const data = await getAllSubmissions();
-            setSubmissions(data);
+            const data = await getAllSubmissions(page,10);
+            setSubmissions(data.content);
+            setTotalPages(data.page.totalPages);
+            setCurrentPage(data.page.number);
+            setTotalElements(data.page.totalElements);
         } catch (e) {
             console.error(e);
         } finally {
@@ -163,7 +170,7 @@ const renderAnswerValue = (value) => {
                 <section className="welcome-section">
                     <div className="welcome-text">
                         <h1 className="welcome-heading">User Submissions</h1>
-                        <p className="welcome-subtitle">{filtered.length} of {submissions.length} submissions</p>
+                        <p className="welcome-subtitle">{totalElements} total submission</p>
                     </div>
                     <button onClick={handleExportExcel}
                         style={{ padding: '10px 20px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 500, fontSize: 14 }}>
@@ -238,6 +245,39 @@ const renderAnswerValue = (value) => {
                         </div>
                     )}
                 </section>
+                {totalPages > 1 && (
+                    <div className="pagination-container">
+                        <button
+                            className={`pagination-btn ${currentPage === 0 ? 'disabled' : ''}`}
+                            onClick={() => fetchAll(currentPage - 1)}
+                            disabled={currentPage === 0}>
+                            ← Prev
+                        </button>
+
+                        {Array.from({ length: totalPages }, (_, i) => i)
+                            .filter(i => i === 0 || i === totalPages - 1 || Math.abs(i - currentPage) <= 2)
+                            .map((i, idx, arr) => (
+                                <React.Fragment key={i}>
+                                    {idx > 0 && arr[idx - 1] !== i - 1 && (
+                                        <span style={{ color: '#9ca3af', padding: '0 4px' }}>...</span>
+                                    )}
+                                    <button
+                                        className={`pagination-btn ${currentPage === i ? 'active' : ''}`}
+                                        onClick={() => fetchAll(i)}>
+                                        {i + 1}
+                                    </button>
+                                </React.Fragment>
+                            ))
+                        }
+
+                        <button
+                            className={`pagination-btn ${currentPage >= totalPages - 1 ? 'disabled' : ''}`}
+                            onClick={() => fetchAll(currentPage + 1)}
+                            disabled={currentPage >= totalPages - 1}>
+                            Next →
+                        </button>
+                    </div>
+                )}
             </main>
         </div>
     );

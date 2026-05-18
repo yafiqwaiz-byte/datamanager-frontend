@@ -4,12 +4,33 @@ import '../styles/Dashboard.css';
 import axios from 'axios';
 
 export default function UserDataPage() {
-    const [submissions, setSubmissions] = useState([]);  // ← was 'submission' (singular), caused submissions.length error
+    const [submissions, setSubmissions] = useState([]);  
     const [userName, setUserName] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedSubmission, setSelectedSubmission] = useState(null);
+    const [currentPage,setCurrentPage] = useState(0);
+    const [totalPages,setTotalPages] = useState(0);
+    const [totalElements,setTotalElements] = useState(0);
     const navigate = useNavigate();
+
+    const fetchSubmissions = async (page =0) => {
+        setLoading(true);
+        const token = localStorage.getItem('authToken');
+        try{
+            const response = await axios.get(`http://localhost:8080/api/forms/my-submissions?page=${page}&size=10`,
+                {headers:{ 'Authorization': `Bearer ${token}`}}
+            );
+            setSubmissions(response.data.content);
+            setTotalPages(response.data.page.totalPages);
+            setCurrentPage(response.data.page.number);
+            setTotalElements(response.data.page.totalElements);
+        } catch {
+            setError('Failed to load your submission.Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -21,20 +42,8 @@ export default function UserDataPage() {
             navigate('/signin');
             return;
         }
-
-        axios.get('http://localhost:8080/api/forms/my-submissions', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                setSubmissions(response.data);  // ← fixed
-                setLoading(false);
-            })
-            .catch(() => {
-                setError('Failed to load your submissions. Please try again later.');
-                setLoading(false);
-            });
+        fetchSubmissions(0);
+        
     }, []);
 
     const formatDate = (dateString) => {
@@ -228,8 +237,40 @@ export default function UserDataPage() {
                         </div>
                     )}
                 </section>
+                {totalPages > 1 && (
+                <div className="pagination-container">
+                    <button
+                        className={`pagination-btn ${currentPage === 0 ? 'disabled' : ''}`}
+                        onClick={() => fetchSubmissions(currentPage - 1)}
+                        disabled={currentPage === 0}>
+                        ← Prev
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i)
+                        .filter(i => i === 0 || i === totalPages - 1 || Math.abs(i - currentPage) <= 2)
+                        .map((i, idx, arr) => (
+                            <React.Fragment key={i}>
+                                {idx > 0 && arr[idx - 1] !== i - 1 && (
+                                    <span style={{ color: '#9ca3af', padding: '0 4px' }}>...</span>
+                                )}
+                                <button
+                                    className={`pagination-btn ${currentPage === i ? 'active' : ''}`}
+                                    onClick={() => fetchSubmissions(i)}>
+                                    {i + 1}
+                                </button>
+                            </React.Fragment>
+                        ))
+                    }
+
+                    <button
+                        className={`pagination-btn ${currentPage >= totalPages - 1 ? 'disabled' : ''}`}
+                        onClick={() => fetchSubmissions(currentPage + 1)}
+                        disabled={currentPage >= totalPages - 1}>
+                        Next →
+                    </button>
+                </div>
+            )}
             </main>
         </div>
-    );  // ← missing closing bracket for return was also an issue
-}       // ← function was not properly closed
-
+    );  
+}       
