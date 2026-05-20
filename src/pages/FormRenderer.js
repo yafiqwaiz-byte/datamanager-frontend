@@ -46,22 +46,22 @@ export default function FormRenderer() {
     setAnswers(prev => ({ ...prev, [fieldId]: value }));
   };
 
-  const handleSubmit = () => {
-    // Required field validation
+  const handleSubmit = async () => { // ── Required field validation ──────────────────────────────
     const missing = template.fields
-      .filter(f => {
-        if(!f.isRequired) return false;
-        const val = answers[f.fieldId];
-        if(Array.isArray(val)) return val.length === 0;
-        return !val;
-      })
-      .map(f => f.fieldLabel);
-       if (missing.length > 0) {
+        .filter(f => {
+            if (!f.isRequired) return false;
+            const val = answers[f.fieldId];
+            if (Array.isArray(val)) return val.length === 0;
+            return !val;
+        })
+        .map(f => f.fieldLabel);
+
+    if (missing.length > 0) {
         alert(`Please fill in required fields: ${missing.join(', ')}`);
         return;
     }
-      
-    setSubmitting(true);
+
+    // ── Build FormData ─────────────────────────────────────────
     const token = localStorage.getItem('authToken');
     const formData = new FormData();
     formData.append('templateId', template.templateId);
@@ -69,34 +69,30 @@ export default function FormRenderer() {
 
     template.fields.forEach(field => {
         const value = answers[field.fieldId];
-        if ((field.fieldType === 'attachimage' || field.fieldType === 'attachfile') 
-                && value) {
-            if (Array.isArray(value)){
-              value.forEach(file => formData.append(`file_${field.fieldId}`,file));
-            } else if (value instanceof File){
-              formData.append(`file_${field.fieldId}`,value);
-            } 
-            } else {
-              formData.append(`answer_${field.fieldId}`,value || '');
+        if ((field.fieldType === 'attachimage' || field.fieldType === 'attachfile') && value) {
+            if (Array.isArray(value)) {
+                value.forEach(file => formData.append(`file_${field.fieldId}`, file));
+            } else if (value instanceof File) {
+                formData.append(`file_${field.fieldId}`, value);
             }
-        
+        } else {
+            formData.append(`answer_${field.fieldId}`, value || '');
+        }
     });
 
-    axios.post('http://localhost:8080/api/forms/submit', formData, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            
-        }
-    })
-    .then(() => {
+    // ── Submit ─────────────────────────────────────────────────
+    try {
+        setSubmitting(true);
+        await axios.post('http://localhost:8080/api/forms/submit', formData, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         alert('Form submitted successfully!');
         navigate('/user/data');
-    })
-    .catch(() => {
-        alert('Submission failed. Please try again.');
-        setSubmitting(false);
-    });
-};
+    } catch (e) {
+        console.error('Submission error:', e);
+        alert(e.response?.data?.message || 'Submission failed. Please try again.');
+        setSubmitting(false); // ✅ now called on both success path ending early and failure
+    }};
 
   
     const renderField = (field) => {
@@ -206,7 +202,7 @@ export default function FormRenderer() {
                 style={{
                   fontSize: '28px',
                   cursor: 'pointer',
-                  color: answers[field.fieldId] >= star ? '#f59e0b' : '#d1d5db'
+                  color: answers[field.fieldId] >= star ? '#efa320' : '#d1d5db'
                 }}
               >
                 ★

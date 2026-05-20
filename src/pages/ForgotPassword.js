@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authService } from '../services/authService';
 import '../styles/Auth.css';
 import { Link } from "react-router-dom";
 
-function ForgotPassword(){
+export default function ForgotPassword(){
 
     const [step,setStep] = useState(1);
     const [username,setUsername] = useState('');
@@ -188,5 +187,5 @@ return (
     );
 }
 
-export default ForgotPassword;
+
 

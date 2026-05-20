@@ -22,12 +22,18 @@ export const authService = {
       }
 
       const data = await response.json();
+      console.log('Signin response data:', data);
       if (data.token) {
         localStorage.setItem('authToken', data.token);
       }
       localStorage.setItem('username', data.username);
       localStorage.setItem('role', data.role);
       localStorage.setItem('user', JSON.stringify(data.user || {}));
+      if (data.staffId) {
+        localStorage.setItem('staffId', data.staffId);
+      } else if (data.user && data.user.staffId) { 
+        localStorage.setItem('staffId', data.user.staffId);
+      }
       return data;
     } catch (error) {
       console.error('Signin error:', error);

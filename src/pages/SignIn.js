@@ -148,7 +148,7 @@ export default function SignIn() {
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
-              width="100%"
+              width="250px"
               text="signin_with"
               shape="rectangular"
               theme="outline"

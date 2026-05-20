@@ -1,83 +1,56 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import '../styles/Dashboard.css';
+import '../styles/OcrUpload.css';
 import axios from "axios";
 
-function UserOcrPage() {
+const API = "http://localhost:8080/api";
 
-    const [file,setfile] = useState(null);
-    const [preview,setPreview] = useState(null);
-    const [loading,setLoading] = useState(false);
-    const [result,setResult] = useState(null);
-    const [error,setError] = useState(null);
-    const [template,setTemplate] = useState([]);
-    const [selectedTemplate,setSelectedTemplate] = useState("");
-    const [mappingDone,setMappingDone] = useState(false);
+export default function UserOcrPage() {
+
+    const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-        useEffect(() => {
-        const fetchTemplates = async () => {
-            const token = localStorage.getItem('authToken');
-            const res = await axios.get('http://localhost:8080/api/letters/templates/all', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            setTemplates(res.data);
-        };
-        fetchTemplates();
-    }, []);
-
-    const handleFileChange = (e) =>{
-        const select = e.target.files[0];
-        if (!select) return;
-        setfile(select);
-        setPreview(URL.createObjectURL(select));
+    const handleFileChange = (e) => {
+        const selected = e.target.files[0];
+        if (!selected) return;
+        setFile(selected);
+        setPreview(URL.createObjectURL(selected));
         setResult(null);
         setError(null);
     };
 
-    const handleAutoMap = async() =>{
-        if(!result?.ocrId || !selectedTemplate) return;
-
-        try{
-            await axios.post(`http://localhost:8080/api/letters/mapping/auto?ocrId=${result.ocrId}&templateId=${selectedTemplate}`,{
-        },
-        {
-            headers:{ 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-        });
-        setMappingDone(true);
-        alert('Auto-mapping completed! Please review and confirm the mapping.');
-        } catch (e){
-            setError('Auto-mapping failed,Please try again.');
-            console.error(e);
-        }
-    };
-
-    const handleUpload = async() =>{
-        if(!file) {
-            setError('Please select an image first'); return;
-        }
+    const handleUpload = async () => {
+        if (!file) { setError('Please select an image first'); return; }
         setLoading(true);
         setError(null);
 
         const token = localStorage.getItem('authToken');
         const formData = new FormData();
-        formData.append('file',file);
+        formData.append('file', file);
 
         try {
-            const res = await axios.post('http://localhost:8080/api/ocr/upload',formData,{
-                headers:{ 
-                    'Authorization': `Bearer ${token}`,
-            }
+            const res = await axios.post(`${API}/files/ocr/upload`, formData, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-            console.log('OCR response:', res.data);
             setResult(res.data);
         } catch (e) {
-            setError('OCR failed,Please try again.');
+            const msg = e.response?.data?.message || e.response?.data || 'OCR failed, please try again.';
+            setError(typeof msg === 'string' ? msg : 'OCR failed, please try again.');
             console.error(e);
         } finally {
             setLoading(false);
         }
-        
+    };
+
+    const handleReset = () => {
+        setFile(null);
+        setPreview(null);
+        setResult(null);
+        setError(null);
     };
 
     return (
@@ -100,176 +73,121 @@ function UserOcrPage() {
             </nav>
 
             <main className="dashboard-main">
-                <section className="welcome-section">
-                    <div className="welcome-text">
-                        <h1 className="welcome-heading">OCR Scan</h1>
-                        <p className="welcome-subtitle">Upload an image to extract text automatically</p>
-                    </div>
-                </section>
+                <div className="ocr-upload-container">
+                    <h1 className="ocr-upload-title">OCR Scan</h1>
 
-                <section className="menu-section">
-                    <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                    {/* Upload Card */}
+                    <div className="ocr-upload-card">
+                        <p className="ocr-upload-step-label">Step 1 — Upload Image</p>
 
-                        {/* Upload Panel */}
-                        <div style={panelStyle}>
-                            <h2 style={panelTitle}>Upload Image</h2>
-
-                            {/* Drop zone */}
-                            <label style={dropZoneStyle}>
-                                <input
-                                    type="file"
-                                    accept="image/jpeg,image/png"
-                                    onChange={handleFileChange}
-                                    style={{ display: 'none' }}
-                                />
-                                {preview ? (
-                                    <img
-                                        src={preview}
-                                        alt="Preview"
-                                        style={{ maxWidth: '100%', maxHeight: 280, borderRadius: 8, objectFit: 'contain' }}
-                                    />
-                                ) : (
-                                    <div style={{ textAlign: 'center', color: '#9ca3af' }}>
-                                        <p style={{ fontSize: 48 }}>🖼</p>
-                                        <p style={{ fontSize: 14 }}>Click to select an image</p>
-                                        <p style={{ fontSize: 12 }}>JPG, PNG supported</p>
-                                    </div>
-                                )}
-                            </label>
-
-                            {file && (
-                                <p style={{ fontSize: 13, color: '#6b7280', marginTop: 8 }}>
-                                    📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                        <label className="ocr-upload-dropzone">
+                            <input
+                                type="file"
+                                accept="image/jpeg,image/png"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                            />
+                            {preview ? (
+                                <img src={preview} alt="Preview" className="ocr-upload-preview" />
+                            ) : (
+                                <p className="ocr-upload-drop-text">
+                                    Click to select an image · JPG, PNG supported
                                 </p>
                             )}
+                        </label>
 
-                            {error && (
-                                <p style={{ color: '#e53e3e', fontSize: 13, marginTop: 8 }}>{error}</p>
+                        {file && (
+                            <p style={{ fontSize: 13, color: '#6b7280', marginTop: 8 }}>
+                                📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                            </p>
+                        )}
+
+                        {error && (
+                            <p style={{ fontSize: 13, color: '#991b1b', marginTop: 8 }}>{error}</p>
+                        )}
+
+                        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                            {file && !loading && (
+                                <button
+                                    onClick={handleReset}
+                                    style={{
+                                        padding: '11px 16px',
+                                        background: '#f3f4f6',
+                                        color: '#374151',
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: 8,
+                                        fontSize: 14,
+                                        cursor: 'pointer',
+                                        fontFamily: 'inherit',
+                                    }}
+                                >
+                                    Clear
+                                </button>
                             )}
-
                             <button
                                 onClick={handleUpload}
                                 disabled={!file || loading}
-                                style={{
-                                    marginTop: 16,
-                                    width: '100%',
-                                    padding: '12px 0',
-                                    background: !file || loading ? '#a78bfa' : '#7c3aed',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: 8,
-                                    fontSize: 15,
-                                    fontWeight: 600,
-                                    cursor: !file || loading ? 'not-allowed' : 'pointer',
-                                    fontFamily: 'inherit'
-                                }}
+                                className="ocr-upload-btn"
+                                style={{ flex: 1 }}
                             >
                                 {loading ? '🔍 Extracting text...' : '🔍 Extract Text'}
                             </button>
                         </div>
+                    </div>
 
-                        {/* Result Panel */}
-                        {result && (
-                            <div style={{ ...panelStyle, flex: 2 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                                    <h2 style={panelTitle}>Extracted Text</h2>
-                                    <span style={{
-                                        padding: '3px 10px', borderRadius: 99, fontSize: 11, fontWeight: 600,
-                                        background: result.status === 'success' ? '#dcfce7' : '#fee2e2',
-                                        color: result.status === 'success' ? '#166534' : '#991b1b'
-                                    }}>
-                                        {result.status}
-                                    </span>
-                                </div>
+                    {/* Result Card */}
+                    {result && (
+                        <div className="ocr-upload-card">
+                            <p className="ocr-upload-step-label">Step 2 — Extracted Text</p>
 
-                                {result.status === 'failed' ? (
-                                    <p style={{ color: '#e53e3e', fontSize: 13 }}>
-                                        OCR Error: {result.errorLog}
-                                    </p>
-                                ) : (
-                                    <>
-                                        {/* Raw extracted text */}
-                                        <div style={{
-                                            background: '#f9fafb',
+                            {result.status === 'failed' ? (
+                                <p style={{ color: '#e53e3e', fontSize: 13 }}>
+                                    OCR Error: {result.errorLog}
+                                </p>
+                            ) : (
+                                <>
+                                    <div className="ocr-upload-success-card">
+                                        <p className="ocr-upload-success-text">
+                                            ✅ Text extracted from {result.upload?.fileName}
+                                        </p>
+                                    </div>
+
+                                    <textarea
+                                        readOnly
+                                        value={result.extractedText || 'No text detected'}
+                                        style={{
+                                            width: '100%',
+                                            minHeight: 200,
+                                            padding: 12,
                                             border: '1px solid #e5e7eb',
                                             borderRadius: 8,
-                                            padding: 16,
                                             fontSize: 13,
+                                            fontFamily: 'monospace',
+                                            resize: 'vertical',
+                                            background: '#f9fafb',
                                             color: '#374151',
-                                            whiteSpace: 'pre-wrap',
-                                            maxHeight: 300,
-                                            overflowY: 'auto',
-                                            marginBottom: 20,
-                                            fontFamily: 'monospace'
-                                        }}>
-                                            {result.extractedText || 'No text detected'}
-                                        </div>
+                                            boxSizing: 'border-box',
+                                            marginBottom: 12,
+                                        }}
+                                    />
 
-                                        {/* Info */}
-                                        <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 8 }}>
-                                            📁 File: {result.upload?.fileName} · 
-                                            🕐 {new Date(result.processedAt).toLocaleString('en-MY')}
-                                        </p>
+                                    <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>
+                                        🕐 {new Date(result.processedAt).toLocaleString('en-MY')}
+                                    </p>
 
-                                        {/* Copy button */}
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(result.extractedText);
-                                                alert('Text copied!');
-                                            }}
-                                            style={{
-                                                padding: '8px 16px',
-                                                background: '#f3f4f6',
-                                                border: '1px solid #e5e7eb',
-                                                borderRadius: 8,
-                                                fontSize: 13,
-                                                cursor: 'pointer',
-                                                fontFamily: 'inherit'
-                                            }}
-                                        >
-                                            📋 Copy Text
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </section>
+                                    <button
+                                        onClick={() => { navigator.clipboard.writeText(result.extractedText); alert('Text copied!'); }}
+                                        className="ocr-upload-btn"
+                                        style={{ background: '#6b7280' }}
+                                    >
+                                        📋 Copy Text
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
             </main>
         </div>
     );
 }
-
-const panelStyle = {
-    background: 'white',
-    borderRadius: 12,
-    padding: 24,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    border: '1px solid #e5e7eb',
-    flex: 1,
-    minWidth: 280
-};
-
-const panelTitle = {
-    fontSize: 16,
-    fontWeight: 700,
-    color: '#1a1a2e',
-    marginBottom: 16,
-    margin: '0 0 16px 0'
-};
-
-const dropZoneStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '2px dashed #e5e7eb',
-    borderRadius: 10,
-    padding: 20,
-    cursor: 'pointer',
-    minHeight: 200,
-    transition: 'border-color 0.2s',
-    background: '#fafafa'
-};
-
-export default UserOcrPage;
-

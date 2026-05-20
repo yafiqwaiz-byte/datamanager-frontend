@@ -135,7 +135,7 @@ export default function UserDataPage() {
                 <section className="welcome-section">
                     <div className="welcome-text">
                         <h1 className="welcome-heading">My Submissions</h1>
-                        <p className="welcome-subtitle">View all your submitted form data</p>
+                        <p className="welcome-subtitle">{totalElements>0 ?`${totalElements} total submission${totalElements !== 1?'s':''}`:'View all your submitted form data'}</p>
                     </div>
                 </section>
 
