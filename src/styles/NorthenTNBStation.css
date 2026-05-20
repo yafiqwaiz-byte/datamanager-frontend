@@ -1,5 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
+
+/* Custom marker styling */
+.custom-station-marker {
+  position: relative;
+}
+
+.marker-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Pulsing animation for selected markers */
+@keyframes pulse {
+  0% {
+    transform: rotate(-45deg) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: rotate(-45deg) scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(-45deg) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Ensure markers are clickable */
+.leaflet-marker-icon {
+  cursor: pointer;
+  z-index: 400;
+}
+
+.leaflet-marker-icon:hover {
+  z-index: 1000 !important;
+}
+
 /* ─── Root Variables ─── */
 :root {
   --bg: #f0f4f8;
@@ -469,3 +508,4 @@
   backdrop-filter: blur(8px);
   pointer-events: none;
 }
+

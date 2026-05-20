@@ -130,10 +130,77 @@ function parseKML(kmlText) {
   return stations;
 }
 
+// Component to handle map reference
 function MapRef({ mapRef }) {
   const map = useMap();
   useEffect(() => { mapRef.current = map; }, [map, mapRef]);
   return null;
+}
+
+// Component to auto-fit bounds to show all stations (Option 4)
+function FitBounds({ stations }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (stations.length > 0) {
+      const bounds = L.latLngBounds(
+        stations.map(s => [s.lat, s.lng])
+      );
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [stations, map]);
+  
+  return null;
+}
+
+// Function to create custom pin marker icon (Option 5)
+function createCustomIcon(station, color, isSelected) {
+  const size = isSelected ? 50 : 40;
+  const pinHeight = isSelected ? 60 : 50;
+  
+  return L.divIcon({
+    className: 'custom-station-marker',
+    html: `
+      <div class="marker-container">
+        <div class="marker-pin" style="
+          width: ${size}px;
+          height: ${size}px;
+          background: ${color};
+          border: 4px solid white;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+        ">
+          <div style="
+            transform: rotate(45deg);
+            color: white;
+            font-weight: 700;
+            font-size: ${isSelected ? 16 : 13}px;
+            font-family: IBM Plex Mono, monospace;
+          ">${station.no}</div>
+        </div>
+        ${isSelected ? `<div class="marker-pulse" style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${color};
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          opacity: 0.6;
+          animation: pulse 2s infinite;
+        "></div>` : ''}
+      </div>
+    `,
+    iconSize: [size, pinHeight],
+    iconAnchor: [size / 2, pinHeight],
+    popupAnchor: [0, -pinHeight],
+  });
 }
 
 export default function NorthenTNBStation() {
@@ -237,8 +304,9 @@ export default function NorthenTNBStation() {
           <div className="north-loading">⚡ LOADING STATIONS...</div>
         ) : (
           <div className="north-map" ref={mapContainerRef}>
-            <MapContainer center={[5.3, 100.8]} zoom={7} style={{ height: '620px', width: '100%' }}>
+            <MapContainer center={[5.3, 100.8]} zoom={8} style={{ height: '620px', width: '100%' }}>
               <MapRef mapRef={mapRef} />
+              <FitBounds stations={filteredStations} />
 
               {/* Tile layer */}
               <TileLayer
@@ -294,30 +362,18 @@ export default function NorthenTNBStation() {
                 </>
               )}
 
-              {/* Station markers */}
+              {/* Station markers with custom pin icons */}
               {filteredStations.map(station => {
                 const color = subzoneColors[station.subzone]?.bg || '#dc2626';
                 const isSelected = selectedStation?.no === station.no;
-                const size = isSelected ? 22 : 15;
-                const icon = L.divIcon({
-                  className: 'custom-marker',
-                  html: `<div style="
-                    width:${size}px;height:${size}px;
-                    background:${color};
-                    border:${isSelected ? 3 : 2}px solid #fff;
-                    border-radius:50%;
-                    box-shadow:0 0 ${isSelected ? 20 : 10}px ${color}cc;
-                    display:flex;align-items:center;justify-content:center;
-                    font-size:${size < 18 ? 7 : 9}px;
-                    font-weight:700;color:#fff;
-                    font-family:IBM Plex Mono,monospace;
-                  ">${station.no}</div>`,
-                  iconSize: [size, size],
-                  iconAnchor: [size / 2, size / 2],
-                });
+                
                 return (
-                  <Marker key={station.no} position={[station.lat, station.lng]} icon={icon}
-                    eventHandlers={{ click: () => setSelectedStation(station) }}>
+                  <Marker 
+                    key={station.no} 
+                    position={[station.lat, station.lng]} 
+                    icon={createCustomIcon(station, color, isSelected)}
+                    eventHandlers={{ click: () => setSelectedStation(station) }}
+                  >
                     <Popup>
                       <div style={{ fontFamily: 'IBM Plex Sans,sans-serif', minWidth: 170 }}>
                         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6, color: '#1a202c' }}>{station.name}</div>
