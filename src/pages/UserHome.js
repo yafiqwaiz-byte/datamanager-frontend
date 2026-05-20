@@ -56,9 +56,9 @@ export default function UserHome() {
     {
       id: 'ocr-scan',
       icon: '🔍',
-      title: 'OCR Scan',
+      title: 'OCR Service',
       description: 'Scan and upload documents for automatic data extraction',
-      action: () => navigate('/user/ocr'),
+      action: () => navigate('/user/ocr-services'),
       color: '#db2777'
     },
     {
