@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TemplateFormModal from '../components/TemplateFormModal';
+import { authService } from '../services/authService';
 import '../styles/Dashboard.css';
 
 
@@ -35,7 +36,7 @@ export default function StaffHome() {
   };
 
   const handleSignOut = () => {
-    localStorage.clear();
+    authService.logout();
     navigate('/signin');
   };
 

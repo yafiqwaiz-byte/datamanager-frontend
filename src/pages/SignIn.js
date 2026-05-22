@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { authService } from '../services/authService';
 import '../styles/Auth.css';
@@ -7,33 +7,20 @@ import '../styles/Auth.css';
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 export default function SignIn() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
+  const [showRoleModal, setShowRoleModal]       = useState(false);
   const [pendingGoogleToken, setPendingGoogleToken] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleRedirect = (role, newUser) => {
-    if (newUser) {
-      window.location.href = '/complete-profile';
-      return;
-    }
-    if (role === 'STAFF') {
-      window.location.href = '/staff-home';
-    } else {
-      window.location.href = '/user-home';
-    }
+    if (newUser) { window.location.href = '/complete-profile'; return; }
+    window.location.href = role === 'STAFF' ? '/staff-home' : '/user-home';
   };
 
   const handleSubmit = async (e) => {
@@ -44,16 +31,14 @@ export default function SignIn() {
     try {
       if (!formData.username || !formData.password) {
         setError('Please fill in all fields');
-        setLoading(false);
         return;
       }
-
+      // authService.signin now uses credentials:'include' — token stays in cookie
       const result = await authService.signin(formData.username, formData.password);
-      console.log('Signin successful:', result);
       handleRedirect(result.role, false);
     } catch (err) {
+      // Show the backend message directly (includes remaining attempts count)
       setError(err.message || 'Signin failed. Please try again.');
-      console.error('Signin error:', err);
     } finally {
       setLoading(false);
     }
@@ -70,13 +55,11 @@ export default function SignIn() {
     setError('');
     try {
       const result = await authService.signinWithGoogle(pendingGoogleToken, selectedRole);
-      console.log('Google signin successful:', result);
 
-      // Check if existing account has a different role than selected
       if (!result.newUser && result.role !== selectedRole) {
         setError(
           `This Google account is already registered as ${result.role}. ` +
-          `Please use a different Google account to sign in as ${selectedRole}.`
+          `Please use a different account to sign in as ${selectedRole}.`
         );
         return;
       }
@@ -84,16 +67,13 @@ export default function SignIn() {
       handleRedirect(result.role, result.newUser);
     } catch (err) {
       setError(err.message || 'Google signin failed. Please try again.');
-      console.error('Google signin error:', err);
     } finally {
       setLoading(false);
       setPendingGoogleToken(null);
     }
   };
 
-  const handleGoogleError = () => {
-    setError('Google signin failed. Please try again.');
-  };
+  const handleGoogleError = () => setError('Google signin failed. Please try again.');
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
@@ -129,20 +109,18 @@ export default function SignIn() {
               />
             </div>
 
-             <div style={{ textAlign: 'right', marginTop: -8, marginBottom: 16 }}>
-                <Link to="/forgot-password" className="link" style={{ fontSize: 13 }}>
-                    Forgot password?
-                </Link>
-             </div>
+            <div style={{ textAlign: 'right', marginTop: -8, marginBottom: 16 }}>
+              <Link to="/forgot-password" className="link" style={{ fontSize: 13 }}>
+                Forgot password?
+              </Link>
+            </div>
 
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
-          <div className="divider">
-            <span>or</span>
-          </div>
+          <div className="divider"><span>or</span></div>
 
           <div className="google-btn-wrapper">
             <GoogleLogin
@@ -158,9 +136,7 @@ export default function SignIn() {
           <div className="auth-footer">
             <p>
               Don't have an account?{' '}
-              <Link to="/signup" className="link">
-                Sign Up here
-              </Link>
+              <Link to="/signup" className="link">Sign Up here</Link>
             </p>
           </div>
         </div>
@@ -172,25 +148,16 @@ export default function SignIn() {
               <h2>Select Your Role</h2>
               <p>Are you signing in as a User or Staff?</p>
               <div className="role-buttons">
-                <button
-                  className="btn btn-role user-role"
-                  onClick={() => handleRoleSelect('USER')}
-                >
+                <button className="btn btn-role user-role" onClick={() => handleRoleSelect('USER')}>
                   👤 User
                 </button>
-                <button
-                  className="btn btn-role staff-role"
-                  onClick={() => handleRoleSelect('STAFF')}
-                >
+                <button className="btn btn-role staff-role" onClick={() => handleRoleSelect('STAFF')}>
                   🏢 Staff
                 </button>
               </div>
               <button
                 className="btn-cancel"
-                onClick={() => {
-                  setShowRoleModal(false);
-                  setPendingGoogleToken(null);
-                }}
+                onClick={() => { setShowRoleModal(false); setPendingGoogleToken(null); }}
               >
                 Cancel
               </button>
@@ -201,4 +168,3 @@ export default function SignIn() {
     </GoogleOAuthProvider>
   );
 }
-

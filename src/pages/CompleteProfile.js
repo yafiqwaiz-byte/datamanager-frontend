@@ -23,7 +23,7 @@ export default function CompleteProfile() {
   useEffect(() => {
     const storedRole = localStorage.getItem('role');
     const storedFullName = localStorage.getItem('fullName') || '';
-    if (!storedRole || !localStorage.getItem('authToken')) {
+    if (!storedRole || !localStorage.getItem('username')) {
       navigate('/signin');
       return;
     }

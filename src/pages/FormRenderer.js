@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import {authService} from '../services/authService';
 import '../styles/Dashboard.css';
 
 export default function FormRenderer() {
@@ -18,21 +18,18 @@ export default function FormRenderer() {
     const username = localStorage.getItem('username') || 'User';
     setUserName(user.fullName || username);
 
-    const token = localStorage.getItem('authToken');
-    if (!token) {
+    
+    if (!localStorage.getItem('username')) {
       navigate('/signin');
       return;
     }
 
-    axios.get(`http://localhost:8080/api/forms/templates/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(res => {
-        setTemplate(res.data);
+   authService.fetchWithAuth(`http://localhost:8080/api/forms/templates/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setTemplate(data);
         const initial = {};
-        res.data.fields.forEach(f => initial[f.fieldId] = '');
+        data.fields.forEach(f => initial[f.fieldId] = '');
         setAnswers(initial);
         setLoading(false);
       })
@@ -62,7 +59,7 @@ export default function FormRenderer() {
     }
 
     // ── Build FormData ─────────────────────────────────────────
-    const token = localStorage.getItem('authToken');
+    
     const formData = new FormData();
     formData.append('templateId', template.templateId);
     formData.append('inputMethod', 'form');
@@ -81,18 +78,25 @@ export default function FormRenderer() {
     });
 
     // ── Submit ─────────────────────────────────────────────────
-    try {
+    try{
         setSubmitting(true);
-        await axios.post('http://localhost:8080/api/forms/submit', formData, {
-            headers: { Authorization: `Bearer ${token}` }
+        const res = await authService.fetchWithAuth('http://localhost:8080/api/forms/submit', {
+            method: 'POST',
+            headers: {},   // let browser set multipart boundary for FormData
+            body: formData,
         });
-        alert('Form submitted successfully!');
+    if(!res.ok){
+      const errData = await res.json().catch(() =>({}));
+      throw new Error(errData.message || "Submission failed.Please try again.");
+    }
+     alert('Form submitted successfully!');
         navigate('/user/data');
-    } catch (e) {
-        console.error('Submission error:', e);
-        alert(e.response?.data?.message || 'Submission failed. Please try again.');
-        setSubmitting(false); // ✅ now called on both success path ending early and failure
-    }};
+  }catch (e) {
+    console.error('Submission error:',e);
+    alert(e.message);
+    setSubmitting(false);
+  }
+  };
 
   
     const renderField = (field) => {

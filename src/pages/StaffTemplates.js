@@ -6,6 +6,7 @@ import {
     toggleTemplate,deleteTemplate,
     getTemplateSubmissions
 } from '../services/templateService';
+import { authService } from '../services/authService';
 import '../styles/Dashboard.css';
 import ExcelJS from 'exceljs';
 
@@ -174,10 +175,7 @@ export default function StaffTemplates(){
                 const filePath = paths[imgIdx].trim();
                 try {
                     const imageUrl = `http://localhost:8080/${filePath.trim().replace(/\/\//g, '/')}`;
-                    const res = await fetch(imageUrl, {
-                        mode: 'cors',
-                        headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
-                    });
+                    const res = await authService.fetchWithAuth(imageUrl);
                     if(!res.ok) throw new Error(`HTTP ${res.status}`);
                     const blob = await res.blob();
                     const arrayBuffer = await blob.arrayBuffer();

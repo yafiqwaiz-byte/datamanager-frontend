@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/OcrUpload.css';
-import axios from "axios";
+import { authService } from "../services/authService";
 
 const API = "http://localhost:8080/api";
 
@@ -28,15 +28,22 @@ export default function UserOcrPage() {
         setLoading(true);
         setError(null);
 
-        const token = localStorage.getItem('authToken');
+       
         const formData = new FormData();
         formData.append('file', file);
 
         try {
-            const res = await axios.post(`${API}/files/ocr/upload`, formData, {
-                headers: { 'Authorization': `Bearer ${token}` }
+            const res = await authService.fetchWithAuth(`${API}/files/ocr/upload`,{
+                method: 'POST',
+                headers: {},
+                body: formData,
             });
-            setResult(res.data);
+            if(!res.ok){
+                const msg = await res.text();
+                 throw new Error(typeof msg === 'string' ? msg : 'OCR failed, please try again.');
+            }
+            const data = await res.json();
+            setResult(data);
         } catch (e) {
             const msg = e.response?.data?.message || e.response?.data || 'OCR failed, please try again.';
             setError(typeof msg === 'string' ? msg : 'OCR failed, please try again.');

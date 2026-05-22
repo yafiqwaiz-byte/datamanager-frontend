@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authService } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
@@ -11,8 +12,8 @@ export default function UserHome() {
 
   useEffect(() => {
    
-    const token = localStorage.getItem('authToken');
-    if (!token) {
+   
+    if (!localStorage.getItem('username')) {
       navigate('/signin');
       return;
     }
@@ -30,6 +31,7 @@ export default function UserHome() {
     // Update time every minute
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getGreeting = () => {
@@ -40,7 +42,7 @@ export default function UserHome() {
   };
 
   const handleSignOut = () => {
-    localStorage.clear();
+    authService.logout();
     navigate('/signin');
   };
 

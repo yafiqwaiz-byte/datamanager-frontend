@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
-import axios from 'axios';
+import { authService } from '../services/authService';
 
 export default function UserFormPage() {
     const [templates, setTemplates] = useState([]);
@@ -11,8 +11,8 @@ export default function UserFormPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
+    
+        if (!localStorage.getItem('username')) {
             navigate('/signin');
             return;
         }
@@ -21,11 +21,10 @@ export default function UserFormPage() {
         const username = localStorage.getItem('username') || 'User';
         setUserName(user.fullName || username);
 
-        axios.get('http://localhost:8080/api/forms/templates', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-        .then(res => {
-            setTemplates(res.data);
+        authService.fetchWithAuth('http://localhost:8080/api/forms/templates')
+        .then(res => res.json())
+        .then(data => {
+            setTemplates(data);
             setLoading(false);
         })
         .catch(() => {

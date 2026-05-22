@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/OcrUpload.css';
-import axios from "axios";
+import { authService } from "../services/authService";
 
 const API = "http://localhost:8080/api";
 
@@ -21,11 +21,10 @@ export default function UserOcrLetterPage() {
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                const res = await axios.get(`${API}/letters/templates/all`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                setTemplates(res.data);
+               
+                const res = await authService.fetchWithAuth(`${API}/letters/templates/all`);
+                const data = await res.json();
+                setTemplates(data);
             } catch (e) {
                 console.error('Failed to fetch templates:', e);
             }
@@ -49,15 +48,22 @@ export default function UserOcrLetterPage() {
         setLoading(true);
         setError(null);
 
-        const token = localStorage.getItem('authToken');
+        
         const formData = new FormData();
         formData.append('file', file);
 
         try {
-            const res = await axios.post(`${API}/files/ocr/upload`, formData, {
-                headers: { 'Authorization': `Bearer ${token}` }
+            const res = await authService.fetchWithAuth(`${API}/files/ocr/upload`,{
+                method: 'POST',
+                headers: {},
+                body: formData,
             });
-            setResult(res.data);
+            if (!res.ok) {
+                const msg = await res.text();
+                throw new Error(typeof msg === 'string'? msg: 'OCR failed,please try again.');
+            }
+            const data = await res.json();
+            setResult(data);
         } catch (e) {
             const msg = e.response?.data?.message || e.response?.data || 'OCR failed, please try again.';
             setError(typeof msg === 'string' ? msg : 'OCR failed, please try again.');
@@ -73,12 +79,16 @@ export default function UserOcrLetterPage() {
         setMapping(true);
         setError(null);
         try {
-            const res = await axios.post(
+            const res = await authService.fetchWithAuth(
                 `${API}/letters/mapping/auto?ocrId=${result.ocrId}&templateId=${selectedTemplate}`,
-                {},
-                { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }
+                { method: 'POST'}
             );
-            navigate(`/staff/letter/review/${res.data.mappingId}`);
+            if (!res.ok) {
+                const msg = await res.text();
+                throw new Error(typeof msg === 'string'? msg:'Auto-mapping failed,please try again.');
+            }
+            const data = await res.json();
+            navigate(`/staff/letter/review/${data.mappingId}`);
         } catch (e) {
             const msg = e.response?.data?.message || e.response?.data || 'Auto-mapping failed, please try again.';
             setError(typeof msg === 'string' ? msg : 'Auto-mapping failed, please try again.');

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import '../styles/FieldMapperReview.css';
-
+import { authService } from "../services/authService";
 const BASE_URL = "http://localhost:8080/api";
 
 export default function FieldMapperReview() {
@@ -20,18 +19,16 @@ export default function FieldMapperReview() {
     useEffect(() => {
         const fetchMapping = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                const res = await axios.get(
-                    `${BASE_URL}/letters/mapping/${mappingId}`,
-                    { headers: { 'Authorization': `Bearer ${token}` } }
-                );
+                const res = await authService.fetchWithAuth(
+                    `${BASE_URL}/letters/mapping/${mappingId}`);
+                const data = await res.json();
 
                 // Parse mappedFields JSON string into object
-                const mapped = JSON.parse(res.data.mappedFields);
+                const mapped = JSON.parse(data.mappedFields);
                 setFields(mapped);
 
                 // If already confirmed, set confirmed state
-                if (res.data.status === 'confirmed') {
+                if (data.status === 'confirmed') {
                     setConfirmed(true);
                 }
             } catch (e) {
@@ -52,17 +49,15 @@ export default function FieldMapperReview() {
     const handleConfirm = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('authToken');
-            await axios.put(
+            const response = await authService.fetchWithAuth(
                 `${BASE_URL}/letters/mapping/confirm/${mappingId}`,
-                fields,
                 {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+                    method:'PUT',
+                    body:JSON.stringify(fields),
+                   
                 }
             );
+            if (!response.ok) throw new Error('Failed to confirm mapping.');
             setConfirmed(true);
         } catch (e) {
             alert('Failed to confirm mapping: ' + e.message);

@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/Dashboard.css';
 import '../styles/StaffUploadPage.css';
-import axios from "axios";
+import { authService } from "../services/authService";
 
 const API = "http://localhost:8080/api";
 
@@ -74,80 +74,119 @@ export default function StaffUploadPage() {
         handleFile(e.dataTransfer.files[0]);
     };
 
-    const handleUpload = async () => {
-        if (!file) return;
-        setError(null);
+   
 
-        try {
-            const token = localStorage.getItem('authToken');
+const handleUpload = async () => {
+    if (!file) return;
+    setError(null);
 
-            // ── Step 1: Upload Excel file (no OCR, no user required) ──
-            setStep(STEP.UPLOADING);
-            setProgress(10);
-            const formData = new FormData();
-            formData.append('file', file);
+    try {
+        // ── Step 1: Upload Excel file with progress tracking ──────────
+        setStep(STEP.UPLOADING);
+        setProgress(10);
 
-            const uploadRes = await axios.post(`${API}/files/excel/upload`, formData, {
-                headers: { 'Authorization': `Bearer ${token}` },
-                onUploadProgress: (e) => {
-                    const pct = Math.round((e.loaded / e.total) * 30);
-                    setProgress(10 + pct);
-                },
-            });
+        const formData = new FormData();
+        formData.append('file', file);
 
-            const uploadId = uploadRes.data?.uploadId;
-            if (!uploadId) throw new Error("No uploadId returned from server.");
-            setProgress(40);
+        // Convert FormData to a Blob so we know the total byte size
+        // (FormData itself doesn't expose .size)
+        const blob = new Blob([await new Response(formData).blob()]);
+        const totalBytes = blob.size;
+        let uploadedBytes = 0;
 
-            // ── Step 2: Process Excel data ──────────────────────────
-            setStep(STEP.PROCESSING);
-            const processFormData = new FormData();
-            processFormData.append('file', file);
+        // Wrap the blob in a ReadableStream that tracks how many
+        // bytes have been read (= sent to the server)
+        const trackingStream = new ReadableStream({
+            start(controller) {
+                const reader = blob.stream().getReader();
 
-            const processRes = await axios.post(
-                `${API}/excel/upload/${uploadId}`,
-                processFormData,
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
-
-            const excel = processRes.data;
-            setExcelResult(excel);
-            setProgress(70);
-
-            // ── Step 3: Save processed rows ─────────────────────────
-            setStep(STEP.SAVING);
-            await axios.post(
-                `${API}/processed-rows/save/${excel.excelId}`,
-                {},
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
-            setProgress(85);
-
-            // ── Step 4: Fetch cleaned preview ───────────────────────
-            const cleanedRes = await axios.get(
-                `${API}/processed-rows/${excel.excelId}/cleaned`,
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
-
-            const rows = cleanedRes.data;
-            if (rows.length > 0) {
-                const parsed = JSON.parse(rows[0].rowData);
-                setPreviewHeaders(Object.keys(parsed).slice(0, 8));
+                function push() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            controller.close();
+                            return;
+                        }
+                        uploadedBytes += value.byteLength;
+                        // Map upload progress to 10–40% range
+                        const uploadPct = Math.round((uploadedBytes / totalBytes) * 30);
+                        setProgress(10 + uploadPct);
+                        controller.enqueue(value);
+                        push();
+                    }).catch(err => controller.error(err));
+                }
+                push();
             }
-            setCleanedRows(rows.slice(0, 10));
-            setProgress(100);
-            setStep(STEP.DONE);
+        });
 
-        } catch (e) {
-           const errData = e.response?.data;
-           const errMsg = typeof errData === 'string'?errData:
-           errData?.message ?errData.message:
-           e.message || "Something went wrong.";
-           setError(errMsg);
-            setStep(STEP.ERROR);
-            setProgress(0);
+        // NOTE: duplex: 'half' is required in Chrome when sending a
+        // streaming body — it tells the browser not to buffer the whole
+        // request before sending
+        const uploadRes = await fetch(`${API}/files/excel/upload`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                // Content-Type must NOT be set here — the browser can't
+                // add the multipart boundary to a streaming body, so we
+                // send the raw blob as octet-stream instead
+                'Content-Type': 'application/octet-stream',
+                'X-File-Name': encodeURIComponent(file.name),
+            },
+            body: trackingStream,
+            duplex: 'half',
+        });
+
+        if (!uploadRes.ok) throw new Error('Upload failed');
+        const uploadData = await uploadRes.json();
+
+        const uploadId = uploadData?.uploadId;
+        if (!uploadId) throw new Error('No uploadId returned from server.');
+        setProgress(40);
+
+        // ── Step 2: Process Excel data ───────────────────────────────
+        setStep(STEP.PROCESSING);
+        const processFormData = new FormData();
+        processFormData.append('file', file);
+
+        const processRes = await authService.fetchWithAuth(`${API}/excel/upload/${uploadId}`, {
+            method: 'POST',
+            headers: {},   // let browser set multipart boundary
+            body: processFormData,
+        });
+        if (!processRes.ok) throw new Error('Processing failed');
+        const excel = await processRes.json();
+        setExcelResult(excel);
+        setProgress(70);
+
+        // ── Step 3: Save processed rows ──────────────────────────────
+        setStep(STEP.SAVING);
+        const saveRes = await authService.fetchWithAuth(
+            `${API}/processed-rows/save/${excel.excelId}`,
+            { method: 'POST' }
+        );
+        if (!saveRes.ok) throw new Error('Saving failed');
+        setProgress(85);
+
+        // ── Step 4: Fetch cleaned preview ────────────────────────────
+        const cleanedRes = await authService.fetchWithAuth(
+            `${API}/processed-rows/${excel.excelId}/cleaned`
+        );
+        if (!cleanedRes.ok) throw new Error('Failed to fetch cleaned data');
+        const rows = await cleanedRes.json();
+
+        if (rows.length > 0) {
+            const parsed = JSON.parse(rows[0].rowData);
+            setPreviewHeaders(Object.keys(parsed).slice(0, 8));
         }
-    };
+        setCleanedRows(rows.slice(0, 10));
+        setProgress(100);
+        setStep(STEP.DONE);
+
+    } catch (e) {
+        setError(e.message || 'Something went wrong.');
+        setStep(STEP.ERROR);
+        setProgress(0);
+    }
+};
 
     return (
         <div className="dashboard-container staff-theme">

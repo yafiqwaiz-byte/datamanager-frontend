@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { authService } from "../services/authService";
 import '../styles/GeneratedLetter.css';
 
 const BASE_URL = "http://localhost:8080/api";
@@ -20,16 +20,11 @@ export default function GeneratedLetters() {
     useEffect(() => {
         const fetchExistingLetter = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                const res = await axios.get(
-                    `${BASE_URL}/letters/generated/${mappingId}`,
-                    { headers: { 'Authorization': `Bearer ${token}` } }
-                );
-
-                // If letter already exists
-                if (res.data && res.data.length > 0) {
-                    setLetter(res.data[0]);
-                }
+               const res = await authService.fetchWithAuth(`${BASE_URL}/letters/generated/${mappingId}`);
+               const data = await res.json();
+               if(data && data.length > 0){
+                setLetter(data[0]);
+               }
             } catch (e) {
                 // No letter yet — that's fine
                 console.log('No existing letter found');
@@ -44,15 +39,13 @@ export default function GeneratedLetters() {
     const handleGenerate = async () => {
         setLoading(true);
         setError(null);
-        try {
-            const token = localStorage.getItem('authToken');
-            const res = await axios.post(
-                `${BASE_URL}/letters/generate/${mappingId}`,
-                {},
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            );
-            setLetter(res.data);
-        } catch (e) {
+        try {const res = await authService.fetchWithAuth(`${BASE_URL}/letters/generate/${mappingId}`,{
+            method: 'POST',
+        });
+        if (!res.ok) throw new Error('Generation Failed');
+        const data = await res.json();
+        setLetter(data);
+    } catch (e) {
             setError("Generation failed: " + e.message);
             console.error(e);
         } finally {
@@ -61,17 +54,13 @@ export default function GeneratedLetters() {
     };
 
     const handleDownloadDocx = () => {
-        const token = localStorage.getItem('authToken');
         window.open(
-            `${BASE_URL}/letters/download/docx/${letter.letterId}?token=${token}`
-        );
+            `${BASE_URL}/letters/download/docx/${letter.letterId}`,'_blank');
     };
 
     const handleDownloadPdf = () => {
-        const token = localStorage.getItem('authToken');
         window.open(
-            `${BASE_URL}/letters/download/pdf/${letter.letterId}?token=${token}`
-        );
+            `${BASE_URL}/letters/download/pdf/${letter.letterId}`,'_blank');
     };
 
     // Loading state

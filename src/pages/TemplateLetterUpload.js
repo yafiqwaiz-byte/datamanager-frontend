@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { authService } from "../services/authService";
 import '../styles/TemplateUpload.css';
 
 const BASE_URL = "http://localhost:8080/api";
@@ -28,32 +28,30 @@ export default function TemplateLetterUpload() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('authToken');
+            
 
             const formData = new FormData();
             formData.append("templateName", templateName);
             formData.append("file", file);
 
-            const uploadRes = await axios.post(
+            const uploadRes = await authService.fetchWithAuth(
                `${BASE_URL}/letters/templates/upload`,
-               formData,
                {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                method: 'POST',
+                headers: {},
+                body: formData,
                 }
-               }    
             );
 
             const savedTemplate = uploadRes.data;
             setLetterTemplateId(savedTemplate.letterTemplateId);  // ← Changed
 
-            const previewRes = await axios.get(
-                `${BASE_URL}/letters/templates/preview/${savedTemplate.letterTemplateId}`,  // ← Changed
-                { headers: { 'Authorization': `Bearer ${token}` } }
+            const previewRes = await authService.fetchWithAuth(
+                `${BASE_URL}/letters/templates/preview/${savedTemplate.letterTemplateId}`
             );
-
-            setHtmlPreview(previewRes.data.html);
+            if (!previewRes.ok) throw new Error('Preview failed');
+            const previewData = await previewRes.json();
+            setHtmlPreview(previewData.data.html);
             setStep(2);
             setMessage(null);
         } catch (e) {
@@ -118,18 +116,13 @@ export default function TemplateLetterUpload() {
 
         setLoading(true);
         try {
-            const token = localStorage.getItem('authToken');
-            await axios.post(
-                `${BASE_URL}/letters/templates/placeholders/${letterTemplateId}`,  // ← Changed
-                placeholders,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
+           const res = await authService.fetchWithAuth(`${BASE_URL}/letters/templates/placeholders/${letterTemplateId}`,
+            {
+                method: 'POST',
+                body:JSON.stringify(placeholders),
+            }
+           );
+           if (res.ok) throw new Error('Save failed');
             setStep(3);
             setMessage({
                 type: "success",

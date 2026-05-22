@@ -1,17 +1,10 @@
-// src/services/templateService.js
-const API_URL = 'http://localhost:8080/api/staff/templates';
+import { authService } from './authService'; // adjust path if needed
 
-const getAuthHeader = () => {
-    const token = localStorage.getItem('authToken');
-    return {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    };
-};
+const API_URL = 'http://localhost:8080/api/staff/templates';
 
 export const getTemplates = async () => {
     try {
-        const response = await fetch(API_URL, { headers: getAuthHeader() });
+        const response = await authService.fetchWithAuth(API_URL);
         if (!response.ok) throw new Error('Failed to fetch templates');
         return response.json();
     } catch (error) {
@@ -22,7 +15,7 @@ export const getTemplates = async () => {
 
 export const getTemplateById = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/${id}`, { headers: getAuthHeader() });
+        const response = await authService.fetchWithAuth(`${API_URL}/${id}`);
         if (!response.ok) throw new Error('Failed to fetch template');
         return response.json();
     } catch (error) {
@@ -33,9 +26,8 @@ export const getTemplateById = async (id) => {
 
 export const createTemplate = async (templateData) => {
     try {
-        const response = await fetch(API_URL, {
+        const response = await authService.fetchWithAuth(API_URL, {
             method: 'POST',
-            headers: getAuthHeader(),
             body: JSON.stringify(templateData),
         });
         if (!response.ok) throw new Error('Failed to create template');
@@ -48,9 +40,8 @@ export const createTemplate = async (templateData) => {
 
 export const updateTemplate = async (id, templateData) => {
     try {
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await authService.fetchWithAuth(`${API_URL}/${id}`, {
             method: 'PUT',
-            headers: getAuthHeader(),
             body: JSON.stringify(templateData),
         });
         if (!response.ok) throw new Error('Failed to update template');
@@ -63,9 +54,8 @@ export const updateTemplate = async (id, templateData) => {
 
 export const toggleTemplate = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/${id}/toggle`, {
+        const response = await authService.fetchWithAuth(`${API_URL}/${id}/toggle`, {
             method: 'PATCH',
-            headers: getAuthHeader(),
         });
         if (!response.ok) throw new Error('Failed to toggle template');
     } catch (error) {
@@ -74,15 +64,14 @@ export const toggleTemplate = async (id) => {
     }
 };
 
-export const getTemplateSubmissions = async(templateId,page = 0,size =10) =>{
-    try{
-        const response = await fetch(
-             `http://localhost:8080/api/staff/templates/${templateId}/submissions?page=${page}&size=${size}`,
-            { headers:getAuthHeader()}
+export const getTemplateSubmissions = async (templateId, page = 0, size = 10) => {
+    try {
+        const response = await authService.fetchWithAuth(
+            `${API_URL}/${templateId}/submissions?page=${page}&size=${size}`
         );
         if (!response.ok) throw new Error('Failed to fetch submissions');
         return response.json();
-    } catch(error){
+    } catch (error) {
         console.error('Error fetching submission:', error);
         throw error;
     }
@@ -90,9 +79,8 @@ export const getTemplateSubmissions = async(templateId,page = 0,size =10) =>{
 
 export const deleteTemplate = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await authService.fetchWithAuth(`${API_URL}/${id}`, {
             method: 'DELETE',
-            headers: getAuthHeader(),
         });
         if (!response.ok) throw new Error('Failed to delete template');
     } catch (error) {
@@ -101,11 +89,10 @@ export const deleteTemplate = async (id) => {
     }
 };
 
-export const getAllSubmissions = async (page = 0,size = 10) => {
+export const getAllSubmissions = async (page = 0, size = 10) => {
     try {
-        const response = await fetch(
-            `http://localhost:8080/api/staff/templates/submissions/all?page=${page}&size=${size}`,
-            { headers: getAuthHeader() }
+        const response = await authService.fetchWithAuth(
+            `${API_URL}/submissions/all?page=${page}&size=${size}`
         );
         if (!response.ok) throw new Error('Failed to fetch submissions');
         return response.json();

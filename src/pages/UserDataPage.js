@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
-import axios from 'axios';
+import { authService } from '../services/authService';
 
 export default function UserDataPage() {
     const [submissions, setSubmissions] = useState([]);  
@@ -16,15 +16,16 @@ export default function UserDataPage() {
 
     const fetchSubmissions = async (page =0) => {
         setLoading(true);
-        const token = localStorage.getItem('authToken');
+        
         try{
-            const response = await axios.get(`http://localhost:8080/api/forms/my-submissions?page=${page}&size=10`,
-                {headers:{ 'Authorization': `Bearer ${token}`}}
+            const response = await authService.fetchWithAuth(`http://localhost:8080/api/forms/my-submissions?page=${page}&size=10`
             );
-            setSubmissions(response.data.content);
-            setTotalPages(response.data.page.totalPages);
-            setCurrentPage(response.data.page.number);
-            setTotalElements(response.data.page.totalElements);
+            if (!response.ok) throw new Error('Failed to load submissions');
+            const data = await response.json();
+            setSubmissions(data.content);
+            setTotalPages(data.page.totalPages);
+            setCurrentPage(data.page.number);
+            setTotalElements(data.page.totalElements);
         } catch {
             setError('Failed to load your submission.Please try again later.');
         } finally {
@@ -33,17 +34,16 @@ export default function UserDataPage() {
     };
 
     useEffect(() => {
+
+         if (!localStorage.getItem('username')) {
+        navigate('/signin');
+        return;
+        }
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const username = localStorage.getItem('username') || 'User';
         setUserName(user.fullName || username);
-
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            navigate('/signin');
-            return;
-        }
         fetchSubmissions(0);
-        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const formatDate = (dateString) => {
@@ -56,16 +56,7 @@ export default function UserDataPage() {
         });
     };
 
-    const isImagePath = (value) => {  // ← was 'isimagePath' (wrong casing)
-        if (!value) return false;
-        return value.match(/\.(jpeg|jpg|png|bmp|svg)$/i);
-    };
-
-    const isFilePath = (value) => {  // ← was 'isfilePath' (wrong casing)
-        if (!value) return false;
-        return value.match(/\.(pdf|doc|docx|xls|xlsx|txt)$/i);
-    };
-
+   
     const renderAnswerValue = (value) => {
     if (!value) return <span style={{ color: 'gray' }}>No data</span>;
 
