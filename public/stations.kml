@@ -40,11 +40,11 @@
     </StyleMap>
     <Placemark>
       <name>TNB SEBERANG JAYA</name>
-      <description><![CDATA[description: BA: 6231 | Subzone: SBJ<br>no: 1<br>ba: 6231<br>subzone: SBJ]]></description>
+      <description><![CDATA[description: BA: 6231 | Subzone: P1<br>no: 1<br>ba: 6231<br>subzone: P1]]></description>
       <styleUrl>#icon-1899-0288D1</styleUrl>
       <ExtendedData>
         <Data name="description">
-          <value>BA: 6231 | Subzone: SBJ</value>
+          <value>BA: 6231 | Subzone: P1</value>
         </Data>
         <Data name="no">
           <value>1</value>
@@ -53,7 +53,7 @@
           <value>6231</value>
         </Data>
         <Data name="subzone">
-          <value>SBJ</value>
+          <value>P1</value>
         </Data>
       </ExtendedData>
       <Point>
@@ -712,11 +712,11 @@
     </Placemark>
     <Placemark>
       <name>TNB GUAR CHEMPEDAK</name>
-      <description><![CDATA[description: BA: 6244 | Subzone: ALS/KAN<br>no: 29<br>ba: 6244<br>subzone: ALS/KAN]]></description>
+      <description><![CDATA[description: BA: 6244 | Subzone: SGP/KLM<br>no: 29<br>ba: 6244<br>subzone: SGP/KLM]]></description>
       <styleUrl>#icon-1899-0288D1</styleUrl>
       <ExtendedData>
         <Data name="description">
-          <value>BA: 6244 | Subzone: ALS/KAN</value>
+          <value>BA: 6244 | Subzone: SGP/KLM</value>
         </Data>
         <Data name="no">
           <value>29</value>
@@ -725,7 +725,7 @@
           <value>6244</value>
         </Data>
         <Data name="subzone">
-          <value>ALS/KAN</value>
+          <value>SGP/KLM</value>
         </Data>
       </ExtendedData>
       <Point>
