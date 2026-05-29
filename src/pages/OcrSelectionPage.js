@@ -29,7 +29,7 @@ export default function OcrSelectionPage() {
                     {/* Basic OCR Scan Card */}
                     <div 
                         className="menu-card ocr-selection-card"
-                        onClick={() => navigate('/user/ocr-scan')}
+                        onClick={() => navigate('/user/ocr')}
                         style={{ '--card-color': '#3b82f6' }}
                     >
                         <div className="ocr-card-content">

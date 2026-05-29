@@ -189,26 +189,31 @@ export const authService = {
   // Use this instead of plain fetch() for all protected API calls.
   // It automatically retries once with a token refresh on 401.
   fetchWithAuth: async (url, options = {}) => {
+
+    const headers = {...options.headers};
+
+    if (options.body && !(options.body instanceof FormData)){
+      headers['Content-Type'] = 'application/json';
+    }
     const response = await fetch(url, {
       ...options,
-      credentials: 'include',                          // cookie sent automatically
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      credentials: 'include',                         
+      headers:headers ,
     });
 
     // Token expired — try refresh once, then retry
     if (response.status === 401) {
       const refreshed = await authService.refreshToken();
       if (refreshed) {
+
+        const retryHeaders = {...options.headers};
+         if (options.body && !(options.body instanceof FormData)) {
+        retryHeaders['Content-Type'] = 'application/json';
+      }
         return fetch(url, {
           ...options,
           credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-          },
+          headers: retryHeaders,
         });
       }
       // refreshToken() already redirects to /signin if failed
