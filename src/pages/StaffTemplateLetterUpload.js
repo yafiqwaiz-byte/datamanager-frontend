@@ -42,8 +42,8 @@ export default function TemplateLetterUpload() {
                 body: formData,
                 }
             );
-
-            const savedTemplate = uploadRes.data;
+            if (!uploadRes.ok) throw new Error('Upload failed');
+            const savedTemplate = await uploadRes.json();
             setLetterTemplateId(savedTemplate.letterTemplateId);  // ← Changed
 
             const previewRes = await authService.fetchWithAuth(
@@ -51,7 +51,7 @@ export default function TemplateLetterUpload() {
             );
             if (!previewRes.ok) throw new Error('Preview failed');
             const previewData = await previewRes.json();
-            setHtmlPreview(previewData.data.html);
+            setHtmlPreview(previewData.html);
             setStep(2);
             setMessage(null);
         } catch (e) {
@@ -122,7 +122,7 @@ export default function TemplateLetterUpload() {
                 body:JSON.stringify(placeholders),
             }
            );
-           if (res.ok) throw new Error('Save failed');
+           if (!res.ok) throw new Error('Save failed');
             setStep(3);
             setMessage({
                 type: "success",

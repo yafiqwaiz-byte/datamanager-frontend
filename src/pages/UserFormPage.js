@@ -21,10 +21,10 @@ export default function UserFormPage() {
         const username = localStorage.getItem('username') || 'User';
         setUserName(user.fullName || username);
 
-        authService.fetchWithAuth('http://localhost:8080/api/forms/templates')
+        authService.fetchWithAuth('http://localhost:8080/api/forms/user-templates')
         .then(res => res.json())
         .then(data => {
-            setTemplates(data);
+            setTemplates(Array.isArray(data) ? data : []);
             setLoading(false);
         })
         .catch(() => {

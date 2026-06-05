@@ -79,7 +79,7 @@ export default function GeneratedLetters() {
             <div className="generated-letters-header">
                 <button
                     className="generated-letters-back"
-                    onClick={() => navigate('/staff-home')}
+                    onClick={() => navigate('/user-home')}
                 >
                     ← Back
                 </button>

@@ -16,7 +16,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import UserOcrPage from './pages/UserOcrPage';
 import UserOcrLetterPage from './pages/UserOcrLetterPage';
 import OcrSelectionPage from './pages/OcrSelectionPage';
-import TemplateLetterUpload from './pages/TemplateLetterUpload';
+import StaffTemplateLetterUpload from './pages/StaffTemplateLetterUpload';
 import FieldMapperReview from './pages/FieldMapperReview';
 import GeneratedLetter from './pages/GeneratedLetter';
 import StaffUploadPage from './pages/StaffUploadPage';
@@ -45,7 +45,7 @@ function App() {
         <Route path="/staff/upload" element ={<StaffUploadPage/>}/>
 
         {/* Staff Letter Routes */}
-        <Route path="/staff/letter/upload-template" element={<TemplateLetterUpload />} />
+        <Route path="/staff/letter/upload-template" element={<StaffTemplateLetterUpload/>} />
         <Route path="/staff/letter/review/:mappingId" element={<FieldMapperReview />} />
         <Route path="/staff/letter/generate/:mappingId" element={<GeneratedLetter />} />
 

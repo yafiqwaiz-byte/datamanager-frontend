@@ -24,6 +24,7 @@ export default function UserOcrLetterPage() {
                
                 const res = await authService.fetchWithAuth(`${API}/letters/templates/all`);
                 const data = await res.json();
+                console.log('templates data:', data)
                 setTemplates(data);
             } catch (e) {
                 console.error('Failed to fetch templates:', e);
@@ -44,7 +45,7 @@ export default function UserOcrLetterPage() {
     // ── Step 1: Upload image and extract text via OCR ──────────────
     const handleUpload = async () => {
         if (!file) { setError('Please select an image first'); return; }
-        if (!selectedTemplate) { setError('Please select a letter template first'); return; }
+        if (!selectedTemplate || selectedTemplate === "") { setError('Please select a letter template first'); return; }
         setLoading(true);
         setError(null);
 
@@ -75,7 +76,8 @@ export default function UserOcrLetterPage() {
 
     // ── Step 2: Auto-map OCR result to selected template ──────────
     const handleAutoMap = async () => {
-        if (!result?.ocrId || !selectedTemplate) return;
+        console.log('selectedTemplate value:', selectedTemplate); 
+        if (!result?.ocrId || !selectedTemplate || selectedTemplate === "") return;
         setMapping(true);
         setError(null);
         try {
@@ -146,7 +148,7 @@ export default function UserOcrLetterPage() {
                             onChange={(e) => setSelectedTemplate(e.target.value)}
                             className="ocr-upload-select"
                         >
-                            <option value="default">— Select a letter template —</option>
+                            <option value="">— Select a letter template —</option>
                             {templates.map((t) => (
                                 <option key={t.letterTemplateId} value={t.letterTemplateId}>
                                     {t.templateName}

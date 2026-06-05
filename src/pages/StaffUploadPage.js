@@ -75,64 +75,26 @@ export default function StaffUploadPage() {
     };
 
    
-
 const handleUpload = async () => {
     if (!file) return;
     setError(null);
 
     try {
-        // ── Step 1: Upload Excel file with progress tracking ──────────
+        // ── Step 1: Upload Excel file ─────────────────────────────
         setStep(STEP.UPLOADING);
         setProgress(10);
 
-        const formData = new FormData();
-        formData.append('file', file);
+       const arayBuffer = await file.arrayBuffer();
 
-        // Convert FormData to a Blob so we know the total byte size
-        // (FormData itself doesn't expose .size)
-        const blob = new Blob([await new Response(formData).blob()]);
-        const totalBytes = blob.size;
-        let uploadedBytes = 0;
-
-        // Wrap the blob in a ReadableStream that tracks how many
-        // bytes have been read (= sent to the server)
-        const trackingStream = new ReadableStream({
-            start(controller) {
-                const reader = blob.stream().getReader();
-
-                function push() {
-                    reader.read().then(({ done, value }) => {
-                        if (done) {
-                            controller.close();
-                            return;
-                        }
-                        uploadedBytes += value.byteLength;
-                        // Map upload progress to 10–40% range
-                        const uploadPct = Math.round((uploadedBytes / totalBytes) * 30);
-                        setProgress(10 + uploadPct);
-                        controller.enqueue(value);
-                        push();
-                    }).catch(err => controller.error(err));
-                }
-                push();
-            }
-        });
-
-        // NOTE: duplex: 'half' is required in Chrome when sending a
-        // streaming body — it tells the browser not to buffer the whole
-        // request before sending
-        const uploadRes = await fetch(`${API}/files/excel/upload`, {
+        // ✅ Use authService instead of raw fetch
+        const uploadRes = await authService.fetchWithAuth(
+            `${API}/files/excel/upload`, {
             method: 'POST',
-            credentials: 'include',
             headers: {
-                // Content-Type must NOT be set here — the browser can't
-                // add the multipart boundary to a streaming body, so we
-                // send the raw blob as octet-stream instead
                 'Content-Type': 'application/octet-stream',
                 'X-File-Name': encodeURIComponent(file.name),
-            },
-            body: trackingStream,
-            duplex: 'half',
+            },  // let browser set multipart boundary
+            body: arayBuffer,
         });
 
         if (!uploadRes.ok) throw new Error('Upload failed');
@@ -142,14 +104,15 @@ const handleUpload = async () => {
         if (!uploadId) throw new Error('No uploadId returned from server.');
         setProgress(40);
 
-        // ── Step 2: Process Excel data ───────────────────────────────
+        // ── Step 2: Process Excel data ────────────────────────────
         setStep(STEP.PROCESSING);
         const processFormData = new FormData();
         processFormData.append('file', file);
 
-        const processRes = await authService.fetchWithAuth(`${API}/excel/upload/${uploadId}`, {
+        const processRes = await authService.fetchWithAuth(
+            `${API}/excel/upload/${uploadId}`, {
             method: 'POST',
-            headers: {},   // let browser set multipart boundary
+            headers: {},
             body: processFormData,
         });
         if (!processRes.ok) throw new Error('Processing failed');
@@ -157,7 +120,7 @@ const handleUpload = async () => {
         setExcelResult(excel);
         setProgress(70);
 
-        // ── Step 3: Save processed rows ──────────────────────────────
+        // ── Step 3: Save processed rows ───────────────────────────
         setStep(STEP.SAVING);
         const saveRes = await authService.fetchWithAuth(
             `${API}/processed-rows/save/${excel.excelId}`,
@@ -166,7 +129,7 @@ const handleUpload = async () => {
         if (!saveRes.ok) throw new Error('Saving failed');
         setProgress(85);
 
-        // ── Step 4: Fetch cleaned preview ────────────────────────────
+        // ── Step 4: Fetch cleaned preview ─────────────────────────
         const cleanedRes = await authService.fetchWithAuth(
             `${API}/processed-rows/${excel.excelId}/cleaned`
         );

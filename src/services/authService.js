@@ -192,7 +192,7 @@ export const authService = {
 
     const headers = {...options.headers};
 
-    if (options.body && !(options.body instanceof FormData)){
+    if (options.body && !(options.body instanceof FormData) && !(options.body instanceof ArrayBuffer)) {
       headers['Content-Type'] = 'application/json';
     }
     const response = await fetch(url, {
@@ -207,7 +207,7 @@ export const authService = {
       if (refreshed) {
 
         const retryHeaders = {...options.headers};
-         if (options.body && !(options.body instanceof FormData)) {
+         if (options.body && !(options.body instanceof FormData) && !(options.body instanceof ArrayBuffer)) {
         retryHeaders['Content-Type'] = 'application/json';
       }
         return fetch(url, {

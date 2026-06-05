@@ -53,7 +53,7 @@ export default function UserOcrPage() {
                 parseExtractedText(data.extractedText);
             }
 
-            const tRes = await authService.fetchWithAuth(`${API}/forms/templates`);
+            const tRes = await authService.fetchWithAuth(`${API}/forms/templates?active=true`);
             const tData = await tRes.json();
             setTemplate(tData);
         } catch (e) {
@@ -328,18 +328,18 @@ return (
                                         onClick={() => setSelectedTemplate(t)}
                                         style={{
                                             padding: '12px 16px',
-                                            border: `1.5px solid ${selectedTemplate?.id === t.id ? '#6d28d9' : '#e5e7eb'}`,
+                                            border: `1.5px solid ${selectedTemplate?.templateIdId === t.templateId  ? '#6d28d9' : '#e5e7eb'}`,
                                             borderRadius: 8,
                                             cursor: 'pointer',
-                                            background: selectedTemplate?.id === t.id ? '#f5f3ff' : '#f9fafb',
+                                            background: selectedTemplate?.templateId  === t.templateId  ? '#f5f3ff' : '#f9fafb',
                                             color: '#374151',
                                             fontSize: 14,
-                                            fontWeight: selectedTemplate?.id === t.id ? 600 : 400,
+                                            fontWeight: selectedTemplate?.templateId  === t.templateId  ? 600 : 400,
                                             transition: 'all 0.15s',
                                         }}
                                     >
                                         <span style={{ marginRight: 8 }}>
-                                            {selectedTemplate?.id === t.id ? '🟣' : '⚪'}
+                                            {selectedTemplate?.templateId  === t.templateId  ? '🟣' : '⚪'}
                                         </span>
                                         {t.templateName}
                                     </div>
