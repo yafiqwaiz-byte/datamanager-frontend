@@ -5,6 +5,7 @@ import '../styles/Auth.css';
 
 export default function SignUp() {
   const [userType, setUserType] = useState('user'); // 'user' or 'staff'
+  const [signupStatus,setSignupStatus] = useState(null);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -19,6 +20,7 @@ export default function SignUp() {
     position: '',
     securityQuestion: '',
     securityAnswer: '',
+    inviteCode:'',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -75,6 +77,11 @@ export default function SignUp() {
       }
     }
 
+    if(!formData.inviteCode){
+      setError('PLease enter your staff invite code');
+      return false;
+    }
+
     return true;
   };
 
@@ -104,19 +111,19 @@ export default function SignUp() {
           phoneNo: formData.phoneNo,
           address: formData.address,
         };
-        result = await authService.signupUser(accountData, userData);
+        const result =  await authService.signupUser(accountData,userData);
+        console.log('User signup successfull',result);
+        navigate('/user-home');   
       } else {
         const staffData = {
           fullName: formData.fullName,
           department: formData.department,
           position: formData.position,
+          inviteCode: formData.inviteCode,
         };
-        result = await authService.signupStaff(accountData, staffData);
+       await authService.signupStaff(accountData,staffData);
+       setSignupStatus('pending');
       }
-
-      console.log('Signup successful:', result);
-      // Redirect to signin page or dashboard
-      navigate(userType === 'staff' ? '/staff-home' : '/user-home');
     } catch (err) {
       setError(err.message || 'Signup failed. Please try again.');
       console.error('Signup error:', err);
@@ -124,6 +131,31 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+  if 
+  (signupStatus === 'pending'){
+    return(
+       <div className="auth-container">
+        <div className="auth-card" style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⏳</div>
+          <h2>Registration Submitted!</h2>
+          <p style={{ color: '#6b7280', marginBottom: 8 }}>
+            Your staff account has been created successfully.
+          </p>
+          <p style={{ color: '#6b7280', marginBottom: 24 }}>
+            Please wait for <strong>admin approval</strong> before signing in.
+            You will receive an <strong>email notification</strong> once approved.
+          </p>
+          <button
+            onClick={() => navigate('/signin')}
+            className="btn btn-primary"
+          >
+            Go to Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-container">
@@ -312,6 +344,24 @@ export default function SignUp() {
                     placeholder="Enter position"
                     required
                   />
+                </div>
+                 <div className="form-group">
+                  <label htmlFor="inviteCode">Staff Invite Code *</label>
+                  <input
+                    type="text"
+                    id="inviteCode"
+                    name="inviteCode"
+                    value={formData.inviteCode}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      inviteCode: e.target.value.toUpperCase()
+                    }))}
+                    placeholder="Enter invite code (e.g. STAFF-ABC12345)"
+                    required
+                  />
+                  <small style={{ color: '#6b7280', fontSize: 12 }}>
+                    Contact your admin to get an invite code
+                  </small>
                 </div>
               </>
             )}

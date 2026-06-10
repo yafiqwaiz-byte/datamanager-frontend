@@ -136,6 +136,7 @@ export const authService = {
         fullName:         staffData.fullName,
         department:       staffData.department,
         position:         staffData.position,
+        inviteCode:       staffData.inviteCode,
       }),
     });
 
@@ -144,9 +145,8 @@ export const authService = {
       throw new Error(error || 'Staff registration failed');
     }
 
-    const data = await response.json();
-    authService._saveUserInfo(data);
-    return data;
+    const message = await response.text();
+    return message;
   },
 
   // ── TOKEN REFRESH ────────────────────────────────────────────────────

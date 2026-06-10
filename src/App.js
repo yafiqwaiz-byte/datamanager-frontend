@@ -20,6 +20,7 @@ import StaffTemplateLetterUpload from './pages/StaffTemplateLetterUpload';
 import FieldMapperReview from './pages/FieldMapperReview';
 import GeneratedLetter from './pages/GeneratedLetter';
 import StaffUploadPage from './pages/StaffUploadPage';
+import AdminDashboard from './pages/AdminDashboard';
 // import Dashboard from './pages/Dashboard';
 // import UserDashboard from './pages/UserDashboard';
 import 'leaflet/dist/leaflet.css';
@@ -31,6 +32,9 @@ function App() {
       v7_relativeSplatPath: true 
     }}>
       <Routes>
+        {/* Admin route */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        
         {/* Auth Route */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />

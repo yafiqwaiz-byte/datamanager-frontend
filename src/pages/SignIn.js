@@ -20,7 +20,14 @@ export default function SignIn() {
 
   const handleRedirect = (role, newUser) => {
     if (newUser) { window.location.href = '/complete-profile'; return; }
-    window.location.href = role === 'STAFF' ? '/staff-home' : '/user-home';
+     // ← ADD ADMIN redirect
+    if (role === 'ADMIN') {
+        window.location.href = '/admin-dashboard';
+    } else if (role === 'STAFF') {
+        window.location.href = '/staff-home';
+    } else {
+        window.location.href = '/user-home';
+    }
   };
 
   const handleSubmit = async (e) => {
