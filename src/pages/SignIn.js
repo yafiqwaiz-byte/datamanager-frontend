@@ -82,6 +82,7 @@ export default function SignIn() {
 
   const handleGoogleError = () => setError('Google signin failed. Please try again.');
 
+
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <div className="auth-container">
@@ -133,10 +134,7 @@ export default function SignIn() {
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
-              width="250px"
-              text="signin_with"
-              shape="rectangular"
-              theme="outline"
+              useOneTap={false}
             />
           </div>
 

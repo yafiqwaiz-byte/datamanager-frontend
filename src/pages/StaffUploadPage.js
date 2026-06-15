@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/Dashboard.css';
 import '../styles/StaffUploadPage.css';
 import { authService } from "../services/authService";
+import DashboardSuggest from "./DashboardSuggest";
 
 const API = "http://localhost:8080/api";
 
@@ -334,6 +335,16 @@ function PreviewView({ excelResult, cleanedRows, previewHeaders, onReset }) {
                     <button className="su-btn-clear" onClick={onReset}>Upload another</button>
                 </div>
             </div>
+
+            {/* ✅ Add AI Dashboard Suggest here */}
+            {excelResult?.excelId && (
+                <DashboardSuggest
+                    excelId={excelResult.excelId}
+                    onSuggestionsReady={(analysis) => {
+                        console.log('AI suggestions:', analysis);
+                    }}
+                />
+            )}
 
             {/* Cleaned data preview */}
             <div className="su-panel">

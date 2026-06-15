@@ -1,194 +1,192 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TemplateFormModal from '../components/TemplateFormModal';
-import { authService } from '../services/authService';
-import '../styles/Dashboard.css';
+import StaffLayout from '../components/StaffLayout';
 
+/* ── Mock recent activity — swap with real API later ─────────────────────── */
+var RECENT_ACTIVITY = [
+  { date: 'Today, 09:42',     type: 'Upload', desc: 'sales_data_june.xlsx processed',          module: 'Upload File',     status: 'active'  },
+  { date: 'Today, 08:15',     type: 'Letter', desc: 'Field mapping review for Batch #14',      module: 'Letter Template', status: 'pending' },
+  { date: 'Yesterday, 16:30', type: 'Export', desc: 'Q2 report exported as PDF',               module: 'Export Data',     status: 'active'  },
+  { date: 'Yesterday, 14:00', type: 'Form',   desc: 'New template "KL District Form" created', module: 'Form Templates',  status: 'reboot'  },
+  { date: '3 Jun, 11:20',     type: 'Map',    desc: 'TNB subzone layer refreshed',             module: 'TNB Map',         status: 'error'   },
+];
 
-export default function StaffHome() {
-  const [staffName, setStaffName] = useState('');
-  const [staffData, setStaffData] = useState(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const navigate = useNavigate();
+/* ── Feature cards ───────────────────────────────────────────────────────── */
+var FEATURE_CARDS = [
+  { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',  desc: 'View and manage data submitted by users via forms or OCR input',        path: '/staff/fetch-data'  },
+  { id: 'templates',  icon: '📝', iconColor: 'amber',  name: 'Form Templates',   desc: 'Create and manage form templates for users to fill in',                  path: '/staff/templates'   },
+  { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',      desc: 'Insert CSV or XLSX files for data cleaning and processing',              path: '/staff/upload'      },
+  { id: 'dashboard',  icon: '📊', iconColor: 'purple', name: 'Data Dashboard',   desc: 'Visualize processed data with charts and filters',                       path: '/staff/data-dashboard' },
+  { id: 'export',     icon: '📤', iconColor: 'coral',  name: 'Export Data',      desc: 'Export filtered and processed tables to various formats',                path: '/staff/export'      },
+];
 
-  useEffect(() => {
-    // Get staff info from localStorage (saved during signin)
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const username = localStorage.getItem('username') || 'Staff';
-    
-    if (user && user.fullName) {
-      setStaffName(user.fullName);
-    } else {
-      setStaffName(username);
-    }
-    setStaffData(user);
+var LETTER_SUBTOOLS = [
+  { id: 'letter-review',    icon: '🗂️', name: 'Review Field Mapping', desc: 'Confirm OCR field mappings before generating letters',    path: '/staff/letter/review'    },
+  { id: 'letter-generate',  icon: '📨', name: 'Generated Letters',    desc: 'Download completed letters in DOCX or PDF format',        path: '/staff/letter/generate'  },
+];
 
-    // Update time every minute
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
+var STAT_CARDS = [
+  { icon: '👥', iconColor: 'blue',   value: '—', label: 'User records'      },
+  { icon: '⏳', iconColor: 'amber',  value: '—', label: 'Pending reviews'   },
+  { icon: '✉️', iconColor: 'green',  value: '—', label: 'Letters generated' },
+  { icon: '📁', iconColor: 'purple', value: '—', label: 'Files uploaded'    },
+];
 
-  const getGreeting = () => {
-    const hour = currentTime.getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
-  const handleSignOut = () => {
-    authService.logout();
-    navigate('/signin');
-  };
-
-  const menuItems = [
-    {
-      id: 'fetch-data',
-      icon: '📋',
-      title: 'Fetch User Data',
-      description: 'View and manage data submitted by users via forms or OCR input',
-      action: () => navigate('/staff/fetch-data'),
-      color: '#51b948f2'
-    },
-    {
-      id:'templates',
-      icon:'📝',
-      title:'Form Templates',
-      description:'Create and manage form templates for users to fill in',
-      action:()=> navigate('/staff/templates'),
-      color: '#e11d48'
-    },
-    {
-      id: 'upload-file',
-      icon: '📂',
-      title: 'Upload File',
-      description: 'Insert CSV or XLSX files for data cleaning and processing',
-      action: () => navigate('/staff/upload'),
-      color: '#10b0d7'
-    },
-    {
-      id: 'dashboard',
-      icon: '📊',
-      title: 'Data Dashboard',
-      description: 'Visualize processed data with charts and filters',
-      action: () => navigate('/staff/data-dashboard'),
-      color: '#059669'
-    },
-    {
-      id: 'export',
-      icon: '📤',
-      title: 'Export Data',
-      description: 'Export filtered and processed tables to various formats',
-      action: () => navigate('/staff/export'),
-      color: '#d97706'
-    },
-     {
-        id: 'letter-template',      // ← new
-        icon: '✉️',
-        title: 'Letter Template',
-        description: 'Upload Word templates with placeholders for auto letter generation',
-        action: () => navigate('/staff/letter/upload-template'),
-        color: '#1a4854'
-    },
-    {
-        id: 'letter-review',        // ← new
-        icon: '🗂️',
-        title: 'Review Field Mapping',
-        description: 'Review and confirm OCR field mappings before generating letters',
-        action: () => navigate('/staff/letter/review'),
-        color: '#6d20f1'
-    },
-    {
-        id: 'letter-generate',      // ← new
-        icon: '📨',
-        title: 'Generated Letters',
-        description: 'Generate and download completed letters in DOCX or PDF format',
-        action: () => navigate('/staff/letter/generate'),
-        color: '#be185d'
-    },
-    {
-      id: 'tnb-station',
-      icon: '🗺️',
-      title: 'TNB Northen Map',
-      description: 'View the map of TNB Northen station with BA number and subzone information',
-      action: () => navigate('/northern-tnb-station'),
-      color: '#7c3aed'
-    }
-  ];
-
+/* ── Status dot + label ──────────────────────────────────────────────────── */
+function StatusText(props) {
+  var status = props.status;
+  var labels = { active: 'Active', pending: 'Pending', error: 'Error', reboot: 'Reboot' };
   return (
-    <div className="dashboard-container staff-theme">
-      {/* Background decoration */}
-      <div className="bg-decoration">
-        <div className="bg-circle circle-1"></div>
-        <div className="bg-circle circle-2"></div>
-        <div className="bg-circle circle-3"></div>
-      </div>
-
-      {/* Navbar */}
-      <nav className="dashboard-nav">
-        <div className="nav-brand">
-          <span className="brand-icon">⚡</span>
-          <span className="brand-name">DataManager</span>
-        </div>
-        <div className="nav-info">
-          <span className="nav-role staff-badge">STAFF</span>
-          <span className="nav-username">{staffName}</span>
-          <button className="signout-btn" onClick={handleSignOut}>Sign Out</button>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="dashboard-main">
-        {/* Welcome Section */}
-        <section className="welcome-section">
-          <div className="welcome-text">
-            <p className="greeting-label">{getGreeting()},</p>
-            <h1 className="welcome-heading">
-              Hi, Welcome! <span className="highlight-name">{staffName}</span> 👋
-            </h1>
-            <p className="welcome-subtitle">
-              {currentTime.toLocaleDateString('en-MY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
-          </div>
-          <div className="welcome-stats">
-            <div className="stat-chip">
-              <span className="stat-icon">🏢</span>
-              <span>{staffData?.department || 'Department'}</span>
-            </div>
-            <div className="stat-chip">
-              <span className="stat-icon">💼</span>
-              <span>{staffData?.position || 'Position'}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Menu Grid */}
-        <section className="menu-section">
-          <h2 className="section-title">What would you like to do?</h2>
-          <div className="menu-grid">
-            {menuItems.map((item, index) => (
-              <div
-                key={item.id}
-                className="menu-card"
-                onClick={item.action}
-                style={{ '--card-color': item.color, '--delay': `${index * 0.1}s` }}
-              >
-                <div className="card-icon-wrapper">
-                  <span className="card-icon">{item.icon}</span>
-                </div>
-                <div className="card-content">
-                  <h3 className="card-title">{item.title}</h3>
-                  <p className="card-description">{item.description}</p>
-                </div>
-                <div className="card-arrow">→</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-    </div>
+    <span className={'sl-status ' + status}>
+      <span className="dot" />
+      {labels[status] || status}
+    </span>
   );
 }
 
+/* ── Main component ──────────────────────────────────────────────────────── */
+function StaffHome() {
+  var navigate = useNavigate();
+  var [staffName, setStaffName] = useState('');
+  var [staffData, setStaffData] = useState(null);
 
+  useEffect(function() {
+    var user     = JSON.parse(localStorage.getItem('user') || '{}');
+    var username = localStorage.getItem('username') || 'Staff';
+    setStaffName(user && user.fullName ? user.fullName : username);
+    setStaffData(user);
+  }, []);
 
+  return (
+    <StaffLayout title="Dashboard" staffName={staffName} staffData={staffData}>
+
+      {/* ── Stats ── */}
+      <div className="sl-stats-row">
+        {STAT_CARDS.map(function(s, i) {
+          return (
+            <div key={i} className="sl-stat-card">
+              <div className={'sl-stat-icon ' + s.iconColor}>{s.icon}</div>
+              <div>
+                <div className="sl-stat-value">{s.value}</div>
+                <div className="sl-stat-label">{s.label}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Feature Grid ── */}
+      <div className="sl-feat-grid">
+
+        {/* Regular cards */}
+        {FEATURE_CARDS.map(function(card) {
+          return (
+            <button
+              key={card.id}
+              className="sl-feat-card"
+              onClick={() => navigate(card.path)}
+            >
+              <div className="sl-feat-top">
+                <div className={'sl-feat-icon ' + card.iconColor}>{card.icon}</div>
+                <div className="sl-feat-arrow">→</div>
+              </div>
+              <div className="sl-feat-name">{card.name}</div>
+              <div className="sl-feat-desc">{card.desc}</div>
+            </button>
+          );
+        })}
+
+        {/* Letter Template dark card */}
+        <button
+          className="sl-feat-card dark"
+          onClick={() => navigate('/staff/letter/upload-template')}
+        >
+          <div className="sl-feat-top">
+            <div className="sl-feat-icon dark">✉️</div>
+            <div className="sl-feat-arrow">→</div>
+          </div>
+          <div className="sl-feat-name">Letter Template</div>
+          <div className="sl-feat-desc">
+            Upload Word templates with placeholders for auto letter generation
+          </div>
+          <div className="sl-subtool-row" onClick={(e) => e.stopPropagation()}>
+            {LETTER_SUBTOOLS.map(function(sub) {
+              return (
+                <button
+                  key={sub.id}
+                  className="sl-subtool"
+                  onClick={(e) => { e.stopPropagation(); navigate(sub.path); }}
+                >
+                  <span className="sl-subtool-icon">{sub.icon}</span>
+                  <div className="sl-subtool-info">
+                    <div className="sl-subtool-name">{sub.name}</div>
+                    <div className="sl-subtool-desc">{sub.desc}</div>
+                  </div>
+                  <span className="sl-subtool-caret">›</span>
+                </button>
+              );
+            })}
+          </div>
+        </button>
+
+        {/* TNB Map wide card */}
+        <button
+          className="sl-feat-card wide"
+          onClick={() => navigate('/northern-tnb-station')}
+        >
+          <div className="sl-feat-icon-lg green">🗺️</div>
+          <div className="sl-feat-body">
+            <div className="sl-feat-name" style={{ fontSize: 14 }}>TNB Northern Map</div>
+            <div className="sl-feat-desc">
+              View the map of TNB Northern station with BA number and subzone information
+            </div>
+          </div>
+          <div className="sl-feat-arrow" style={{ flexShrink: 0 }}>→</div>
+        </button>
+      </div>
+
+      {/* ── Recent Activity ── */}
+      <div className="sl-activity-card">
+        <div className="sl-card-header">
+          <span className="sl-card-title">Recent activity</span>
+          <button className="sl-view-all">View all</button>
+        </div>
+
+        <table className="sl-table">
+          <colgroup>
+            <col style={{ width: '160px' }} />
+            <col style={{ width: '72px' }} />
+            <col />
+            <col style={{ width: '120px' }} />
+            <col style={{ width: '90px' }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Module</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RECENT_ACTIVITY.map(function(row, i) {
+              return (
+                <tr key={i}>
+                  <td className="muted">{row.date}</td>
+                  <td><span className="sl-type-badge">{row.type}</span></td>
+                  <td>{row.desc}</td>
+                  <td style={{ color: '#6b7280' }}>{row.module}</td>
+                  <td><StatusText status={row.status} /></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+    </StaffLayout>
+  );
+}
+
+export default StaffHome;
