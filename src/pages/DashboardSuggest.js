@@ -43,9 +43,7 @@ export default function DashboardSuggest({ excelId, onSuggestionsReady }) {
             }
 
             if(!res.ok){
-                const errData = await res.json();
-                setError(errData.message || 'Analysis failed');
-                return;
+               throw new Error((await res.json()).message || 'Analysis Failed');
             }
 
             const data = await res.json();

@@ -21,9 +21,11 @@ import FieldMapperReview from './pages/FieldMapperReview';
 import GeneratedLetter from './pages/GeneratedLetter';
 import StaffUploadPage from './pages/StaffUploadPage';
 import AdminDashboard from './pages/AdminDashboard';
+import StaffPOAging from './pages/StaffPOAging';
 // import Dashboard from './pages/Dashboard';
 // import UserDashboard from './pages/UserDashboard';
 import 'leaflet/dist/leaflet.css';
+
 
 function App() {
   return (
@@ -52,6 +54,8 @@ function App() {
         <Route path="/staff/letter/upload-template" element={<StaffTemplateLetterUpload/>} />
         <Route path="/staff/letter/review/:mappingId" element={<FieldMapperReview />} />
         <Route path="/staff/letter/generate/:mappingId" element={<GeneratedLetter />} />
+        <Route path="/staff/po-aging" element={<StaffPOAging/>} />
+        
 
         {/* User Routes */}
         <Route path="/user-home" element={<UserHome />} />

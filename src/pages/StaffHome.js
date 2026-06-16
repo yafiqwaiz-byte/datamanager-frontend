@@ -18,6 +18,9 @@ var FEATURE_CARDS = [
   { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',      desc: 'Insert CSV or XLSX files for data cleaning and processing',              path: '/staff/upload'      },
   { id: 'dashboard',  icon: '📊', iconColor: 'purple', name: 'Data Dashboard',   desc: 'Visualize processed data with charts and filters',                       path: '/staff/data-dashboard' },
   { id: 'export',     icon: '📤', iconColor: 'coral',  name: 'Export Data',      desc: 'Export filtered and processed tables to various formats',                path: '/staff/export'      },
+  { id: 'po-aging', icon: '📈', iconColor: 'blue', name: 'PO Aging Dashboard',
+  desc: 'Track and monitor PO outstanding aging by station and subzone',
+  path: '/staff/po-aging' },
 ];
 
 var LETTER_SUBTOOLS = [
@@ -97,10 +100,12 @@ function StaffHome() {
         })}
 
         {/* Letter Template dark card */}
-        <button
+        <div
           className="sl-feat-card dark"
           onClick={() => navigate('/staff/letter/upload-template')}
+          style={{cursor: 'pointer'}}
         >
+        
           <div className="sl-feat-top">
             <div className="sl-feat-icon dark">✉️</div>
             <div className="sl-feat-arrow">→</div>
@@ -127,7 +132,7 @@ function StaffHome() {
               );
             })}
           </div>
-        </button>
+        </div>
 
         {/* TNB Map wide card */}
         <button

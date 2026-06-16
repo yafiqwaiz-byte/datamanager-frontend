@@ -1,0 +1,531 @@
+/* ─── POAgingDashboard.css ─────────────────────────────────────────────────── */
+/* Extends StaffLayout.css design tokens — do not import fonts again           */
+
+/* ── Upload Section ────────────────────────────────────────────────────────── */
+.poa-upload-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.poa-upload-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid #e5e7eb;
+  padding: 16px;
+}
+
+.poa-upload-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.poa-upload-desc {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0 0 12px;
+}
+
+.poa-upload-btn {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.poa-upload-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.poa-upload-btn:not(:disabled):hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.poa-upload-btn.primary {
+  background: #0f172a;
+  color: #f59e0b;
+}
+
+.poa-upload-btn.success {
+  background: #eaf3de;
+  color: #27500a;
+}
+
+.poa-upload-hint {
+  font-size: 10.5px;
+  color: #9ca3af;
+  margin: 6px 0 0;
+}
+
+/* ── Error / Alert Banner ──────────────────────────────────────────────────── */
+.poa-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  border: 0.5px solid;
+}
+
+.poa-alert.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #791f1f;
+}
+
+.poa-alert.success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #27500a;
+}
+
+.poa-alert-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 14px;
+  opacity: 0.6;
+  padding: 0;
+  line-height: 1;
+}
+
+.poa-alert-close:hover { opacity: 1; }
+
+/* ── Tabs ───────────────────────────────────────────────────────────────────── */
+.poa-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: #fff;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.poa-tab {
+  padding: 7px 16px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.poa-tab:hover { background: #f0f2f7; color: #1a1a2e; }
+
+.poa-tab.active {
+  background: #0f172a;
+  color: #f59e0b;
+}
+
+/* ── KPI Cards ─────────────────────────────────────────────────────────────── */
+.poa-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.poa-kpi-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid #e5e7eb;
+  padding: 14px 16px;
+  border-left: 3px solid transparent;
+}
+
+.poa-kpi-card.red    { border-left-color: #ef4444; }
+.poa-kpi-card.amber  { border-left-color: #f59e0b; }
+.poa-kpi-card.green  { border-left-color: #22c55e; }
+.poa-kpi-card.blue   { border-left-color: #3b82f6; }
+
+.poa-kpi-icon {
+  font-size: 18px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.poa-kpi-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.poa-kpi-updated {
+  font-size: 11px;
+  color: #22c55e;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.poa-kpi-label {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ── Section Card ───────────────────────────────────────────────────────────── */
+.poa-section-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid #e5e7eb;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.poa-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.poa-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.poa-section-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #f0f2f7;
+  color: #6b7280;
+}
+
+/* ── Two-column chart grid ─────────────────────────────────────────────────── */
+.poa-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* ── Mark Badge ─────────────────────────────────────────────────────────────── */
+.poa-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.poa-mark.m1 { background: #fef2f2; color: #a32d2d; border: 0.5px solid #fecaca; }
+.poa-mark.m2 { background: #fefce8; color: #854f0b; border: 0.5px solid #fde68a; }
+.poa-mark.m3 { background: #f0fdf4; color: #27500a; border: 0.5px solid #bbf7d0; }
+
+/* ── Subzone Grid ───────────────────────────────────────────────────────────── */
+.poa-subzone-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.poa-subzone-card {
+  border-radius: 10px;
+  border: 0.5px solid;
+  padding: 12px 14px;
+  transition: transform 0.15s;
+}
+
+.poa-subzone-card:hover { transform: translateY(-1px); }
+
+.poa-subzone-card.m1 {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.poa-subzone-card.m2 {
+  background: #fefce8;
+  border-color: #fde68a;
+}
+
+.poa-subzone-card.m3 {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.poa-subzone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.poa-subzone-code {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.poa-subzone-label {
+  font-size: 10px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.poa-subzone-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.poa-subzone-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.poa-subzone-stat-label { color: #6b7280; }
+.poa-subzone-stat-value { font-weight: 600; color: #1a1a2e; }
+
+.poa-subzone-divider {
+  height: 0.5px;
+  background: currentColor;
+  opacity: 0.15;
+  margin: 6px 0;
+}
+
+/* ── Station Table ──────────────────────────────────────────────────────────── */
+.poa-table-wrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 0.5px solid #e5e7eb;
+}
+
+.poa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.poa-table th {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-bottom: 0.5px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.poa-table td {
+  padding: 9px 12px;
+  color: #1a1a2e;
+  border-bottom: 0.5px solid #f3f4f6;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.poa-table tr:last-child td { border-bottom: none; }
+
+.poa-table tr:hover td { background: #fafafa; }
+
+.poa-table td.muted {
+  color: #9ca3af;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+}
+
+/* ── Progress Bar ───────────────────────────────────────────────────────────── */
+.poa-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.poa-progress-bar {
+  flex: 1;
+  height: 5px;
+  background: #f0f2f7;
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.poa-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.poa-progress-fill.m1 { background: #ef4444; }
+.poa-progress-fill.m2 { background: #f59e0b; }
+.poa-progress-fill.m3 { background: #22c55e; }
+
+.poa-progress-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Cleared Diff ───────────────────────────────────────────────────────────── */
+.poa-diff-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.poa-diff-pill.positive {
+  background: #f0fdf4;
+  color: #27500a;
+}
+
+.poa-diff-pill.neutral {
+  background: #f0f2f7;
+  color: #6b7280;
+}
+
+/* ── Empty State ────────────────────────────────────────────────────────────── */
+.poa-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: #9ca3af;
+}
+
+.poa-empty-icon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.poa-empty-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.poa-empty-desc {
+  font-size: 12px;
+}
+
+/* ── Loading ────────────────────────────────────────────────────────────────── */
+.poa-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.poa-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  animation: poa-spin 0.7s linear infinite;
+}
+
+@keyframes poa-spin { to { transform: rotate(360deg); } }
+
+/* ── Percentile Info Row ────────────────────────────────────────────────────── */
+.poa-percentile-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.poa-percentile-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.poa-percentile-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 0.5px solid;
+}
+
+.poa-percentile-chip.p33 {
+  background: #fefce8;
+  border-color: #fde68a;
+  color: #854f0b;
+}
+
+.poa-percentile-chip.p66 {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #a32d2d;
+}
+
+.poa-percentile-divider {
+  font-size: 11px;
+  color: #d1d5db;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .poa-kpi-row     { grid-template-columns: repeat(2, 1fr); }
+  .poa-chart-grid  { grid-template-columns: 1fr; }
+  .poa-subzone-grid { grid-template-columns: repeat(2, 1fr); }
+  .poa-upload-row  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .poa-kpi-row      { grid-template-columns: 1fr 1fr; }
+  .poa-subzone-grid { grid-template-columns: 1fr 1fr; }
+  .poa-tabs         { width: 100%; flex-wrap: wrap; }
+  .poa-tab          { flex: 1; text-align: center; }
+}
