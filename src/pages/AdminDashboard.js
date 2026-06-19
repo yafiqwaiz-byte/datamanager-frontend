@@ -12,7 +12,6 @@ export default function AdminDashboard() {
     const [loading, setLoading]                   = useState(false);
     const [fetchingList, setFetchingList]         = useState(true);
     const [generatedCode, setGeneratedCode]       = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchPendingAccounts();

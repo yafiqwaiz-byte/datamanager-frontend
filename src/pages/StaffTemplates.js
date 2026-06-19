@@ -28,6 +28,7 @@ export default function StaffTemplates() {
     const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
     useEffect(() => { fetchTemplates(); }, []);

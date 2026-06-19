@@ -73,34 +73,20 @@ export default function POAgingDashboard() {
         setError(null);
 
         try {
-            // Step 1: save file record
-            const arrayBuffer = await file.arrayBuffer();
-            const uploadRes = await authService.fetchWithAuth(
-                `${API}/files/excel/upload`,
-                { method: 'POST',
-                  headers: {
-                    'Content-Type':'application/octet-stream',
-                    'X-file-name': encodeURIComponent(file.name),
-                  },
-                 body: arrayBuffer }
-            );
-            if (!uploadRes.ok) throw new Error('File upload failed');
-            const uploadData = await uploadRes.json();
-            const newUploadId = uploadData.uploadId;
-            setUploadId(newUploadId);
-
+            
             // Step 2: process PO aging
-            const fd2 = new FormData();
-            fd2.append('file', file);
+            const fd = new FormData();
+            fd.append('file', file);
             const res = await authService.fetchWithAuth(
-                `${API}/po-aging/upload/raw/${newUploadId}`,
-                { method: 'POST', body: fd2 }
+                `${API}/po-aging/upload/raw`,
+                { method: 'POST', body: fd }
             );
             if (!res.ok) {
                 const err = await res.json();
                 throw new Error(err.message || 'PO processing failed');
             }
             const data = await res.json();
+            setUploadId(data.uploadId);
             setDashboard(data);
             setActiveTab('overview');
         } catch (err) {
@@ -119,11 +105,11 @@ export default function POAgingDashboard() {
         setError(null);
 
         try {
-            const fd = new FormData();
-            fd.append('file', file);
+            const fd1 = new FormData();
+            fd1.append('file', file);
             const res = await authService.fetchWithAuth(
                 `${API}/po-aging/upload/cleared/${uploadId}`,
-                { method: 'POST', body: fd }
+                { method: 'POST', body: fd1 }
             );
             if (!res.ok) {
                 const err = await res.json();

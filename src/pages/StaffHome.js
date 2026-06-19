@@ -11,21 +11,17 @@ var RECENT_ACTIVITY = [
   { date: '3 Jun, 11:20',     type: 'Map',    desc: 'TNB subzone layer refreshed',             module: 'TNB Map',         status: 'error'   },
 ];
 
-/* ── Feature cards ───────────────────────────────────────────────────────── */
+/* ── Feature cards — Data Dashboard and Export Data removed ──────────────── */
 var FEATURE_CARDS = [
-  { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',  desc: 'View and manage data submitted by users via forms or OCR input',        path: '/staff/fetch-data'  },
-  { id: 'templates',  icon: '📝', iconColor: 'amber',  name: 'Form Templates',   desc: 'Create and manage form templates for users to fill in',                  path: '/staff/templates'   },
-  { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',      desc: 'Insert CSV or XLSX files for data cleaning and processing',              path: '/staff/upload'      },
-  { id: 'dashboard',  icon: '📊', iconColor: 'purple', name: 'Data Dashboard',   desc: 'Visualize processed data with charts and filters',                       path: '/staff/data-dashboard' },
-  { id: 'export',     icon: '📤', iconColor: 'coral',  name: 'Export Data',      desc: 'Export filtered and processed tables to various formats',                path: '/staff/export'      },
-  { id: 'po-aging', icon: '📈', iconColor: 'blue', name: 'PO Aging Dashboard',
-  desc: 'Track and monitor PO outstanding aging by station and subzone',
-  path: '/staff/po-aging' },
+  { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',     desc: 'View and manage data submitted by users via forms or OCR input', path: '/staff/fetch-data' },
+  { id: 'templates',  icon: '📝', iconColor: 'amber',  name: 'Form Templates',      desc: 'Create and manage form templates for users to fill in',           path: '/staff/templates'  },
+  { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',         desc: 'Insert CSV or XLSX files for data cleaning and processing',       path: '/staff/upload'     },
+  { id: 'po-aging',   icon: '📈', iconColor: 'blue',   name: 'PO Aging Dashboard',  desc: 'Track and monitor PO outstanding aging by station and subzone',   path: '/staff/po-aging'   },
 ];
 
 var LETTER_SUBTOOLS = [
-  { id: 'letter-review',    icon: '🗂️', name: 'Review Field Mapping', desc: 'Confirm OCR field mappings before generating letters',    path: '/staff/letter/review'    },
-  { id: 'letter-generate',  icon: '📨', name: 'Generated Letters',    desc: 'Download completed letters in DOCX or PDF format',        path: '/staff/letter/generate'  },
+  { id: 'letter-review',   icon: '🗂️', name: 'Review Field Mapping', desc: 'Confirm OCR field mappings before generating letters', path: '/staff/letter/review'   },
+  { id: 'letter-generate', icon: '📨', name: 'Generated Letters',    desc: 'Download completed letters in DOCX or PDF format',     path: '/staff/letter/generate' },
 ];
 
 var STAT_CARDS = [
@@ -36,7 +32,7 @@ var STAT_CARDS = [
 ];
 
 /* ── Status dot + label ──────────────────────────────────────────────────── */
-function StatusText(props) {
+ function StatusText(props) {
   var status = props.status;
   var labels = { active: 'Active', pending: 'Pending', error: 'Error', reboot: 'Reboot' };
   return (
@@ -48,7 +44,7 @@ function StatusText(props) {
 }
 
 /* ── Main component ──────────────────────────────────────────────────────── */
-function StaffHome() {
+export default function StaffHome() {
   var navigate = useNavigate();
   var [staffName, setStaffName] = useState('');
   var [staffData, setStaffData] = useState(null);
@@ -103,9 +99,8 @@ function StaffHome() {
         <div
           className="sl-feat-card dark"
           onClick={() => navigate('/staff/letter/upload-template')}
-          style={{cursor: 'pointer'}}
+          style={{ cursor: 'pointer' }}
         >
-        
           <div className="sl-feat-top">
             <div className="sl-feat-icon dark">✉️</div>
             <div className="sl-feat-arrow">→</div>
@@ -193,5 +188,3 @@ function StaffHome() {
     </StaffLayout>
   );
 }
-
-export default StaffHome;

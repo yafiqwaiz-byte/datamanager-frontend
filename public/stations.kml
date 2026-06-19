@@ -40,11 +40,11 @@
     </StyleMap>
     <Placemark>
       <name>TNB SEBERANG JAYA</name>
-      <description><![CDATA[description: BA: 6231 | Subzone: P1<br>no: 1<br>ba: 6231<br>subzone: P1]]></description>
+      <description><![CDATA[description: BA: 6231 | Subzone: P2<br>no: 1<br>ba: 6231<br>subzone: P2]]></description>
       <styleUrl>#icon-1899-0288D1</styleUrl>
       <ExtendedData>
         <Data name="description">
-          <value>BA: 6231 | Subzone: P1</value>
+          <value>BA: 6231 | Subzone: P2</value>
         </Data>
         <Data name="no">
           <value>1</value>
@@ -53,7 +53,7 @@
           <value>6231</value>
         </Data>
         <Data name="subzone">
-          <value>P1</value>
+          <value>P2</value>
         </Data>
       </ExtendedData>
       <Point>
@@ -688,11 +688,11 @@
     </Placemark>
     <Placemark>
       <name>TNB BAYAN BARU</name>
-      <description><![CDATA[description: BA: 6261 | Subzone: P2<br>no: 28<br>ba: 6261<br>subzone: P2]]></description>
+      <description><![CDATA[description: BA: 6261 | Subzone: P1<br>no: 28<br>ba: 6261<br>subzone: P1]]></description>
       <styleUrl>#icon-1899-0288D1</styleUrl>
       <ExtendedData>
         <Data name="description">
-          <value>BA: 6261 | Subzone: P2</value>
+          <value>BA: 6261 | Subzone: P1</value>
         </Data>
         <Data name="no">
           <value>28</value>
@@ -701,7 +701,7 @@
           <value>6261</value>
         </Data>
         <Data name="subzone">
-          <value>P2</value>
+          <value>P1</value>
         </Data>
       </ExtendedData>
       <Point>

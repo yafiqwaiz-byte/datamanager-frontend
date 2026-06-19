@@ -1,0 +1,483 @@
+/* ─── StaffFetchData.css ───────────────────────────────────────────────────── */
+
+/* ── Page header ───────────────────────────────────────────────────────────── */
+.sfd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sfd-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.sfd-subheading {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 3px 0 0;
+  font-weight: 400;
+}
+
+.sfd-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.sfd-export-btn:hover { background: #15803d; }
+
+/* ── Toolbar (filters + actions) ───────────────────────────────────────────── */
+.sfd-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.sfd-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sfd-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Select all checkbox row ───────────────────────────────────────────────── */
+.sfd-select-all-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sfd-select-all-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #4338ca;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.sfd-select-all-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ── Toolbar buttons (Filters, Sort, Fields, Actions) ──────────────────────── */
+.sfd-toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.13s, border-color 0.13s;
+  white-space: nowrap;
+}
+
+.sfd-toolbar-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.sfd-toolbar-btn svg {
+  flex-shrink: 0;
+  color: #6b7280;
+}
+
+/* ── Search input ───────────────────────────────────────────────────────────── */
+.sfd-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sfd-search-wrap svg {
+  position: absolute;
+  left: 10px;
+  color: #9ca3af;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.sfd-search {
+  padding: 7px 12px 7px 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: #1a1a2e;
+  background: #fff;
+  min-width: 200px;
+  transition: border-color 0.13s;
+  outline: none;
+}
+
+.sfd-search:focus { border-color: #4338ca; }
+.sfd-search::placeholder { color: #9ca3af; }
+
+/* ── Filter selects ─────────────────────────────────────────────────────────── */
+.sfd-select {
+  padding: 7px 28px 7px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: #374151;
+  background: #fff;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.13s;
+}
+
+.sfd-select:focus { border-color: #4338ca; }
+
+/* ── Table card ─────────────────────────────────────────────────────────────── */
+.sfd-table-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+/* ── Table ──────────────────────────────────────────────────────────────────── */
+.sfd-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+
+.sfd-table thead {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sfd-table th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sfd-table th.sfd-col-check {
+  width: 44px;
+  padding-left: 16px;
+}
+
+.sfd-table th.sfd-col-date   { width: 170px; }
+.sfd-table th.sfd-col-status { width: 110px; }
+.sfd-table th.sfd-col-method { width: 110px; }
+.sfd-table th.sfd-col-expand { width: 44px; }
+
+.sfd-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s;
+}
+
+.sfd-table tbody tr:last-child { border-bottom: none; }
+
+.sfd-table tbody tr:hover { background: #fafafa; }
+
+.sfd-table tbody tr.sfd-row-selected {
+  background: #eff6ff;
+}
+
+.sfd-table td {
+  padding: 12px 14px;
+  color: #1a1a2e;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sfd-table td.sfd-col-check {
+  padding-left: 16px;
+}
+
+/* ── Row checkbox ───────────────────────────────────────────────────────────── */
+.sfd-row-check {
+  width: 16px;
+  height: 16px;
+  accent-color: #4338ca;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* ── Template name cell ─────────────────────────────────────────────────────── */
+.sfd-cell-template {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 13px;
+}
+
+/* ── Date cell ──────────────────────────────────────────────────────────────── */
+.sfd-cell-date {
+  font-size: 12px;
+  color: #6b7280;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Status badge ───────────────────────────────────────────────────────────── */
+.sfd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.sfd-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sfd-badge.submitted  { background: #dcfce7; color: #15803d; }
+.sfd-badge.submitted .sfd-badge-dot { background: #16a34a; }
+.sfd-badge.pending    { background: #fef9c3; color: #92400e; }
+.sfd-badge.pending .sfd-badge-dot   { background: #d97706; }
+.sfd-badge.rejected   { background: #fee2e2; color: #991b1b; }
+.sfd-badge.rejected .sfd-badge-dot  { background: #ef4444; }
+
+/* ── Input method chip ──────────────────────────────────────────────────────── */
+.sfd-method-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f0f2f7;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+/* ── Expand toggle ──────────────────────────────────────────────────────────── */
+.sfd-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 13px;
+  transition: background 0.13s, border-color 0.13s;
+  margin: 0 auto;
+}
+
+.sfd-expand-btn:hover {
+  background: #f0f2f7;
+  border-color: #d1d5db;
+}
+
+/* ── Expanded answers row ───────────────────────────────────────────────────── */
+.sfd-answers-row td {
+  padding: 0;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sfd-answers-inner {
+  padding: 14px 18px 14px 60px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+}
+
+.sfd-answer-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+  min-width: 160px;
+  max-width: 280px;
+}
+
+.sfd-answer-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.sfd-answer-value {
+  color: #1a1a2e;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.sfd-answer-value a {
+  color: #4338ca;
+  text-decoration: underline;
+}
+
+/* ── Empty / loading states ─────────────────────────────────────────────────── */
+.sfd-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.sfd-empty-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.sfd-empty p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.sfd-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* ── Pagination ─────────────────────────────────────────────────────────────── */
+.sfd-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 14px 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.sfd-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 12.5px;
+  font-family: inherit;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.13s, border-color 0.13s;
+  font-weight: 500;
+}
+
+.sfd-page-btn:hover:not(:disabled) {
+  background: #f0f2f7;
+  border-color: #d1d5db;
+}
+
+.sfd-page-btn.active {
+  background: #4338ca;
+  border-color: #4338ca;
+  color: #fff;
+}
+
+.sfd-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sfd-page-ellipsis {
+  padding: 0 4px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ── Selection action bar (appears when rows selected) ──────────────────────── */
+.sfd-selection-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.sfd-selection-bar button {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid #bfdbfe;
+  background: #fff;
+  font-size: 12px;
+  font-family: inherit;
+  color: #1e40af;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.13s;
+}
+
+.sfd-selection-bar button:hover { background: #dbeafe; }
+
+.sfd-selection-bar .sfd-sel-count {
+  font-weight: 700;
+  color: #1e40af;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sfd-table th.sfd-col-date,
+  .sfd-table td:nth-child(3) { display: none; }
+
+  .sfd-toolbar { flex-direction: column; align-items: stretch; }
+  .sfd-toolbar-left { flex-wrap: wrap; }
+
+  .sfd-answers-inner { padding-left: 18px; }
+}

@@ -165,12 +165,24 @@ export default function NorthenTNBStation() {
             <h1 className="north-title">TNB Northern Region Map</h1>
             <p className="north-subtitle">Live Station View · {stations.length} Stations</p>
           </div>
-          <button className="north-export-btn" onClick={handleExport} disabled={exporting || loading}>
-            {exporting ? <><span className="north-export-spinner" /> Exporting...</> : <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'stretch' }}>
+            <button className="north-export-btn" onClick={handleExport} disabled={exporting || loading}>
+              {exporting ? <><span className="north-export-spinner" /> Exporting...</> : <>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+                </svg> Export Map</>}
+            </button>
+            <button
+              className="north-export-btn"
+              style={{ background: '#475569', borderColor: '#475569' }}
+              onClick={() => window.location.href = '/staff-home'}
+            >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-              </svg> Export Map</>}
-          </button>
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              Back to Home
+            </button>
+          </div>
         </div>
 
         {/* LAYER SWITCHER — Street & Satellite only */}
