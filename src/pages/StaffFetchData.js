@@ -119,7 +119,7 @@ export default function StaffFetchData() {
         submittedAt: new Date(sub.submittedAt).toLocaleString('en-MY'),
         status:      sub.status,
         inputMethod: sub.inputMethod,
-        answers:     sub.answers.map(a => `${a.fieldLabel}: ${a.answerValue || ''}`).join(' | '),
+        answers:     sub.answers.map(a => `${a.fieldLabel}: ${formatAnswerForExport(a)}`).join(' | '),
       });
       row.eachCell(cell => { cell.alignment = { vertical: 'middle', wrapText: true }; });
     });
@@ -136,9 +136,99 @@ export default function StaffFetchData() {
     URL.revokeObjectURL(url);
   };
 
+  /* ── Helpers for labeled_images and location answers ── */
+  // labeled_images answers are stored as a JSON string like {"Tracking Board": "/uploads/img1.jpg", ...}
+  // location answers are stored as {"lat":..., "lng":..., "formattedAddress":...}
+  // Plain text/other answers are not JSON objects, so these safely fall through for them.
+  const tryParseLocation = (value) => {
+    if (!value || typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (!trimmed.startsWith('{')) return null;
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed && typeof parsed === 'object' && 'lat' in parsed && 'lng' in parsed) {
+        return parsed;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const tryParseLabeledImages = (value) => {
+    if (!value || typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (!trimmed.startsWith('{')) return null;
+    try {
+      const parsed = JSON.parse(trimmed);
+      // Exclude location objects so they're handled by tryParseLocation instead
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !('lat' in parsed)) {
+        return parsed;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const formatAnswerForExport = (answer) => {
+    const location = tryParseLocation(answer.answerValue);
+    if (location) {
+      return `${location.formattedAddress} (${location.lat}, ${location.lng})`;
+    }
+    const labeledImages = tryParseLabeledImages(answer.answerValue);
+    if (labeledImages) {
+      return Object.entries(labeledImages)
+        .map(([label, path]) => `${label}: ${path}`)
+        .join('; ');
+    }
+    return answer.answerValue || '';
+  };
+
   /* ── Render answer value ── */
   const renderAnswerValue = (value) => {
     if (!value) return <span style={{ color: '#9ca3af' }}>—</span>;
+
+    // Location: render the resolved address with a link to view it on Google Maps
+    const location = tryParseLocation(value);
+    if (location) {
+      const mapsUrl = `https://www.google.com/maps?q=${location.lat},${location.lng}`;
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span className="sfd-answer-value">📍 {location.formattedAddress}</span>
+          <a href={mapsUrl} target="_blank" rel="noreferrer" className="sfd-file-link" style={{ fontSize: 11 }}>
+            View on map
+          </a>
+        </div>
+      );
+    }
+
+    // Labeled images: render each label with a link to its uploaded photo
+    const labeledImages = tryParseLabeledImages(value);
+    if (labeledImages) {
+      const entries = Object.entries(labeledImages);
+      if (entries.length === 0) return <span style={{ color: '#9ca3af' }}>—</span>;
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {entries.map(([label, path]) => (
+            <div key={label} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: '#6b7280', minWidth: 120 }}>
+                {label}:
+              </span>
+              {path ? (
+                <a href={`http://localhost:8080/${path}`}
+                  target="_blank" rel="noreferrer" className="sfd-file-link">
+                  🖼 View photo
+                </a>
+              ) : (
+                <span style={{ fontSize: 11, color: '#9ca3af' }}>Not uploaded</span>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     const parts = value.split(',').map(v => v.trim()).filter(Boolean);
     const isFile = parts.some(p =>
       p.match(/\.(jpeg|jpg|png|gif|bmp|svg|pdf|doc|docx|xlsx|csv|txt)$/i)
@@ -372,12 +462,22 @@ export default function StaffFetchData() {
                       <tr className="sfd-answers-row">
                         <td colSpan={6}>
                           <div className="sfd-answers-inner">
-                            {sub.answers.map(a => (
-                              <div key={a.answerId} className="sfd-answer-item">
-                                <span className="sfd-answer-label">{a.fieldLabel}</span>
-                                {renderAnswerValue(a.answerValue)}
-                              </div>
-                            ))}
+                            {/* answers already arrive sorted by fieldOrder from the backend */}
+                            {sub.answers.map(a => {
+                              const isComplex =
+                                tryParseLocation(a.answerValue) !== null ||
+                                tryParseLabeledImages(a.answerValue) !== null;
+                              return (
+                                <div
+                                  key={a.answerId}
+                                  className="sfd-answer-item"
+                                  style={isComplex ? { gridColumn: '1 / -1' } : {}}
+                                >
+                                  <span className="sfd-answer-label">{a.fieldLabel}</span>
+                                  {renderAnswerValue(a.answerValue)}
+                                </div>
+                              );
+                            })}
                           </div>
                         </td>
                       </tr>

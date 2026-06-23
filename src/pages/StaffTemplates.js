@@ -28,7 +28,6 @@ export default function StaffTemplates() {
     const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
 
     useEffect(() => { fetchTemplates(); }, []);
@@ -108,116 +107,219 @@ export default function StaffTemplates() {
             ) || s.status.toLowerCase().includes(searchTerm.toLowerCase());
         })
         .sort((a, b) => {
-            if (sortBy === 'date') return new Date(b.submittedAt) - new Date(a.submittedAt);
+            if (sortBy === 'date')   return new Date(b.submittedAt) - new Date(a.submittedAt);
             if (sortBy === 'status') return a.status.localeCompare(b.status);
             return 0;
         });
 
     // ── Excel export ──────────────────────────────────────────────────────────
-    const handleExportExcel = async () => {
-        if (!submissions.length) return;
 
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet(selectedTemplate.templateName);
-        const fields = selectedTemplate.fields.map(f => f.fieldLabel);
+    /**
+     * Parse an answerValue that may be:
+     *  (A) JSON object  → {"Label 1":"uploads/...jpg","Label 2":"uploads/...png"}
+     *  (B) Plain path   → "uploads/form-images/abc.png"
+     *  (C) Plain text   → "Some text answer"
+     *
+     * Returns array of { label, path } for image values, or null for plain text.
+     */
+    const parseImagePaths = (val) => {
+        if (!val) return null;
+        val = val.trim();
 
-        const imageFields = [];
-        filteredSubmissions.forEach(sub => {
-            sub.answers.forEach(a => {
-                const val = a.answerValue || '';
-                const isImg = val.split(',').some(p =>
-                    p.trim().endsWith('.png') || p.trim().endsWith('.jpg') || p.trim().endsWith('.jpeg')
-                );
-                if (isImg && !imageFields.includes(a.fieldLabel)) {
-                    imageFields.push(a.fieldLabel);
-                }
-            });
-        });
-
-        worksheet.columns = [
-            { header: 'Submission ID', key: 'submissionId', width: 20 },
-            { header: 'Submitted At',  key: 'submittedAt',  width: 22 },
-            { header: 'Status',        key: 'status',       width: 12 },
-            ...fields.map(f => ({
-                header: f, key: f,
-                width: imageFields.includes(f) ? 18 : 25
-            }))
-        ];
-
-        worksheet.getRow(1).eachCell(cell => {
-            cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4338CA' } };
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        });
-        worksheet.getRow(1).height = 30;
-
-        for (let i = 0; i < filteredSubmissions.length; i++) {
-            const sub = filteredSubmissions[i];
-            const rowIndex = i + 2;
-            const answerMap = {};
-            sub.answers.forEach(a => { answerMap[a.fieldLabel] = a.answerValue || ''; });
-
-            let maxImages = 1;
-            imageFields.forEach(f => {
-                const paths = (answerMap[f] || '').split(',').filter(Boolean);
-                if (paths.length > maxImages) maxImages = paths.length;
-            });
-            const ROW_HEIGHT = 120 * maxImages;
-
-            const rowData = {
-                submissionId: sub.submissionId,
-                submittedAt: new Date(sub.submittedAt).toLocaleString('en-MY'),
-                status: sub.status,
-            };
-            fields.forEach(f => {
-                if (!imageFields.includes(f)) rowData[f] = answerMap[f] || '—';
-            });
-
-            const row = worksheet.addRow(rowData);
-            row.height = ROW_HEIGHT;
-            row.eachCell(cell => { cell.alignment = { vertical: 'middle', wrapText: true }; });
-
-            for (let colIdx = 0; colIdx < fields.length; colIdx++) {
-                const fieldLabel = fields[colIdx];
-                if (!imageFields.includes(fieldLabel)) continue;
-                const val = answerMap[fieldLabel] || '';
-                const paths = val.split(',').filter(Boolean);
-
-                for (let imgIdx = 0; imgIdx < paths.length; imgIdx++) {
-                    const filePath = paths[imgIdx].trim();
-                    try {
-                        const imageUrl = `http://localhost:8080/${filePath.trim().replace(/\/\//g, '/')}`;
-                        const res = await authService.fetchWithAuth(imageUrl);
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        const blob = await res.blob();
-                        const arrayBuffer = await blob.arrayBuffer();
-                        const ext = filePath.split('.').pop().toLowerCase();
-                        const imageId = workbook.addImage({
-                            buffer: arrayBuffer,
-                            extension: ext === 'jpg' ? 'jpeg' : ext,
-                        });
-                        const col = 3 + colIdx;
-                        const imgHeightPx = Math.floor((ROW_HEIGHT / paths.length) * 0.75);
-                        const offsetTop = imgIdx * imgHeightPx;
-                        worksheet.addImage(imageId, {
-                            tl: { col, row: rowIndex - 1, nativeColOff: 0, nativeRowOff: offsetTop * 9525 },
-                            ext: { width: 120, height: imgHeightPx },
-                            editAs: 'oneCell',
-                        });
-                    } catch (e) {
-                        console.error('Failed to embed image:', filePath, e);
-                    }
-                }
+        // Try JSON object (Labeled Images field type)
+        if (val.startsWith('{')) {
+            try {
+                const obj = JSON.parse(val);
+                const entries = Object.entries(obj)
+                    .filter(([, v]) => /\.(png|jpg|jpeg|webp)$/i.test((v || '').trim()))
+                    .map(([label, path]) => ({ label, path: path.trim() }));
+                return entries.length > 0 ? entries : null;
+            } catch {
+                // not valid JSON — fall through
             }
         }
 
+        // Try comma-separated plain paths
+        const parts = val.split(',').map(p => p.trim()).filter(Boolean);
+        if (parts.length > 0 && parts.every(p => /\.(png|jpg|jpeg|webp)$/i.test(p))) {
+            return parts.map((path, i) => ({ label: `Image ${i + 1}`, path }));
+        }
+
+        return null; // plain text
+    };
+
+    const handleExportExcel = async () => {
+        if (!submissions.length) return;
+
+        const IMG_W       = 180;              // px — embedded image width
+        const IMG_H       = 130;              // px — embedded image height
+        const IMG_ROW_H   = IMG_H * 0.75 + 4; // pt — row height for image rows
+        const TEXT_ROW_H  = 28;              // pt — row height for text-only rows
+
+        const workbook  = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet(selectedTemplate.templateName);
+        const fields    = selectedTemplate.fields.map(f => f.fieldLabel);
+
+        // ── Detect which template fields are image fields ──────────────────
+        const imageFields = new Set();
+        filteredSubmissions.forEach(sub => {
+            sub.answers.forEach(a => {
+                if (parseImagePaths(a.answerValue)) imageFields.add(a.fieldLabel);
+            });
+        });
+
+        // Text fields only (for the main data columns)
+        const textFields = fields.filter(f => !imageFields.has(f));
+
+        // ── Column layout ──────────────────────────────────────────────────
+        // Text columns + 3 trailing columns for image rows:
+        //   "Image Field"  — which field (e.g. "Gambar Sebelum Kerja")
+        //   "Image Label"  — sub-label   (e.g. "1. Tracking Board")
+        //   "Image"        — embedded image
+        worksheet.columns = [
+            { header: 'Submitted At', key: 'submittedAt', width: 22 },
+            { header: 'Status',       key: 'status',      width: 12 },
+            ...textFields.map(f => ({ header: f, key: f, width: 30 })),
+            { header: 'Image Field',  key: '__imgField',  width: 28 },
+            { header: 'Image Label',  key: '__imgLabel',  width: 32 },
+            { header: 'Image',        key: '__img',       width: Math.ceil(IMG_W / 7) + 2 },
+        ];
+
+        // Column index (0-based) of the Image column
+        const imgColIdx = worksheet.columns.length - 1;
+
+        // ── Header styling ─────────────────────────────────────────────────
+        worksheet.getRow(1).eachCell(cell => {
+            cell.font      = { bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill      = { type: 'pattern', pattern: 'solid',
+                               fgColor: { argb: 'FF0F172A' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        });
+        worksheet.getRow(1).height = 36;
+
+        // ── Data rows ──────────────────────────────────────────────────────
+        // Layout per submission:
+        //
+        //   Row A  — text answers + first image field / first image label / [image]
+        //   Row B  —              + first image field / second image label / [image]
+        //   ...
+        //   Row N  —              + second image field / first image label / [image]
+        //   ...
+        //
+        // "text answers" only appear in the FIRST row of each submission.
+        // All subsequent rows for that submission leave text columns blank.
+
+        let currentExcelRow = 2; // track next available Excel row (1-indexed)
+
+        for (const sub of filteredSubmissions) {
+            // Build answer lookup
+            const answerMap = {};
+            sub.answers.forEach(a => {
+                answerMap[a.fieldLabel] = (a.answerValue || '').trim();
+            });
+
+            // Collect all image entries: [{ fieldLabel, imgLabel, path }]
+            const imageEntries = [];
+            fields.forEach(f => {
+                if (!imageFields.has(f)) return;
+                const imgs = parseImagePaths(answerMap[f]);
+                if (!imgs) return;
+                imgs.forEach(({ label, path }) => {
+                    imageEntries.push({ fieldLabel: f, imgLabel: label, path });
+                });
+            });
+
+            // Ensure at least one row even if no images
+            const rowCount = Math.max(imageEntries.length, 1);
+
+            for (let r = 0; r < rowCount; r++) {
+                const isFirst = r === 0;
+                const entry   = imageEntries[r] || null;
+
+                const rowData = {};
+
+                // Text answers only on first row of submission
+                if (isFirst) {
+                    rowData.submittedAt = new Date(sub.submittedAt)
+                        .toLocaleString('en-MY');
+                    rowData.status = sub.status;
+                    textFields.forEach(f => {
+                        rowData[f] = answerMap[f] || '—';
+                    });
+                }
+
+                // Image metadata columns
+                if (entry) {
+                    rowData.__imgField = entry.fieldLabel;
+                    rowData.__imgLabel = entry.imgLabel;
+                    // __img cell left empty — image embedded below
+                }
+
+                const row = worksheet.addRow(rowData);
+                row.height = entry ? IMG_ROW_H : TEXT_ROW_H;
+                row.eachCell(cell => {
+                    cell.alignment = { vertical: 'middle', wrapText: true };
+                });
+
+                // ── Embed image ────────────────────────────────────────────
+                if (entry) {
+                    try {
+                        const cleanPath = entry.path.replace(/\/\//g, '/');
+                        const imageUrl  = `http://localhost:8080/${cleanPath}`;
+                        const res = await authService.fetchWithAuth(imageUrl);
+
+                        if (!res.ok) {
+                            console.warn(`Image fetch failed (${res.status}): ${imageUrl}`);
+                        } else {
+                            const blob        = await res.blob();
+                            const arrayBuffer = await blob.arrayBuffer();
+
+                            // ExcelJS doesn't support webp — treat as jpeg
+                            const rawExt = entry.path.split('.').pop().toLowerCase();
+                            const ext    = rawExt === 'jpg' || rawExt === 'webp'
+                                ? 'jpeg' : rawExt;
+
+                            const imageId = workbook.addImage({
+                                buffer: arrayBuffer, extension: ext,
+                            });
+
+                            worksheet.addImage(imageId, {
+                                tl: {
+                                    col:          imgColIdx,
+                                    row:          currentExcelRow - 1, // 0-based
+                                    nativeColOff: 4 * 9525,
+                                    nativeRowOff: 4 * 9525,
+                                },
+                                ext: { width: IMG_W, height: IMG_H },
+                                editAs: 'oneCell',
+                            });
+                        }
+                    } catch (err) {
+                        console.error(`Failed to embed: ${entry.path}`, err);
+                    }
+                }
+
+                currentExcelRow++;
+            }
+
+            // ── Thin separator row between submissions ─────────────────────
+            const sep = worksheet.addRow({});
+            sep.height = 6;
+            sep.eachCell(cell => {
+                cell.fill = { type: 'pattern', pattern: 'solid',
+                              fgColor: { argb: 'FFF0F2F7' } };
+            });
+            currentExcelRow++;
+        }
+
+        // ── Download ───────────────────────────────────────────────────────
         const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], {
+        const blob   = new Blob([buffer], {
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
+        const a   = document.createElement('a');
+        a.href     = url;
         a.download = `${selectedTemplate.templateName}_submissions.xlsx`;
         a.click();
         URL.revokeObjectURL(url);
@@ -312,7 +414,8 @@ export default function StaffTemplates() {
                                     <button
                                         onClick={() => handleViewSubmissions(t)}
                                         style={{
-                                            ...actionBtn(selectedTemplate?.templateId === t.templateId ? '#5b21b6' : '#7c3aed'),
+                                            ...actionBtn(selectedTemplate?.templateId === t.templateId
+                                                ? '#5b21b6' : '#7c3aed'),
                                             gridColumn: '1 / -1'
                                         }}>
                                         {selectedTemplate?.templateId === t.templateId
@@ -411,7 +514,9 @@ export default function StaffTemplates() {
                                         <tbody>
                                             {filteredSubmissions.map((sub, i) => {
                                                 const answerMap = {};
-                                                sub.answers.forEach(a => { answerMap[a.fieldLabel] = a.answerValue; });
+                                                sub.answers.forEach(a => {
+                                                    answerMap[a.fieldLabel] = a.answerValue;
+                                                });
                                                 return (
                                                     <tr key={sub.submissionId}
                                                         style={{ background: i % 2 === 0 ? 'white' : '#f9fafb' }}>
