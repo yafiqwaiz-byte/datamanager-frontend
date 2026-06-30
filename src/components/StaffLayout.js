@@ -20,6 +20,7 @@ const NAV_ITEMS = [
       { label: 'Data Dashboard',  icon: '📊', path: '/staff/data-dashboard' },
       { label: 'Export Data',     icon: '📤', path: '/staff/export' },
       { label: 'Letter Template', icon: '✉️', path: '/staff/letter/upload-template' },
+      { label: 'Letter Requests', icon: '📨', path: '/staff/letter/queue' }, 
       { label: 'TNB Map',         icon: '🗺️', path: '/northern-tnb-station' },
     ],
   },

@@ -1,0 +1,202 @@
+/* ─── StaffLetterQueue.css ──────────────────────────────────────────────────── */
+
+/* ── Container ─────────────────────────────────────────────────────────────── */
+.slq-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Toolbar ───────────────────────────────────────────────────────────────── */
+.slq-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.slq-tabs {
+    display: flex;
+    gap: 6px;
+    background: #f0f2f7;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.slq-tab {
+    padding: 6px 16px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    background: transparent;
+    color: #6b7280;
+    transition: background 0.15s, color 0.15s;
+}
+
+.slq-tab:hover {
+    background: rgba(255, 255, 255, 0.6);
+    color: #1a1a2e;
+}
+
+.slq-tab--active {
+    background: #fff;
+    color: #1a1a2e;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.slq-refresh-btn {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 0.5px solid #e5e7eb;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    color: #374151;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+
+.slq-refresh-btn:hover {
+    background: #f0f2f7;
+}
+
+/* ── Table wrapper ─────────────────────────────────────────────────────────── */
+.slq-table-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    border: 0.5px solid #e5e7eb;
+    overflow: hidden;
+}
+
+/* ── Status badges ─────────────────────────────────────────────────────────── */
+.slq-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.slq-badge--pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.slq-badge--mapping {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.slq-badge--confirmed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.slq-badge--ready {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.slq-badge--uploaded {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* ── Action buttons ────────────────────────────────────────────────────────── */
+.slq-action-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: opacity 0.15s;
+}
+
+.slq-action-btn:hover {
+    opacity: 0.85;
+}
+
+.slq-action-btn--process {
+    background: #0f172a;
+    color: #f59e0b;
+}
+
+.slq-action-btn--view {
+    background: #f0f2f7;
+    color: #374151;
+}
+
+/* ── States ────────────────────────────────────────────────────────────────── */
+.slq-state {
+    background: #fff;
+    border-radius: 12px;
+    border: 0.5px solid #e5e7eb;
+    padding: 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.slq-state--error {
+    background: #fff5f5;
+    border-color: #fecaca;
+}
+
+.slq-state__text {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.slq-state--error .slq-state__text {
+    color: #dc2626;
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────────── */
+.slq-empty {
+    background: #fff;
+    border-radius: 12px;
+    border: 0.5px solid #e5e7eb;
+    padding: 48px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.slq-empty__icon {
+    font-size: 36px;
+    margin-bottom: 4px;
+}
+
+.slq-empty__text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.slq-empty__sub {
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0;
+}
+
+/* ── Row count ─────────────────────────────────────────────────────────────── */
+.slq-count {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: right;
+    margin: 0;
+}

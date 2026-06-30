@@ -515,6 +515,83 @@
   color: #d1d5db;
 }
 
+/* ── Analyze Button Row ─────────────────────────────────────────────────────── */
+.poa-analyze-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+  margin-bottom: 20px;
+}
+
+.poa-analyze-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: #0f172a;
+  color: #f59e0b;
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+}
+
+.poa-analyze-btn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+}
+
+.poa-analyze-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Analysis Result Panel ──────────────────────────────────────────────────── */
+.poa-analysis-panel {
+  background: #fff;
+  border: 0.5px solid #e5e7eb;
+  border-left: 3px solid #f59e0b;
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.poa-analysis-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.poa-analysis-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.poa-analysis-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #fefce8;
+  color: #854f0b;
+  border: 0.5px solid #fde68a;
+}
+
+.poa-analysis-body {
+  font-size: 12.5px;
+  color: #374151;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .poa-kpi-row     { grid-template-columns: repeat(2, 1fr); }

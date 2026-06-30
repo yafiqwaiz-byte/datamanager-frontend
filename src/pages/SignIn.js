@@ -6,6 +6,7 @@ import AuthCircuitGrid from '../components/AuthCircuitGrid';
 import '../styles/Auth.css';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+console.log("Client ID:", GOOGLE_CLIENT_ID);
 
 export default function SignIn() {
   const [formData, setFormData] = useState({ username: '', password: '' });

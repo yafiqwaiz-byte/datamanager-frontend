@@ -48,6 +48,19 @@ function DiffPill({ original, updated }) {
     );
 }
 
+// ── Partial payment pill ───────────────────────────────────────────────────────
+function PartialPill({ count }) {
+    if (!count || count <= 0) return null;
+    return (
+        <span className="poa-diff-pill" style={{
+            background: '#fefce8', color: '#854f0b',
+            border: '0.5px solid #fde68a'
+        }}>
+            ⏳ {count} partial
+        </span>
+    );
+}
+
 function formatRM(value) {
     if (value == null) return 'RM 0.00';
     return `RM ${Number(value).toLocaleString('en-MY', {
@@ -58,11 +71,14 @@ function formatRM(value) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function POAgingDashboard() {
-    const [dashboard, setDashboard]   = useState(null);
-    const [uploadId, setUploadId]     = useState(null);
-    const [activeTab, setActiveTab]   = useState('overview');
-    const [loading, setLoading]       = useState(false);
-    const [error, setError]           = useState(null);
+    const [dashboard, setDashboard] = useState(null);
+    const [uploadId, setUploadId]   = useState(null);
+    const [activeTab, setActiveTab] = useState('overview');
+    const [loading, setLoading]     = useState(false);
+    const [error, setError]         = useState(null);
+    const [analyze,setAnalyzing]    = useState(false);
+    const [cooldown,setCooldown]    = useState(0);
+    const [analysis,setAnalysis]    = useState(null);
 
     // ── Upload raw PO file ─────────────────────────────────────────────────────
     const handleRawUpload = async (e) => {
@@ -73,20 +89,19 @@ export default function POAgingDashboard() {
         setError(null);
 
         try {
-            
-            // Step 2: process PO aging
             const fd = new FormData();
             fd.append('file', file);
+
             const res = await authService.fetchWithAuth(
                 `${API}/po-aging/upload/raw`,
                 { method: 'POST', body: fd }
             );
             if (!res.ok) {
                 const err = await res.json();
-                throw new Error(err.message || 'PO processing failed');
+                throw new Error(err.error || 'PO processing failed');
             }
             const data = await res.json();
-            setUploadId(data.uploadId);
+            setUploadId(data.uploadId);   // uploadId returned by backend
             setDashboard(data);
             setActiveTab('overview');
         } catch (err) {
@@ -105,15 +120,15 @@ export default function POAgingDashboard() {
         setError(null);
 
         try {
-            const fd1 = new FormData();
-            fd1.append('file', file);
+            const fd = new FormData();
+            fd.append('file', file);
             const res = await authService.fetchWithAuth(
                 `${API}/po-aging/upload/cleared/${uploadId}`,
-                { method: 'POST', body: fd1 }
+                { method: 'POST', body: fd }
             );
             if (!res.ok) {
                 const err = await res.json();
-                throw new Error(err.message || 'Update failed');
+                throw new Error(err.error || 'Update failed');
             }
             const data = await res.json();
             setDashboard(data);
@@ -125,11 +140,53 @@ export default function POAgingDashboard() {
     };
 
     const TABS = [
-        { key: 'overview', label: '📊 Overview' },
-        { key: 'stations', label: '📍 Stations' },
-        { key: 'subzone',  label: '🗺️ Subzone'  },
-        { key: 'table',    label: '📋 Table'    },
+        { key: 'overview', label: '📊 Overview'  },
+        { key: 'stations', label: '📍 Stations'  },
+        { key: 'subzone',  label: '🗺️ Subzone'   },
+        { key: 'table',    label: '📋 Table'      },
     ];
+
+    // Has cleared file been uploaded? (any PO fully cleared or partially paid)
+    const hasClearedData = dashboard &&
+        ((dashboard.totalPOCleared || 0) > 0 ||
+         (dashboard.totalPOPartiallyPaid || 0) > 0);
+
+    const handleAnalyze = async () => {
+    if (!uploadId) return;
+    setAnalyzing(true);
+    setAnalysis(null);
+
+    try {
+        const res = await authService.fetchWithAuth(
+            `${API}/gemini/analyze/po-aging/${uploadId}`,
+            { method: 'POST' }
+        );
+
+        if (res.status === 429) {
+            const data = await res.json();
+            let secs = 60;
+            setCooldown(secs);
+            const timer = setInterval(() => {
+                secs -= 1;
+                setCooldown(secs);
+                if(secs <=0) clearInterval(timer);
+            },1000);
+            throw new Error(data.message || 'AI Service busy. Please wait 1 minute.');
+        }
+
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || 'Analysis failed');
+        }
+
+        const data = await res.json();
+        setAnalysis(data);
+    } catch (error) {
+        setError(error.message);
+    } finally {
+        setAnalyzing(false);
+    }
+};
 
     return (
         <>
@@ -138,9 +195,7 @@ export default function POAgingDashboard() {
 
                 {/* Raw upload */}
                 <div className="poa-upload-card">
-                    <p className="poa-upload-title">
-                        📁 Raw PO Data
-                    </p>
+                    <p className="poa-upload-title">📁 Raw PO Data</p>
                     <p className="poa-upload-desc">
                         Upload the full PO outstanding Excel file.
                         Stations with &gt;180 days will be extracted automatically.
@@ -159,8 +214,7 @@ export default function POAgingDashboard() {
                             ) : '📤 Upload Excel File'}
                         </span>
                         <input
-                            type="file"
-                            accept=".xlsx,.xls"
+                            type="file" accept=".xlsx,.xls"
                             onChange={handleRawUpload}
                             disabled={loading}
                             style={{ display: 'none' }}
@@ -170,12 +224,11 @@ export default function POAgingDashboard() {
 
                 {/* Cleared upload */}
                 <div className="poa-upload-card">
-                    <p className="poa-upload-title">
-                        ✅ Cleared PO Update
-                    </p>
+                    <p className="poa-upload-title">✅ Cleared PO Update</p>
                     <p className="poa-upload-desc">
-                        Upload updated file with CLEARED?&nbsp;=&nbsp;YES
-                        to reduce PO aging counts automatically.
+                        Upload cleared PO file with&nbsp;<strong>PO No.</strong>&nbsp;
+                        and&nbsp;<strong>GR/SA Value</strong>&nbsp;columns to
+                        update outstanding amounts automatically.
                     </p>
                     <label>
                         <span
@@ -189,8 +242,7 @@ export default function POAgingDashboard() {
                             📤 Upload Cleared File
                         </span>
                         <input
-                            type="file"
-                            accept=".xlsx,.xls"
+                            type="file" accept=".xlsx,.xls"
                             onChange={handleClearedUpload}
                             disabled={!uploadId || loading}
                             style={{ display: 'none' }}
@@ -208,10 +260,7 @@ export default function POAgingDashboard() {
             {error && (
                 <div className="poa-alert error">
                     <span>⚠️ {error}</span>
-                    <button
-                        className="poa-alert-close"
-                        onClick={() => setError(null)}
-                    >✕</button>
+                    <button className="poa-alert-close" onClick={() => setError(null)}>✕</button>
                 </div>
             )}
 
@@ -231,13 +280,13 @@ export default function POAgingDashboard() {
             {/* ── Dashboard ──────────────────────────────────────────────────── */}
             {dashboard && (
                 <>
-                    {/* KPI Row — reuses sl-stats-row token */}
+                    {/* ── KPI Row ────────────────────────────────────────────── */}
                     <div className="poa-kpi-row">
                         <KPICard
                             icon="⚠️"
                             colorClass="red"
                             value={dashboard.updatedTotalPOOver180}
-                            label="PO &gt; 180 Days"
+                            label="PO > 180 Days"
                             updated={dashboard.totalPOOver180 !== dashboard.updatedTotalPOOver180
                                 ? `was ${dashboard.totalPOOver180}` : null}
                         />
@@ -246,8 +295,18 @@ export default function POAgingDashboard() {
                             colorClass="amber"
                             value={formatRM(dashboard.updatedTotalOutstandingValue)}
                             label="Total Outstanding"
-                            updated={dashboard.totalPOCleared > 0
-                                ? `${dashboard.totalPOCleared} cleared` : null}
+                            updated={hasClearedData
+                                ? `${formatRM(dashboard.totalClearedAmount)} cleared`
+                                : null}
+                        />
+                        <KPICard
+                            icon="✅"
+                            colorClass="green"
+                            value={dashboard.totalPOCleared || 0}
+                            label="Fully Cleared POs"
+                            updated={(dashboard.totalPOPartiallyPaid || 0) > 0
+                                ? `${dashboard.totalPOPartiallyPaid} partially paid`
+                                : null}
                         />
                         <KPICard
                             icon="🔴"
@@ -255,15 +314,9 @@ export default function POAgingDashboard() {
                             value={`${dashboard.highAgingStations} stations`}
                             label="High Aging (Mark 1)"
                         />
-                        <KPICard
-                            icon="📈"
-                            colorClass="blue"
-                            value={`${(dashboard.updatedAveragePercentAging || 0).toFixed(1)}%`}
-                            label="Avg % Aging"
-                        />
                     </div>
 
-                    {/* Percentile info */}
+                    {/* ── Percentile info ────────────────────────────────────── */}
                     <div className="poa-percentile-row">
                         <span className="poa-percentile-label">
                             Percentile thresholds:
@@ -280,7 +333,7 @@ export default function POAgingDashboard() {
                         </span>
                     </div>
 
-                    {/* Tabs */}
+                    {/* ── Tabs ───────────────────────────────────────────────── */}
                     <div className="poa-tabs">
                         {TABS.map(t => (
                             <button
@@ -293,20 +346,42 @@ export default function POAgingDashboard() {
                         ))}
                     </div>
 
-                    {/* Tab content */}
-                    {activeTab === 'overview' && (
-                        <OverviewTab dashboard={dashboard} />
-                    )}
-                    {activeTab === 'stations' && (
-                        <StationsTab data={dashboard.stationData} />
-                    )}
-                    {activeTab === 'subzone' && (
-                        <SubzoneTab data={dashboard.subzoneSummary} />
-                    )}
-                    {activeTab === 'table' && (
-                        <TableTab data={dashboard.stationData} />
-                    )}
+                    {/* ── Tab content ────────────────────────────────────────── */}
+                    {activeTab === 'overview' && <OverviewTab dashboard={dashboard} />}
+                    {activeTab === 'stations' && <StationsTab data={dashboard.stationData} />}
+                    {activeTab === 'subzone'  && <SubzoneTab  data={dashboard.subzoneSummary} />}
+                    {activeTab === 'table'    && <TableTab    data={dashboard.stationData} />}
+
+                 {/* ── Analyze Button — below chart tabs ─────────────────────────────── */}
+                {dashboard && (
+                    <div className="poa-analyze-row">
+                        <button
+                            className="poa-analyze-btn"
+                            onClick={handleAnalyze}
+                            disabled={analyze || !uploadId}
+                        >
+                            {analyze ? (
+                                <>
+                                    <span className="poa-spinner" />
+                                    Analyzing…
+                                </>
+                            ) : '🤖 Analyze Dashboard'}
+                        </button>
+                    </div>
+                )}
+
+                {/* ── Analysis Result Panel ──────────────────────────────────────────── */}
+                {analysis && (
+                    <div className="poa-analysis-panel">
+                        <div className="poa-analysis-header">
+                            <span className="poa-analysis-title">🤖 AI Analysis</span>
+                            <span className="poa-analysis-badge">Gemini</span>
+                        </div>
+                        <p className="poa-analysis-body">{analysis}</p>
+                    </div>
+                )}
                 </>
+                
             )}
         </>
     );
@@ -318,9 +393,7 @@ function KPICard({ icon, colorClass, value, label, updated }) {
         <div className={`poa-kpi-card ${colorClass}`}>
             <span className="poa-kpi-icon">{icon}</span>
             <div className="poa-kpi-value">{value}</div>
-            {updated && (
-                <div className="poa-kpi-updated">↓ {updated}</div>
-            )}
+            {updated && <div className="poa-kpi-updated">↓ {updated}</div>}
             <div className="poa-kpi-label">{label}</div>
         </div>
     );
@@ -334,8 +407,7 @@ function OverviewTab({ dashboard }) {
         { name: 'Low Aging (3)',    value: dashboard.lowAgingStations,    color: '#22c55e' },
     ].filter(d => d.value > 0);
 
-    const top10 = (dashboard.stationData || [])
-        .slice(0, 10);
+    const top10 = (dashboard.stationData || []).slice(0, 10);
 
     return (
         <div className="poa-chart-grid">
@@ -343,21 +415,13 @@ function OverviewTab({ dashboard }) {
             <div className="poa-section-card">
                 <div className="poa-section-header">
                     <span className="poa-section-title">🎯 Mark Distribution</span>
-                    <span className="poa-section-badge">
-                        {dashboard.totalStations} stations
-                    </span>
+                    <span className="poa-section-badge">{dashboard.totalStations} stations</span>
                 </div>
                 <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
-                        <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={55}
-                            outerRadius={85}
-                            paddingAngle={3}
-                            dataKey="value"
-                        >
+                        <Pie data={pieData} cx="50%" cy="50%"
+                             innerRadius={55} outerRadius={85}
+                             paddingAngle={3} dataKey="value">
                             {pieData.map((entry, i) => (
                                 <Cell key={i} fill={entry.color} />
                             ))}
@@ -366,11 +430,8 @@ function OverviewTab({ dashboard }) {
                             formatter={(val, name) => [`${val} stations`, name]}
                             contentStyle={{ fontSize: 12, borderRadius: 8 }}
                         />
-                        <Legend
-                            iconType="circle"
-                            iconSize={8}
-                            wrapperStyle={{ fontSize: 11 }}
-                        />
+                        <Legend iconType="circle" iconSize={8}
+                                wrapperStyle={{ fontSize: 11 }} />
                     </PieChart>
                 </ResponsiveContainer>
             </div>
@@ -381,33 +442,21 @@ function OverviewTab({ dashboard }) {
                     <span className="poa-section-title">📊 Top Stations by PO Count</span>
                 </div>
                 <ResponsiveContainer width="100%" height={220}>
-                    <BarChart
-                        data={top10}
-                        margin={{ top: 0, right: 0, left: -20, bottom: 40 }}
-                    >
+                    <BarChart data={top10}
+                              margin={{ top: 0, right: 0, left: -20, bottom: 40 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f2f7" />
-                        <XAxis
-                            dataKey="stationName"
-                            tick={{ fontSize: 9 }}
-                            angle={-40}
-                            textAnchor="end"
-                            interval={0}
-                        />
+                        <XAxis dataKey="stationName" tick={{ fontSize: 9 }}
+                               angle={-40} textAnchor="end" interval={0} />
                         <YAxis tick={{ fontSize: 10 }} />
                         <Tooltip
                             contentStyle={{ fontSize: 12, borderRadius: 8 }}
                             formatter={(val) => [val, 'PO > 180 days']}
                         />
-                        <Bar
-                            dataKey="updatedCountPOOver180"
-                            name="PO > 180 Days"
-                            radius={[4, 4, 0, 0]}
-                        >
+                        <Bar dataKey="updatedCountPOOver180"
+                             name="PO > 180 Days" radius={[4, 4, 0, 0]}>
                             {top10.map((entry, i) => (
-                                <Cell
-                                    key={i}
-                                    fill={MARK_COLOR[entry.updatedMarks] || '#6b7280'}
-                                />
+                                <Cell key={i}
+                                      fill={MARK_COLOR[entry.updatedMarks] || '#6b7280'} />
                             ))}
                         </Bar>
                     </BarChart>
@@ -422,11 +471,10 @@ function StationsTab({ data = [] }) {
     return (
         <div className="poa-section-card">
             <div className="poa-section-header">
-                <span className="poa-section-title">
-                    📍 Outstanding Amount by Station
-                </span>
+                <span className="poa-section-title">📍 Outstanding Amount by Station</span>
             </div>
-            <ResponsiveContainer width="100%" height={Math.max(300, data.length * 22)}>
+            <ResponsiveContainer width="100%"
+                                 height={Math.max(300, data.length * 22)}>
                 <BarChart
                     data={[...data].sort(
                         (a, b) => (b.updatedOutstandingValue || 0) -
@@ -436,34 +484,22 @@ function StationsTab({ data = [] }) {
                     margin={{ top: 0, right: 16, left: 130, bottom: 0 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f2f7" />
-                    <XAxis
-                        type="number"
-                        tick={{ fontSize: 10 }}
-                        tickFormatter={v =>
-                            v >= 1_000_000
-                                ? `RM ${(v / 1_000_000).toFixed(1)}M`
-                                : `RM ${(v / 1_000).toFixed(0)}K`
-                        }
-                    />
-                    <YAxis
-                        dataKey="stationName"
-                        type="category"
-                        width={125}
-                        tick={{ fontSize: 10 }}
-                    />
+                    <XAxis type="number" tick={{ fontSize: 10 }}
+                           tickFormatter={v =>
+                               v >= 1_000_000
+                                   ? `RM ${(v / 1_000_000).toFixed(1)}M`
+                                   : `RM ${(v / 1_000).toFixed(0)}K`
+                           } />
+                    <YAxis dataKey="stationName" type="category"
+                           width={125} tick={{ fontSize: 10 }} />
                     <Tooltip
                         contentStyle={{ fontSize: 12, borderRadius: 8 }}
                         formatter={v => [formatRM(v), 'Outstanding']}
                     />
-                    <Bar
-                        dataKey="updatedOutstandingValue"
-                        radius={[0, 4, 4, 0]}
-                    >
+                    <Bar dataKey="updatedOutstandingValue" radius={[0, 4, 4, 0]}>
                         {data.map((entry, i) => (
-                            <Cell
-                                key={i}
-                                fill={MARK_COLOR[entry.updatedMarks] || '#6b7280'}
-                            />
+                            <Cell key={i}
+                                  fill={MARK_COLOR[entry.updatedMarks] || '#6b7280'} />
                         ))}
                     </Bar>
                 </BarChart>
@@ -475,73 +511,64 @@ function StationsTab({ data = [] }) {
 // ── Subzone Tab ────────────────────────────────────────────────────────────────
 function SubzoneTab({ data = [] }) {
     return (
-        <>
-            <div className="poa-subzone-grid">
-                {data.map((sz, i) => (
-                    <div
-                        key={i}
-                        className={`poa-subzone-card ${MARK_CLASS[sz.marks] || 'm3'}`}
-                    >
-                        <div className="poa-subzone-header">
-                            <span className="poa-subzone-code">{sz.subzone}</span>
-                            <MarkBadge mark={sz.marks} />
+        <div className="poa-subzone-grid">
+            {data.map((sz, i) => (
+                <div key={i}
+                     className={`poa-subzone-card ${MARK_CLASS[sz.marks] || 'm3'}`}>
+                    <div className="poa-subzone-header">
+                        <span className="poa-subzone-code">{sz.subzone}</span>
+                        <MarkBadge mark={sz.marks} />
+                    </div>
+                    <p className="poa-subzone-label">{sz.subzoneLabel}</p>
+
+                    <div className="poa-subzone-divider" />
+
+                    <div className="poa-subzone-stats">
+                        <div className="poa-subzone-stat">
+                            <span className="poa-subzone-stat-label">Stations</span>
+                            <span className="poa-subzone-stat-value">{sz.totalStations}</span>
                         </div>
-                        <p className="poa-subzone-label">{sz.subzoneLabel}</p>
-
-                        <div className="poa-subzone-divider" />
-
-                        <div className="poa-subzone-stats">
-                            <div className="poa-subzone-stat">
-                                <span className="poa-subzone-stat-label">Stations</span>
-                                <span className="poa-subzone-stat-value">
-                                    {sz.totalStations}
-                                </span>
-                            </div>
-                            <div className="poa-subzone-stat">
-                                <span className="poa-subzone-stat-label">PO &gt; 180</span>
-                                <span className="poa-subzone-stat-value">
-                                    {sz.updatedTotalPOOver180}
-                                    {sz.totalPOOver180 !== sz.updatedTotalPOOver180 && (
-                                        <span style={{ color: '#22c55e', fontWeight: 600,
-                                                       marginLeft: 4, fontSize: 10 }}>
-                                            ↓{sz.totalPOOver180 - sz.updatedTotalPOOver180}
-                                        </span>
-                                    )}
-                                </span>
-                            </div>
-                            <div className="poa-subzone-stat">
-                                <span className="poa-subzone-stat-label">Outstanding</span>
-                                <span className="poa-subzone-stat-value" style={{ fontSize: 10 }}>
-                                    {formatRM(sz.updatedOutstandingValue)}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="poa-subzone-divider" style={{ marginTop: 8 }} />
-
-                        {/* Mini mark breakdown */}
-                        <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                            {[
-                                { m: 1, count: sz.highAgingCount },
-                                { m: 2, count: sz.mediumAgingCount },
-                                { m: 3, count: sz.lowAgingCount },
-                            ].map(({ m, count }) => (
-                                <div
-                                    key={m}
-                                    style={{ display: 'flex', alignItems: 'center',
-                                             gap: 3 }}
-                                >
-                                    <MarkBadge mark={m} />
-                                    <span style={{ fontSize: 10, color: '#6b7280' }}>
-                                        ×{count || 0}
+                        <div className="poa-subzone-stat">
+                            <span className="poa-subzone-stat-label">PO &gt; 180</span>
+                            <span className="poa-subzone-stat-value">
+                                {sz.updatedTotalPOOver180}
+                                {sz.totalPOOver180 !== sz.updatedTotalPOOver180 && (
+                                    <span style={{ color: '#22c55e', fontWeight: 600,
+                                                   marginLeft: 4, fontSize: 10 }}>
+                                        ↓{sz.totalPOOver180 - sz.updatedTotalPOOver180}
                                     </span>
-                                </div>
-                            ))}
+                                )}
+                            </span>
+                        </div>
+                        <div className="poa-subzone-stat">
+                            <span className="poa-subzone-stat-label">Outstanding</span>
+                            <span className="poa-subzone-stat-value" style={{ fontSize: 10 }}>
+                                {formatRM(sz.updatedOutstandingValue)}
+                            </span>
                         </div>
                     </div>
-                ))}
-            </div>
-        </>
+
+                    <div className="poa-subzone-divider" style={{ marginTop: 8 }} />
+
+                    {/* Mini mark breakdown */}
+                    <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                        {[
+                            { m: 1, count: sz.highAgingCount },
+                            { m: 2, count: sz.mediumAgingCount },
+                            { m: 3, count: sz.lowAgingCount },
+                        ].map(({ m, count }) => (
+                            <div key={m} style={{ display: 'flex',
+                                                  alignItems: 'center', gap: 3 }}>
+                                <MarkBadge mark={m} />
+                                <span style={{ fontSize: 10, color: '#6b7280' }}>
+                                    ×{count || 0}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 }
 
@@ -561,24 +588,22 @@ function TableTab({ data = [] }) {
                             <th>Outstanding (RM)</th>
                             <th>% Aging</th>
                             <th>Mark</th>
+                            <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.map((row, i) => (
                             <tr key={i}>
-                                <td style={{ fontWeight: 500 }}>
-                                    {row.stationName}
-                                </td>
+                                <td style={{ fontWeight: 500 }}>{row.stationName}</td>
                                 <td className="muted">{row.busArea}</td>
                                 <td>
-                                    <span className="sl-type-badge">
-                                        {row.subzone}
-                                    </span>
+                                    <span className="sl-type-badge">{row.subzone}</span>
                                 </td>
                                 <td className="muted">{row.countPOOver180}</td>
                                 <td>
                                     <div style={{ display: 'flex',
-                                                  alignItems: 'center', gap: 6 }}>
+                                                  alignItems: 'center', gap: 4,
+                                                  flexWrap: 'wrap' }}>
                                         <span style={{ fontWeight: 600 }}>
                                             {row.updatedCountPOOver180}
                                         </span>
@@ -586,11 +611,19 @@ function TableTab({ data = [] }) {
                                             original={row.countPOOver180}
                                             updated={row.updatedCountPOOver180}
                                         />
+                                        <PartialPill count={row.partiallyPaidCount} />
                                     </div>
                                 </td>
                                 <td style={{ fontFamily: 'DM Mono, monospace',
                                              fontSize: 11 }}>
                                     {formatRM(row.updatedOutstandingValue)}
+                                    {/* Show cleared amount if any */}
+                                    {(row.totalClearedAmount || 0) > 0 && (
+                                        <div style={{ fontSize: 10, color: '#22c55e',
+                                                      marginTop: 2 }}>
+                                            -{formatRM(row.totalClearedAmount)} cleared
+                                        </div>
+                                    )}
                                 </td>
                                 <td>
                                     <ProgressBar
@@ -606,6 +639,12 @@ function TableTab({ data = [] }) {
                                             {MARK_LABEL[row.updatedMarks]}
                                         </span>
                                     </div>
+                                </td>
+                                {/* Remarks — shows cleared/partial summary */}
+                                <td style={{ fontSize: 11, color: '#6b7280',
+                                             maxWidth: 200, whiteSpace: 'normal',
+                                             lineHeight: 1.4 }}>
+                                    {row.remarks || '—'}
                                 </td>
                             </tr>
                         ))}

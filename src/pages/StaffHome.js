@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StaffLayout from '../components/StaffLayout';
 
-/* ── Mock recent activity — swap with real API later ─────────────────────── */
 var RECENT_ACTIVITY = [
   { date: 'Today, 09:42',     type: 'Upload', desc: 'sales_data_june.xlsx processed',          module: 'Upload File',     status: 'active'  },
   { date: 'Today, 08:15',     type: 'Letter', desc: 'Field mapping review for Batch #14',      module: 'Letter Template', status: 'pending' },
@@ -11,17 +10,29 @@ var RECENT_ACTIVITY = [
   { date: '3 Jun, 11:20',     type: 'Map',    desc: 'TNB subzone layer refreshed',             module: 'TNB Map',         status: 'error'   },
 ];
 
-/* ── Feature cards — Data Dashboard and Export Data removed ──────────────── */
 var FEATURE_CARDS = [
-  { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',     desc: 'View and manage data submitted by users via forms or OCR input', path: '/staff/fetch-data' },
-  { id: 'templates',  icon: '📝', iconColor: 'amber',  name: 'Form Templates',      desc: 'Create and manage form templates for users to fill in',           path: '/staff/templates'  },
-  { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',         desc: 'Insert CSV or XLSX files for data cleaning and processing',       path: '/staff/upload'     },
-  { id: 'po-aging',   icon: '📈', iconColor: 'blue',   name: 'PO Aging Dashboard',  desc: 'Track and monitor PO outstanding aging by station and subzone',   path: '/staff/po-aging'   },
+  { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',    desc: 'View and manage data submitted by users via forms or OCR input', path: '/staff/fetch-data' },
+  { id: 'templates',  icon: '📝', iconColor: 'amber',  name: 'Form Templates',     desc: 'Create and manage form templates for users to fill in',           path: '/staff/templates'  },
+  { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',        desc: 'Insert CSV or XLSX files for data cleaning and processing',       path: '/staff/upload'     },
+  { id: 'po-aging',   icon: '📈', iconColor: 'blue',   name: 'PO Aging Dashboard', desc: 'Track and monitor PO outstanding aging by station and subzone',   path: '/staff/po-aging'   },
 ];
 
+// ── Fixed: both subtools point to pages that don't need a mappingId upfront ──
 var LETTER_SUBTOOLS = [
-  { id: 'letter-review',   icon: '🗂️', name: 'Review Field Mapping', desc: 'Confirm OCR field mappings before generating letters', path: '/staff/letter/review'   },
-  { id: 'letter-generate', icon: '📨', name: 'Generated Letters',    desc: 'Download completed letters in DOCX or PDF format',     path: '/staff/letter/generate' },
+  {
+    id:   'letter-queue',
+    icon: '📬',
+    name: 'Letter Queue',
+    desc: 'View pending submissions, trigger auto-map and review fields',
+    path: '/staff/letter/queue',            // ← entry point for full letter flow
+  },
+  {
+    id:   'letter-upload',
+    icon: '📤',
+    name: 'Upload Template',
+    desc: 'Upload Word templates with placeholders for letter generation',
+    path: '/staff/letter/upload-template',  // ← template management
+  },
 ];
 
 var STAT_CARDS = [
@@ -31,8 +42,7 @@ var STAT_CARDS = [
   { icon: '📁', iconColor: 'purple', value: '—', label: 'Files uploaded'    },
 ];
 
-/* ── Status dot + label ──────────────────────────────────────────────────── */
- function StatusText(props) {
+function StatusText(props) {
   var status = props.status;
   var labels = { active: 'Active', pending: 'Pending', error: 'Error', reboot: 'Reboot' };
   return (
@@ -43,13 +53,12 @@ var STAT_CARDS = [
   );
 }
 
-/* ── Main component ──────────────────────────────────────────────────────── */
 export default function StaffHome() {
   var navigate = useNavigate();
   var [staffName, setStaffName] = useState('');
   var [staffData, setStaffData] = useState(null);
 
-  useEffect(function() {
+  useEffect(function () {
     var user     = JSON.parse(localStorage.getItem('user') || '{}');
     var username = localStorage.getItem('username') || 'Staff';
     setStaffName(user && user.fullName ? user.fullName : username);
@@ -61,7 +70,7 @@ export default function StaffHome() {
 
       {/* ── Stats ── */}
       <div className="sl-stats-row">
-        {STAT_CARDS.map(function(s, i) {
+        {STAT_CARDS.map(function (s, i) {
           return (
             <div key={i} className="sl-stat-card">
               <div className={'sl-stat-icon ' + s.iconColor}>{s.icon}</div>
@@ -78,7 +87,7 @@ export default function StaffHome() {
       <div className="sl-feat-grid">
 
         {/* Regular cards */}
-        {FEATURE_CARDS.map(function(card) {
+        {FEATURE_CARDS.map(function (card) {
           return (
             <button
               key={card.id}
@@ -95,22 +104,22 @@ export default function StaffHome() {
           );
         })}
 
-        {/* Letter Template dark card */}
+        {/* Letter Template dark card — clicks to queue (main workflow entry) */}
         <div
           className="sl-feat-card dark"
-          onClick={() => navigate('/staff/letter/upload-template')}
+          onClick={() => navigate('/staff/letter/queue')}
           style={{ cursor: 'pointer' }}
         >
           <div className="sl-feat-top">
             <div className="sl-feat-icon dark">✉️</div>
             <div className="sl-feat-arrow">→</div>
           </div>
-          <div className="sl-feat-name">Letter Template</div>
+          <div className="sl-feat-name">Letter Management</div>
           <div className="sl-feat-desc">
-            Upload Word templates with placeholders for auto letter generation
+            Process user letter requests — review OCR mappings and generate letters
           </div>
           <div className="sl-subtool-row" onClick={(e) => e.stopPropagation()}>
-            {LETTER_SUBTOOLS.map(function(sub) {
+            {LETTER_SUBTOOLS.map(function (sub) {
               return (
                 <button
                   key={sub.id}
@@ -170,7 +179,7 @@ export default function StaffHome() {
             </tr>
           </thead>
           <tbody>
-            {RECENT_ACTIVITY.map(function(row, i) {
+            {RECENT_ACTIVITY.map(function (row, i) {
               return (
                 <tr key={i}>
                   <td className="muted">{row.date}</td>
