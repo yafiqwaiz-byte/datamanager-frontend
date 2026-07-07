@@ -19,11 +19,11 @@ import OcrSelectionPage from './pages/OcrSelectionPage';
 import StaffTemplateLetterUpload from './pages/StaffTemplateLetterUpload';
 import FieldMapperReview from './pages/FieldMapperReview';
 import GeneratedLetter from './pages/GeneratedLetter';
-import StaffUploadPage from './pages/StaffUploadPage';
 import AdminDashboard from './pages/AdminDashboard';
 import StaffPOAging from './pages/StaffPOAging';
 import StaffLetterQueue from './pages/StaffLetterQueue';
 import UserLetterStatus from './pages/UserLetterStatus';
+import StaffLetterReview from './pages/StaffLetterReview';
 import 'leaflet/dist/leaflet.css';
 
 function App() {
@@ -47,7 +47,6 @@ function App() {
         <Route path="/staff-home"       element={<StaffHome />} />
         <Route path="/staff/templates"  element={<StaffTemplates />} />
         <Route path="/staff/fetch-data" element={<StaffFetchData />} />
-        <Route path="/staff/upload"     element={<StaffUploadPage />} />
         <Route path="/staff/po-aging"   element={<StaffPOAging />} />
 
         {/* Staff Letter Routes */}
@@ -55,6 +54,7 @@ function App() {
         <Route path="/staff/letter/upload-template"     element={<StaffTemplateLetterUpload />} />
         <Route path="/staff/letter/mapping/:mappingId"  element={<FieldMapperReview />} />
         <Route path="/staff/letter/generate/:mappingId" element={<GeneratedLetter />} />
+        <Route path="/staff/letter/review/:ocrId" element={<StaffLetterReview />} />
 
         {/* User Routes */}
         <Route path="/user-home"          element={<UserHome />} />

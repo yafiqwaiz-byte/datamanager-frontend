@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import StaffLayout from '../components/StaffLayout';
 
 var RECENT_ACTIVITY = [
-  { date: 'Today, 09:42',     type: 'Upload', desc: 'sales_data_june.xlsx processed',          module: 'Upload File',     status: 'active'  },
   { date: 'Today, 08:15',     type: 'Letter', desc: 'Field mapping review for Batch #14',      module: 'Letter Template', status: 'pending' },
   { date: 'Yesterday, 16:30', type: 'Export', desc: 'Q2 report exported as PDF',               module: 'Export Data',     status: 'active'  },
   { date: 'Yesterday, 14:00', type: 'Form',   desc: 'New template "KL District Form" created', module: 'Form Templates',  status: 'reboot'  },
@@ -13,7 +12,6 @@ var RECENT_ACTIVITY = [
 var FEATURE_CARDS = [
   { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',    desc: 'View and manage data submitted by users via forms or OCR input', path: '/staff/fetch-data' },
   { id: 'templates',  icon: '📝', iconColor: 'amber',  name: 'Form Templates',     desc: 'Create and manage form templates for users to fill in',           path: '/staff/templates'  },
-  { id: 'upload',     icon: '📂', iconColor: 'teal',   name: 'Upload File',        desc: 'Insert CSV or XLSX files for data cleaning and processing',       path: '/staff/upload'     },
   { id: 'po-aging',   icon: '📈', iconColor: 'blue',   name: 'PO Aging Dashboard', desc: 'Track and monitor PO outstanding aging by station and subzone',   path: '/staff/po-aging'   },
 ];
 
@@ -39,7 +37,6 @@ var STAT_CARDS = [
   { icon: '👥', iconColor: 'blue',   value: '—', label: 'User records'      },
   { icon: '⏳', iconColor: 'amber',  value: '—', label: 'Pending reviews'   },
   { icon: '✉️', iconColor: 'green',  value: '—', label: 'Letters generated' },
-  { icon: '📁', iconColor: 'purple', value: '—', label: 'Files uploaded'    },
 ];
 
 function StatusText(props) {
