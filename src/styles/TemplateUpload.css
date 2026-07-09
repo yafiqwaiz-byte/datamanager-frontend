@@ -374,3 +374,153 @@
         position: static;
     }
 }
+
+/* ─── Additions for Manage Templates tab ───────────────────────────────── */
+/* Append these to the end of TemplateUpload.css                          */
+
+/* ── Tabs ──────────────────────────────────────────────────────────────── */
+.template-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.template-tab {
+    padding: 10px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.template-tab:hover {
+    color: #0f172a;
+}
+
+.template-tab--active {
+    color: #0f172a;
+    border-bottom-color: #f59e0b;
+}
+
+/* ── Manage Templates list ────────────────────────────────────────────── */
+.template-manage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.template-manage-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border: 0.5px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.template-manage-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.template-manage-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 4px 0;
+    word-break: break-word;
+}
+
+.template-manage-date {
+    font-size: 12.5px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.template-manage-warning {
+    font-size: 12.5px;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 8px 0 0 0;
+}
+
+.template-manage-link-btn {
+    background: none;
+    border: none;
+    color: #b45309;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: 12.5px;
+}
+
+.template-manage-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.template-manage-edit-btn {
+    padding: 7px 14px;
+    background: #0f172a;
+    color: #f59e0b;
+    border: none;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.template-manage-edit-btn:hover {
+    background: #1e293b;
+}
+
+.template-manage-delete-btn {
+    padding: 7px 14px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.template-manage-delete-btn:hover:not(:disabled) {
+    background: #fca5a5;
+}
+
+.template-manage-delete-btn:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* ── Edit panel (inline, replaces the row when editing) ───────────────── */
+.template-manage-edit-panel {
+    width: 100%;
+}
+
+.template-manage-edit-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.template-manage-edit-buttons .template-upload-btn,
+.template-manage-edit-buttons .template-upload-btn-secondary {
+    width: auto;
+    flex: 1;
+}

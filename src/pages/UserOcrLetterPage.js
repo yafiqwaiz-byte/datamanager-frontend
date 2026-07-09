@@ -52,6 +52,17 @@ export default function UserOcrLetterPage() {
         setProcessingStep('');
     };
 
+    // ✅ FIX 1 — Back button now goes to /user-home directly (matches App.js route)
+    // and is wrapped so any navigation error doesn't crash silently
+    const handleBack = () => {
+        try {
+            navigate('/user-home');
+        } catch (e) {
+            console.error('Navigation failed:', e);
+            window.location.href = '/user-home';
+        }
+    };
+
     // ── Single action: OCR extract → submit to staff ───────────────
     // User never sees extracted text — happens in background
     const handleUploadAndSubmit = async () => {
@@ -88,6 +99,9 @@ export default function UserOcrLetterPage() {
             if (ocrData.status === 'failed') {
                 throw new Error('OCR could not extract text from this image. Please try a clearer image.');
             }
+            if (!ocrData.ocrId) {
+                throw new Error('OCR did not return a valid reference ID. Please try again.');
+            }
 
             // ── Stage 2: Submit to staff queue ─────────────────────
             setProcessingStep('Submitting to staff...');
@@ -102,6 +116,10 @@ export default function UserOcrLetterPage() {
             }
             const submitData = await submitRes.json();
 
+            if (!submitData.ocrId) {
+                throw new Error('Submission succeeded but no reference ID was returned.');
+            }
+
             // ── Done ───────────────────────────────────────────────
             setSubmittedOcrId(submitData.ocrId);
             setSubmitted(true);
@@ -112,6 +130,13 @@ export default function UserOcrLetterPage() {
             setProcessing(false);
             setProcessingStep('');
         }
+    };
+
+    // ✅ FIX 2 — Track Status now uses the correct route path
+    // matching App.js: /letter/status/:ocrId
+    const handleTrackStatus = () => {
+        if (!submittedOcrId) return;
+        navigate(`/letter/status/${submittedOcrId}`);
     };
 
     // ── Render ─────────────────────────────────────────────────────
@@ -132,7 +157,7 @@ export default function UserOcrLetterPage() {
                     <span className="nav-role user-badge">USER</span>
                     <button
                         className="signout-btn"
-                        onClick={() => navigate('/user/ocr-services')}
+                        onClick={handleBack}
                         disabled={processing}
                     >
                         ← Back
@@ -228,9 +253,7 @@ export default function UserOcrLetterPage() {
                                 </button>
                                 <button
                                     className="ocr-upload-btn"
-                                    onClick={() =>
-                                        navigate(`/letter/status/${submittedOcrId}`)
-                                    }
+                                    onClick={handleTrackStatus}
                                     style={{ flex: 1 }}
                                 >
                                     📬 Track Status

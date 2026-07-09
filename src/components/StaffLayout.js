@@ -10,15 +10,12 @@ const NAV_ITEMS = [
       { label: 'Dashboard',       icon: '⬡',  path: '/staff-home' },
       { label: 'Fetch User Data', icon: '📋', path: '/staff/fetch-data' },
       { label: 'Form Templates',  icon: '📝', path: '/staff/templates' },
-      { label: 'Upload File',     icon: '📂', path: '/staff/upload' },
       { label: 'PO Aging', icon: '📈', path: '/staff/po-aging' },
     ],
   },
   {
     group: 'Tools',
     items: [
-      { label: 'Data Dashboard',  icon: '📊', path: '/staff/data-dashboard' },
-      { label: 'Export Data',     icon: '📤', path: '/staff/export' },
       { label: 'Letter Template', icon: '✉️', path: '/staff/letter/upload-template' },
       { label: 'Letter Requests', icon: '📨', path: '/staff/letter/queue' }, 
       { label: 'TNB Map',         icon: '🗺️', path: '/northern-tnb-station' },

@@ -1,70 +1,92 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
-import '../styles/OcrUpload.css';
+import '../styles/UserLetterStatus.css';
 
 const API = "http://localhost:8080/api";
 
 const STATUS_STEPS = [
-    { key: "pending_review", label: "Submitted",       icon: "📨" },
-    { key: "mapping",        label: "Processing",      icon: "⚙️" },
+    { key: "pending_review", label: "Submitted",        icon: "📨" },
+    { key: "mapping",        label: "Processing",       icon: "⚙️" },
     { key: "confirmed",      label: "Fields Confirmed", icon: "✅" },
-    { key: "ready",          label: "Letter Ready",    icon: "📄" },
+    { key: "ready",          label: "Letter Ready",     icon: "📄" },
 ];
 
 export default function UserLetterStatus() {
 
-    const { ocrId }   = useParams();
-    const navigate    = useNavigate();
+    const { ocrId } = useParams();
+    const navigate  = useNavigate();
 
     const [statusData, setStatusData] = useState(null);
     const [loading,    setLoading]    = useState(true);
     const [error,      setError]      = useState(null);
 
-    // ── Poll status every 15 seconds until ready ──────────────────
+    const statusRef = useRef(null);
+
+    // ── Fetch status ───────────────────────────────────────────────
     const fetchStatus = useCallback(async () => {
+        if (!ocrId) {
+            setError('No reference ID provided.');
+            setLoading(false);
+            return;
+        }
         try {
             const res = await authService.fetchWithAuth(
                 `${API}/letters/status/${ocrId}`
             );
-            if (!res.ok) throw new Error('Failed to fetch status');
+            if (!res.ok) {
+                const msg = await res.text().catch(() => '');
+                throw new Error(msg || `Failed to fetch status (${res.status})`);
+            }
             const data = await res.json();
-            setStatusData(data);
+            const safeData = {
+                ocrId:        data.ocrId        ?? ocrId,
+                status:       data.status        ?? 'uploaded',
+                message:      data.message       ?? 'Processing your request...',
+                letterId:     data.letterId      ?? null,
+                generatedAt:  data.generatedAt   ?? null,
+                downloadPdf:  data.downloadPdf   ?? null,
+                downloadDocx: data.downloadDocx  ?? null,
+            };
+            setStatusData(safeData);
+            statusRef.current = safeData.status;
             setError(null);
         } catch (e) {
-            setError('Failed to fetch status. Please refresh.');
+            setError(e.message || 'Failed to fetch status. Please refresh.');
         } finally {
             setLoading(false);
         }
     }, [ocrId]);
 
+    // ── Polling ────────────────────────────────────────────────────
     useEffect(() => {
         fetchStatus();
-
-        // Poll every 15 seconds — stop when ready
         const interval = setInterval(() => {
-            if (statusData?.status === 'ready') {
+            if (statusRef.current === 'ready') {
                 clearInterval(interval);
                 return;
             }
             fetchStatus();
         }, 15000);
-
         return () => clearInterval(interval);
-    }, [fetchStatus, statusData?.status]);
+    }, [fetchStatus]);
 
-    // ── Get current step index ─────────────────────────────────────
-    const currentStepIndex = STATUS_STEPS.findIndex(
-        s => s.key === statusData?.status
-    );
+    const handleManualRefresh = () => {
+        setLoading(true);
+        fetchStatus();
+    };
+
+    const currentStepIndex = statusData
+        ? STATUS_STEPS.findIndex(s => s.key === statusData.status)
+        : -1;
 
     // ── Render ─────────────────────────────────────────────────────
     return (
         <div className="dashboard-container user-theme">
             <div className="bg-decoration">
-                <div className="bg-circle circle-1"></div>
-                <div className="bg-circle circle-2"></div>
-                <div className="bg-circle circle-3"></div>
+                <div className="bg-circle circle-1" />
+                <div className="bg-circle circle-2" />
+                <div className="bg-circle circle-3" />
             </div>
 
             <nav className="dashboard-nav">
@@ -74,9 +96,10 @@ export default function UserLetterStatus() {
                 </div>
                 <div className="nav-info">
                     <span className="nav-role user-badge">USER</span>
+                    {/* ✅ Back button goes to user-home */}
                     <button
                         className="signout-btn"
-                        onClick={() => navigate('/user/ocr-letter')}
+                        onClick={() => navigate('/user-home')}
                     >
                         ← Back
                     </button>
@@ -84,21 +107,23 @@ export default function UserLetterStatus() {
             </nav>
 
             <main className="dashboard-main">
-                <div className="ocr-upload-container">
-                    <h1 className="ocr-upload-title">Letter Status</h1>
+                <div className="uls-container">
+                    <h1 className="uls-title">Letter Status</h1>
 
-                    {loading && (
-                        <div className="ocr-upload-card" style={{ textAlign: 'center' }}>
-                            <p style={{ color: '#6b7280' }}>⏳ Checking status...</p>
+                    {/* ── Loading (first load only) ── */}
+                    {loading && !statusData && (
+                        <div className="uls-card uls-card--center">
+                            <p className="uls-muted">⏳ Checking status...</p>
                         </div>
                     )}
 
-                    {error && (
-                        <div className="ocr-upload-card">
-                            <p className="ocr-upload-error">{error}</p>
+                    {/* ── Error (no data yet) ── */}
+                    {error && !statusData && (
+                        <div className="uls-card">
+                            <p className="uls-error">{error}</p>
                             <button
-                                className="ocr-upload-btn"
-                                onClick={fetchStatus}
+                                className="uls-btn"
+                                onClick={handleManualRefresh}
                                 style={{ marginTop: 12 }}
                             >
                                 Retry
@@ -109,90 +134,52 @@ export default function UserLetterStatus() {
                     {statusData && (
                         <>
                             {/* ── Reference ID ── */}
-                            <div className="ocr-upload-card">
-                                <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4 }}>
-                                    Reference ID
-                                </p>
-                                <p style={{
-                                    fontSize: 13,
-                                    fontFamily: 'monospace',
-                                    color: '#374151',
-                                    wordBreak: 'break-all'
-                                }}>
-                                    {ocrId}
-                                </p>
+                            <div className="uls-card">
+                                <p className="uls-label">Reference ID</p>
+                                <p className="uls-mono">{ocrId}</p>
                             </div>
 
-                            {/* ── Progress stepper ── */}
-                            <div className="ocr-upload-card">
-                                <p style={{
-                                    fontSize: 14,
-                                    fontWeight: 600,
-                                    color: '#111827',
-                                    marginBottom: 24
-                                }}>
-                                    Progress
-                                </p>
+                            {/* ── Stale error banner ── */}
+                            {error && (
+                                <div className="uls-card uls-card--error-banner">
+                                    ⚠️ {error} — showing last known status.
+                                </div>
+                            )}
 
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 16
-                                }}>
+                            {/* ── Progress stepper ── */}
+                            <div className="uls-card">
+                                <p className="uls-section-title">Progress</p>
+
+                                <div className="uls-steps">
                                     {STATUS_STEPS.map((step, index) => {
-                                        const isDone    = index < currentStepIndex;
+                                        const isDone    = currentStepIndex >= 0
+                                                            && index < currentStepIndex;
                                         const isCurrent = index === currentStepIndex;
-                                        const isPending = index > currentStepIndex;
+                                        const isPending = currentStepIndex >= 0
+                                                            ? index > currentStepIndex
+                                                            : true;
 
                                         return (
                                             <div
                                                 key={step.key}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 12,
-                                                    opacity: isPending ? 0.4 : 1,
-                                                }}
+                                                className={`uls-step ${isPending ? 'uls-step--pending' : ''}`}
                                             >
-                                                {/* Step icon */}
-                                                <div style={{
-                                                    width: 36,
-                                                    height: 36,
-                                                    borderRadius: '50%',
-                                                    background: isDone
-                                                        ? '#10b981'
-                                                        : isCurrent
-                                                            ? '#3b82f6'
-                                                            : '#e5e7eb',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    fontSize: 16,
-                                                    flexShrink: 0,
-                                                }}>
+                                                <div className={`uls-step__icon ${
+                                                    isDone    ? 'uls-step__icon--done'    :
+                                                    isCurrent ? 'uls-step__icon--current' :
+                                                                'uls-step__icon--pending'
+                                                }`}>
                                                     {isDone ? '✓' : step.icon}
                                                 </div>
-
-                                                {/* Step label */}
                                                 <div>
-                                                    <p style={{
-                                                        fontSize: 14,
-                                                        fontWeight: isCurrent ? 600 : 400,
-                                                        color: isCurrent
-                                                            ? '#1d4ed8'
-                                                            : isDone
-                                                                ? '#065f46'
-                                                                : '#6b7280',
-                                                        margin: 0,
-                                                    }}>
+                                                    <p className={`uls-step__label ${
+                                                        isCurrent ? 'uls-step__label--current' :
+                                                        isDone    ? 'uls-step__label--done'    : ''
+                                                    }`}>
                                                         {step.label}
                                                     </p>
-                                                    {isCurrent && (
-                                                        <p style={{
-                                                            fontSize: 12,
-                                                            color: '#6b7280',
-                                                            margin: '2px 0 0 0'
-                                                        }}>
+                                                    {isCurrent && statusData.message && (
+                                                        <p className="uls-step__msg">
                                                             {statusData.message}
                                                         </p>
                                                     )}
@@ -202,80 +189,70 @@ export default function UserLetterStatus() {
                                     })}
                                 </div>
 
-                                {/* Auto-refresh notice */}
                                 {statusData.status !== 'ready' && (
-                                    <p style={{
-                                        fontSize: 12,
-                                        color: '#9ca3af',
-                                        marginTop: 24,
-                                        textAlign: 'center'
-                                    }}>
+                                    <p className="uls-autorefresh">
                                         🔄 Auto-refreshing every 15 seconds...
                                     </p>
                                 )}
                             </div>
 
-                            {/* ── Download card — shown when ready ── */}
+                            {/* ── Download card ── */}
                             {statusData.status === 'ready' && statusData.letterId && (
-                                <div className="ocr-upload-card">
-                                    <div className="ocr-upload-success-banner"
-                                        style={{ marginBottom: 16 }}>
+                                <div className="uls-card">
+                                    <div className="uls-success-banner">
                                         🎉 Your letter is ready!
                                     </div>
-
-                                    <p style={{
-                                        fontSize: 13,
-                                        color: '#6b7280',
-                                        marginBottom: 16
-                                    }}>
-                                        Generated on{' '}
-                                        {new Date(statusData.generatedAt)
-                                            .toLocaleString('en-MY')}
-                                    </p>
-
-                                    <div style={{
-                                        display: 'flex',
-                                        gap: 8,
-                                        flexDirection: 'column'
-                                    }}>
-                                        <a
-                                            href={`${API}${statusData.downloadPdf}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="ocr-upload-btn"
-                                            style={{
-                                                display: 'block',
-                                                textAlign: 'center',
-                                                textDecoration: 'none'
-                                            }}
-                                        >
-                                            📥 Download PDF
-                                        </a>
-                                        <a
-                                            href={`${API}${statusData.downloadDocx}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="ocr-upload-btn-clear"
-                                            style={{
-                                                display: 'block',
-                                                textAlign: 'center',
-                                                textDecoration: 'none'
-                                            }}
-                                        >
-                                            📄 Download DOCX
-                                        </a>
+                                    {statusData.generatedAt && (
+                                        <p className="uls-muted" style={{ marginBottom: 16 }}>
+                                            Generated on{' '}
+                                            {new Date(statusData.generatedAt)
+                                                .toLocaleString('en-MY')}
+                                        </p>
+                                    )}
+                                    <div className="uls-download-row">
+                                        {statusData.downloadPdf && (
+                                            <a
+                                                href={`${API}${statusData.downloadPdf}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="uls-btn"
+                                            >
+                                                📥 Download PDF
+                                            </a>
+                                        )}
+                                        {statusData.downloadDocx && (
+                                            <a
+                                                href={`${API}${statusData.downloadDocx}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="uls-btn-clear"
+                                            >
+                                                📄 Download DOCX
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             )}
 
-                            {/* ── Manual refresh ── */}
-                            <button
-                                className="ocr-upload-btn-clear"
-                                onClick={fetchStatus}
-                                style={{ width: '100%', marginTop: 8 }}
-                            >
-                                🔄 Refresh Now
-                            </button>
+                            {/* ── Actions ── */}
+                            <div className="uls-actions-row">
+                                <button
+                                    className="uls-btn-clear"
+                                    onClick={handleManualRefresh}
+                                    disabled={loading}
+                                    style={{ flex: 1 }}
+                                >
+                                    {loading ? '⏳ Refreshing...' : '🔄 Refresh Now'}
+                                </button>
+                                {/* ✅ Back to Home button */}
+                                <button
+                                    className="uls-btn-home"
+                                    onClick={() => navigate('/user-home')}
+                                    style={{ flex: 1 }}
+                                >
+                                    🏠 Back to Home
+                                </button>
+                            </div>
                         </>
                     )}
                 </div>

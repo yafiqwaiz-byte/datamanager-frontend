@@ -1,70 +1,83 @@
-# Getting Started with Create React App
+# DataManager Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Version: 1.5.0 (in development) — 2026-07-06
 
-## Available Scripts
+This React frontend is the user/staff/admin portal for the DataManager backend. It was bootstrapped with Create React App and implements the UI for forms, OCR uploads, letter generation, PO aging dashboards, and staff workflows.
 
-In the project directory, you can run:
+## Quick Start
 
-### `npm start`
+Install dependencies and start the dev server:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+npm start
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Open http://localhost:3000 to view the app. Set `REACT_APP_API_BASE_URL` in your environment or `.env` to point to the backend API.
 
-### `npm test`
+## Implemented Pages
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `SignIn`, `SignUp`, `ForgotPassword`, `CompleteProfile`
+- User pages: `UserHome`, `UserFormPage`, `UserDataPage`, `UserOcrPage`, `UserOcrLetterPage`, `UserLetterStatus`
+- Staff pages: `StaffHome`, `StaffFetchData`, `StaffUploadPage`, `StaffTemplates`, `StaffTemplateLetterUpload`, `StaffPOAging`, `StaffLetterQueue`, `StaffLetterReview`
+- Admin page: `AdminDashboard`
+- Utility pages: `FormRenderer`, `FieldMapperReview`, `GeneratedLetter`, `OcrSelectionPage`, `NorthenTNBStation`, `DashboardSuggest`
 
-### `npm run build`
+## Main Components
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `StaffLayout` — application shell used by staff pages (topbar + navigation)
+- `AuthCircuitGrid` — authentication entry UI
+- `POAgingDashboard` — visualizes PO aging metrics and percentile marks
+- `TemplateFormModal` — modal UI for creating/updating DOCX letter templates
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Services (API clients)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `authService.js` — authentication: login, logout, token handling (access + refresh cookie)
+- `letterApi.js` — endpoints for letter generation, template upload and export
+- `templateService.js` — template management API
 
-### `npm run eject`
+These services call backend REST endpoints and handle JSON and multipart/form-data where needed.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Styles & Design
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+All page-specific styles are under `src/styles/` and include:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- `Auth.css`, `AdminDashboard.css`, `Dashboard.css`, `POAgingDashboard.css`, `GeneratedLetter.css`, `NorthenTNBStation.css`, `OcrUpload.css`, `OcrSelectionPage.css`, `TemplateUpload.css`, `TemplateFormModal.css`, `StaffLayout.css`, `StaffUploadPage.css`, `StaffLetterQueue.css`, `StaffLetterReview.css`, `Stafffetchdata.css`, `FieldMapperReview.css`, `UserLetterStatus.css`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Design notes:
+- Responsive two-column staff layout with a top navigation bar (`StaffLayout`).
+- Reusable modal and form components for template management and form rendering.
+- PO Aging visualizations use charts (implemented via front-end charting library) and table views for drill-down.
+- Map view for TNB Northern stations using GeoJSON/leaflet on `NorthenTNBStation` page.
 
-## Learn More
+## Folder Structure (selected)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+src/
+├── components/      # Reusable UI components (StaffLayout, TemplateFormModal, POAgingDashboard...)
+├── pages/           # Route pages (SignIn, UserHome, StaffHome, AdminDashboard...)
+├── services/        # API client modules (authService, templateService, letterApi)
+├── styles/          # Page and component CSS files
+├── App.js           # Route definitions and top-level layouts
+└── index.js         # App bootstrap
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Integration Notes
 
-### Code Splitting
+- The frontend expects authentication to use access tokens with a refresh cookie flow. `authService` handles storing tokens and triggering refresh flows.
+- File uploads (templates, images, OCR files) use multipart requests; `FileUploadController` and letter endpoints on the backend support these.
+- The PO Aging dashboard reads from the `POAgingController` endpoints and renders percentile marks and filters.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Testing & Build
 
-### Analyzing the Bundle Size
+- Run tests: `npm test`
+- Build for production: `npm run build`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Upcoming Frontend Work
 
-### Making a Progressive Web App
+- Finish and polish form renderer interactions and validation flows.
+- Add integration tests that exercise end-to-end flows with the backend (auth, upload, OCR, letter generation).
+- Improve accessibility and keyboard navigation for modal dialogs and tables.
+- Add feature toggles for AI-assisted suggestions in mapping workflows.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

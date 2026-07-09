@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StaffLayout from '../components/StaffLayout';
+import { authService } from '../services/authService';
 
-var RECENT_ACTIVITY = [
-  { date: 'Today, 08:15',     type: 'Letter', desc: 'Field mapping review for Batch #14',      module: 'Letter Template', status: 'pending' },
-  { date: 'Yesterday, 16:30', type: 'Export', desc: 'Q2 report exported as PDF',               module: 'Export Data',     status: 'active'  },
-  { date: 'Yesterday, 14:00', type: 'Form',   desc: 'New template "KL District Form" created', module: 'Form Templates',  status: 'reboot'  },
-  { date: '3 Jun, 11:20',     type: 'Map',    desc: 'TNB subzone layer refreshed',             module: 'TNB Map',         status: 'error'   },
-];
+const API = "http://localhost:8080/api";
 
 var FEATURE_CARDS = [
   { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',    desc: 'View and manage data submitted by users via forms or OCR input', path: '/staff/fetch-data' },
@@ -33,12 +29,6 @@ var LETTER_SUBTOOLS = [
   },
 ];
 
-var STAT_CARDS = [
-  { icon: '👥', iconColor: 'blue',   value: '—', label: 'User records'      },
-  { icon: '⏳', iconColor: 'amber',  value: '—', label: 'Pending reviews'   },
-  { icon: '✉️', iconColor: 'green',  value: '—', label: 'Letters generated' },
-];
-
 function StatusText(props) {
   var status = props.status;
   var labels = { active: 'Active', pending: 'Pending', error: 'Error', reboot: 'Reboot' };
@@ -55,12 +45,47 @@ export default function StaffHome() {
   var [staffName, setStaffName] = useState('');
   var [staffData, setStaffData] = useState(null);
 
+  // ── Dashboard stats (dynamic) ──
+  var [stats, setStats] = useState({
+    userRecords: '—',
+    pendingReviews: '—',
+    lettersGenerated: '—',
+  });
+
+  // ── Recent activity (dynamic) ──
+  var [activity, setActivity] = useState([]);
+  var [activityLoading, setActivityLoading] = useState(true);
+
   useEffect(function () {
     var user     = JSON.parse(localStorage.getItem('user') || '{}');
     var username = localStorage.getItem('username') || 'Staff';
     setStaffName(user && user.fullName ? user.fullName : username);
     setStaffData(user);
   }, []);
+
+  useEffect(() => {
+    authService.fetchWithAuth(`${API}/staff/dashboard/stats`)
+      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(setStats)
+      .catch(() => {
+        // stats stay at '—' placeholders on failure
+      });
+  }, []);
+
+  useEffect(() => {
+    setActivityLoading(true);
+    authService.fetchWithAuth(`${API}/staff/dashboard/activity?limit=10`)
+      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(setActivity)
+      .catch(() => setActivity([]))
+      .finally(() => setActivityLoading(false));
+  }, []);
+
+  var STAT_CARDS = [
+    { icon: '👥', iconColor: 'blue',  value: stats.userRecords,      label: 'User records'      },
+    { icon: '⏳', iconColor: 'amber', value: stats.pendingReviews,   label: 'Pending reviews'   },
+    { icon: '✉️', iconColor: 'green', value: stats.lettersGenerated, label: 'Letters generated' },
+  ];
 
   return (
     <StaffLayout title="Dashboard" staffName={staffName} staffData={staffData}>
@@ -158,37 +183,51 @@ export default function StaffHome() {
           <button className="sl-view-all">View all</button>
         </div>
 
-        <table className="sl-table">
-          <colgroup>
-            <col style={{ width: '160px' }} />
-            <col style={{ width: '72px' }} />
-            <col />
-            <col style={{ width: '120px' }} />
-            <col style={{ width: '90px' }} />
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Module</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {RECENT_ACTIVITY.map(function (row, i) {
-              return (
-                <tr key={i}>
-                  <td className="muted">{row.date}</td>
-                  <td><span className="sl-type-badge">{row.type}</span></td>
-                  <td>{row.desc}</td>
-                  <td style={{ color: '#6b7280' }}>{row.module}</td>
-                  <td><StatusText status={row.status} /></td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {activityLoading && (
+          <p className="muted" style={{ padding: 16 }}>Loading...</p>
+        )}
+
+        {!activityLoading && activity.length === 0 && (
+          <p className="muted" style={{ padding: 16 }}>No recent activity.</p>
+        )}
+
+        {!activityLoading && activity.length > 0 && (
+          <table className="sl-table">
+            <colgroup>
+              <col style={{ width: '160px' }} />
+              <col style={{ width: '72px' }} />
+              <col />
+              <col style={{ width: '120px' }} />
+              <col style={{ width: '90px' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Module</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activity.map(function (row, i) {
+                return (
+                  <tr key={row.activityId || i}>
+                    <td className="muted">
+                      {row.createdAt
+                        ? new Date(row.createdAt).toLocaleString('en-MY')
+                        : '—'}
+                    </td>
+                    <td><span className="sl-type-badge">{row.type}</span></td>
+                    <td>{row.description}</td>
+                    <td style={{ color: '#6b7280' }}>{row.module}</td>
+                    <td><StatusText status={row.status} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
     </StaffLayout>
