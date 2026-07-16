@@ -1,128 +1,235 @@
-/* ─── UserLetterStatus.css ─────────────────────────────────────── */
+/* ─── UserLetterStatus.css ──────────────────────────────────────────────────── */
 
 .uls-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.uls-back {
-    background: none;
-    border: none;
-    color: #4f46e5;
-    font-size: 14px;
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 16px;
-    display: block;
-    font-family: inherit;
-}
-.uls-back:hover { text-decoration: underline; }
-
-.uls-title    { font-size: 22px; font-weight: 700; color: #1a1a2e; margin: 0 0 6px; }
-.uls-subtitle { font-size: 14px; color: #6b7280; margin: 0 0 28px; }
-
-/* ── Stepper ── */
-.uls-stepper {
-    display: flex;
-    align-items: flex-start;
-    gap: 0;
-    margin-bottom: 28px;
-    overflow-x: auto;
-}
-
-.uls-step-wrap {
+    max-width: 560px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    flex: 1;
-    position: relative;
+    gap: 16px;
 }
 
-.uls-step-dot {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #e5e7eb;
-    color: #9ca3af;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
+.uls-title {
+    font-size: 22px;
     font-weight: 700;
-    z-index: 1;
-    flex-shrink: 0;
-    transition: background 0.3s, color 0.3s;
+    color: #1a1a2e;
+    margin: 0 0 4px;
 }
 
-.uls-step-dot.done   { background: #0f172a; color: #f59e0b; }
-.uls-step-dot.active { background: #f59e0b; color: #0f172a; }
-
-.uls-step-label {
-    font-size: 11px;
-    color: #9ca3af;
-    text-align: center;
-    margin-top: 6px;
-    line-height: 1.3;
-    max-width: 70px;
-}
-.uls-step-label.active { color: #0f172a; font-weight: 600; }
-
-.uls-step-line {
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    width: 100%;
-    height: 2px;
-    background: #e5e7eb;
-    z-index: 0;
-    transition: background 0.3s;
-}
-.uls-step-line.done { background: #0f172a; }
-
-/* ── Status card ── */
+/* ── Card ──────────────────────────────────────────────────────────────────── */
 .uls-card {
     background: #fff;
     border-radius: 12px;
-    border: 0.5px solid #e5e7eb;
-    padding: 28px 24px;
+    border: 1px solid #e5e7eb;
+    padding: 20px;
+}
+
+.uls-card--center {
     text-align: center;
 }
 
-.uls-card-ready {
-    border-color: #86efac;
-    background: #f0fdf4;
+.uls-card--error-banner {
+    background: #fef3c7;
+    border-color: #fde68a;
+    color: #92400e;
+    font-size: 13px;
+    padding: 12px 16px;
 }
 
-.uls-loading      { color: #9ca3af; font-size: 14px; margin: 0; }
-.uls-error        { color: #991b1b; font-size: 14px; margin: 0; }
-.uls-status-msg   { font-size: 15px; font-weight: 600; color: #1a1a2e; margin: 0 0 8px; }
-.uls-polling-note { font-size: 12px; color: #9ca3af; margin: 0; }
+/* ── Text ──────────────────────────────────────────────────────────────────── */
+.uls-label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
 
-.uls-ready-text { font-size: 18px; font-weight: 700; color: #166534; margin: 0 0 6px; }
-.uls-ready-sub  { font-size: 12px; color: #6b7280; margin: 0 0 20px; }
+.uls-mono {
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    color: #374151;
+    word-break: break-all;
+    margin: 0;
+}
+
+.uls-muted {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.uls-error {
+    font-size: 13px;
+    color: #dc2626;
+    margin: 0;
+}
+
+.uls-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 24px;
+}
+
+/* ── Steps ─────────────────────────────────────────────────────────────────── */
+.uls-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.uls-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.uls-step--pending {
+    opacity: 0.4;
+}
+
+.uls-step__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.uls-step__icon--done {
+    background: #10b981;
+    color: #fff;
+}
+
+.uls-step__icon--current {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.uls-step__icon--pending {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+.uls-step__label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #6b7280;
+    margin: 0;
+}
+
+.uls-step__label--current {
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
+.uls-step__label--done {
+    color: #065f46;
+}
+
+.uls-step__msg {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 2px 0 0;
+}
+
+.uls-autorefresh {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    margin: 24px 0 0;
+}
+
+/* ── Download ──────────────────────────────────────────────────────────────── */
+.uls-success-banner {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
 
 .uls-download-row {
     display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
+    gap: 8px;
+    flex-direction: column;
 }
 
-.uls-btn-docx,
-.uls-btn-pdf {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.uls-btn {
+    display: block;
+    text-align: center;
     text-decoration: none;
-    display: inline-block;
+    padding: 10px 16px;
+    background: #1d4ed8;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.uls-btn:hover {
+    opacity: 0.9;
+}
+
+.uls-btn-clear {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.uls-btn-clear:hover {
+    background: #e5e7eb;
+}
+
+.uls-btn-clear:disabled,
+.uls-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── Actions row (refresh + back to home) ──────────────────────────────────── */
+.uls-actions-row {
+    display: flex;
+    gap: 8px;
+}
+
+/* ── Home button ───────────────────────────────────────────────────────────── */
+.uls-btn-home {
+    display: block;
+    text-align: center;
+    padding: 10px 16px;
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
     transition: opacity 0.15s;
 }
 
-.uls-btn-docx { background: #0f172a; color: #f59e0b; }
-.uls-btn-pdf  { background: #1e3a5f; color: #93c5fd; }
-
-.uls-btn-docx:hover,
-.uls-btn-pdf:hover { opacity: 0.85; }
+.uls-btn-home:hover {
+    opacity: 0.9;
+}

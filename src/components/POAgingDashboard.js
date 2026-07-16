@@ -6,12 +6,19 @@ import {
 } from 'recharts';
 import { authService } from '../services/authService';
 import '../styles/POAgingDashboard.css';
+import MapTab from './MapTab';
 
 const API = 'http://localhost:8080/api';
 
 const MARK_CLASS = { 1: 'm1', 2: 'm2', 3: 'm3' };
 const MARK_COLOR = { 1: '#ef4444', 2: '#f59e0b', 3: '#22c55e' };
 const MARK_LABEL = { 1: 'High', 2: 'Medium', 3: 'Low' };
+
+const SIZE_BRACKET_COLOR = {
+    Large:  { bg: '#eff6ff', color: '#1e40af' },
+    Medium: { bg: '#f8fafc', color: '#6b7280' },
+    Small:  { bg: '#f0fdf4', color: '#166534' },
+};
 
 function MarkBadge({ mark }) {
     return <span className={`poa-mark ${MARK_CLASS[mark] || 'm3'}`}>{mark}</span>;
@@ -45,6 +52,31 @@ function PartialPill({ count }) {
             ⏳ {count} partial
         </span>
     );
+}
+
+function SizeBracketBadge({ bracket }) {
+    const style = SIZE_BRACKET_COLOR[bracket] || SIZE_BRACKET_COLOR.Medium;
+    return (
+        <span style={{
+            fontSize: 10, padding: '2px 8px', borderRadius: 10,
+            background: style.bg, color: style.color, fontWeight: 600,
+        }}>
+            {bracket || '—'}
+        </span>
+    );
+}
+
+function TrendBadge({ trend }) {
+    if (trend === 'Improving') {
+        return <span style={{ color: '#22c55e', fontWeight: 600, fontSize: 12 }}>↑ Improving</span>;
+    }
+    if (trend === 'Worsening') {
+        return <span style={{ color: '#ef4444', fontWeight: 600, fontSize: 12 }}>↓ Worsening</span>;
+    }
+    if (trend === 'Flat') {
+        return <span style={{ color: '#6b7280', fontSize: 12 }}>→ Flat</span>;
+    }
+    return <span style={{ color: '#d1d5db', fontSize: 12 }}>—</span>;
 }
 
 function formatRM(value) {
@@ -131,6 +163,7 @@ export default function POAgingDashboard() {
     const TABS = [
         { key: 'overview', label: '📊 Overview'   },
         { key: 'stations', label: '📍 Stations'   },
+        { key: 'map',      label: '🗺️Map'        }, 
         { key: 'subzone',  label: '🗺️ Subzone'    },
         { key: 'table',    label: '📋 Table'       },
         { key: 'ai',       label: '🤖 AI Analysis' },
@@ -272,6 +305,7 @@ export default function POAgingDashboard() {
 
                     {activeTab === 'overview' && <OverviewTab dashboard={dashboard} />}
                     {activeTab === 'stations' && <StationsTab data={dashboard.stationData} />}
+                    {activeTab === 'map'      && <MapTab      data={dashboard.stationData} />}
                     {activeTab === 'subzone'  && <SubzoneTab  data={dashboard.subzoneSummary} />}
                     {activeTab === 'table'    && <TableTab    data={dashboard.stationData} />}
                     {activeTab === 'ai'       && (
@@ -384,7 +418,7 @@ function StationsTab({ data = [] }) {
 
 // ── Subzone Tab ────────────────────────────────────────────────────────────────
 function SubzoneTab({ data = [] }) {
-     const [expandedSubzone, setExpandedSubzone] = useState(null);
+    const [expandedSubzone, setExpandedSubzone] = useState(null);
 
     return (
         <div className="poa-subzone-grid">
@@ -489,8 +523,10 @@ function TableTab({ data = [] }) {
                     <thead>
                         <tr>
                             <th>Station</th><th>BA</th><th>Subzone</th>
+                            <th>Size</th>
                             <th>PO &gt; 180</th><th>Updated</th>
                             <th>Outstanding (RM)</th><th>% Aging</th>
+                            <th>Trend</th>
                             <th>Mark</th><th>Remarks</th>
                         </tr>
                     </thead>
@@ -500,6 +536,7 @@ function TableTab({ data = [] }) {
                                 <td style={{ fontWeight:500 }}>{row.stationName}</td>
                                 <td className="muted">{row.busArea}</td>
                                 <td><span className="sl-type-badge">{row.subzone}</span></td>
+                                <td><SizeBracketBadge bracket={row.sizeBracket} /></td>
                                 <td className="muted">{row.countPOOver180}</td>
                                 <td>
                                     <div style={{ display:'flex', alignItems:'center',
@@ -518,6 +555,7 @@ function TableTab({ data = [] }) {
                                     )}
                                 </td>
                                 <td><ProgressBar pct={row.updatedPercentAging} mark={row.updatedMarks} /></td>
+                                <td><TrendBadge trend={row.trend} /></td>
                                 <td>
                                     <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                                         <MarkBadge mark={row.updatedMarks} />

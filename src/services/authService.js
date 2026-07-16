@@ -77,12 +77,12 @@ export const authService = {
 
   // ── COMPLETE STAFF PROFILE (Google new staff) ────────────────────────
   completeStaffProfile: async (profileData) => {
-    const response = await fetch(`${API_BASE_URL}/accounts/complete-profile/staff`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(profileData),
-    });
+  const response = await fetch(`${API_BASE_URL}/accounts/complete-profile/staff`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(profileData), // now includes { department, position, inviteCode }
+  });
 
     if (!response.ok) {
       const error = await response.text();

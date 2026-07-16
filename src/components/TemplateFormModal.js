@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/TemplateFormModal.css';
 
+let _keySeq = 0;
+const nextKey = () => `k${++_keySeq}`;
+
 const emptyField = () => ({
+    _key: nextKey(),
     fieldLabel: '',
     fieldType: 'text',
     isRequired: false,
@@ -27,6 +31,11 @@ export default function TemplateFormModal({ template, onSave, onClose }) {
             setFields(template.fields && template.fields.length > 0
                 ? template.fields.map(f => ({
                     ...f,
+                    // Stable per-row identity for React's key prop.
+                    // Prefer the real fieldId (already stable + unique) so edits to an
+                    // existing field never change its key; fall back to a freshly
+                    // generated key only if this field somehow has no fieldId yet.
+                    _key: f.fieldId ?? nextKey(),
                     // Normalize any null/undefined values coming from the backend —
                     // React inputs need "" not null/undefined, or they flip from
                     // controlled to uncontrolled and render as blank.
@@ -74,8 +83,9 @@ export default function TemplateFormModal({ template, onSave, onClose }) {
 
         setLoading(true);
         try {
-            // Strip the helper-only imageLabelsText field before saving, keep imageLabels
-            const cleanedFields = fields.map(({ imageLabelsText, ...rest }) => rest);
+            // Strip helper-only fields before saving: imageLabelsText is UI-only scratch
+            // state, and _key is a React-only identity tag — neither should reach the API.
+            const cleanedFields = fields.map(({ imageLabelsText, _key, ...rest }) => rest);
             await onSave({ templateName, description, isActive, fields: cleanedFields });
             onClose();
         } catch (e) {
@@ -122,7 +132,7 @@ export default function TemplateFormModal({ template, onSave, onClose }) {
                     </div>
 
                     {fields.map((field, index) => (
-                        <div key={index} className='field-row' style={{ flexWrap: 'wrap' }}>
+                        <div key={field._key} className='field-row' style={{ flexWrap: 'wrap' }}>
                             <input className='field-label-input'
                                 placeholder="Field label"
                                 value={field.fieldLabel}

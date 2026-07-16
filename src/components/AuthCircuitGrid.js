@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { STATION_COORDS_BY_BA } from './StationCoords';
 /**
  * AuthCircuitGrid — signature illustration for the auth split-screen panel.
  * A geometric grid of circuit lines with amber pulse-dots traveling along
