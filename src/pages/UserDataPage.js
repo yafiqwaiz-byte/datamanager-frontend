@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import { authService } from '../services/authService';
 
-const API = 'http://localhost:8080/api';
-const FILE_BASE = 'http://localhost:8080/';
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+const FILE_BASE = process.env.REACT_APP_FILE_BASE_URL || 'http://localhost:8080/';
 
 const IMAGE_EXT = /\.(jpeg|jpg|png|gif|bmp|webp|svg)$/i;
 const DOC_EXT   = /\.(pdf|doc|docx|xlsx|csv|txt)$/i;

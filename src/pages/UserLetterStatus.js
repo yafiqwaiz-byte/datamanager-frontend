@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
 import '../styles/UserLetterStatus.css';
 
-const API = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 const STATUS_STEPS = [
     { key: "pending_review", label: "Submitted",        icon: "📨" },

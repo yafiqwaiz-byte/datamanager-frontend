@@ -3,7 +3,7 @@ import { authService } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
-const API = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 const STATUS_CONFIG = {
     uploaded:       { label: 'OCR Complete',      icon: '📄', color: '#6b7280', bg: '#f3f4f6' },

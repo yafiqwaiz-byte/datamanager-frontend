@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
 import '../styles/GeneratedLetter.css';
 
-const BASE_URL = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 export default function GeneratedLetters() {
 
@@ -20,7 +20,7 @@ export default function GeneratedLetters() {
     useEffect(() => {
         const fetchExistingLetter = async () => {
             try {
-               const res = await authService.fetchWithAuth(`${BASE_URL}/letters/generated/${mappingId}`);
+               const res = await authService.fetchWithAuth(`${API}/letters/generated/${mappingId}`);
                const data = await res.json();
                if(data && data.length > 0){
                 setLetter(data[0]);
@@ -39,7 +39,7 @@ export default function GeneratedLetters() {
     const handleGenerate = async () => {
         setLoading(true);
         setError(null);
-        try {const res = await authService.fetchWithAuth(`${BASE_URL}/letters/generate/${mappingId}`,{
+        try {const res = await authService.fetchWithAuth(`${API}/letters/generate/${mappingId}`,{
             method: 'POST',
         });
         if (!res.ok) throw new Error('Generation Failed');
@@ -55,12 +55,12 @@ export default function GeneratedLetters() {
 
     const handleDownloadDocx = () => {
         window.open(
-            `${BASE_URL}/letters/download/docx/${letter.letterId}`,'_blank');
+            `${API}/letters/download/docx/${letter.letterId}`,'_blank');
     };
 
     const handleDownloadPdf = () => {
         window.open(
-            `${BASE_URL}/letters/download/pdf/${letter.letterId}`,'_blank');
+            `${API}/letters/download/pdf/${letter.letterId}`,'_blank');
     };
 
     // Loading state

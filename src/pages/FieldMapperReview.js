@@ -4,7 +4,7 @@ import { authService } from "../services/authService";
 import StaffLayout from "../components/StaffLayout";
 import '../styles/FieldMapperReview.css';
 
-const BASE_URL = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ export default function FieldMapperReview() {
         const fetchMapping = async () => {
             try {
                 const res  = await authService.fetchWithAuth(
-                    `${BASE_URL}/letters/mapping/${mappingId}`
+                    `${API}/letters/mapping/${mappingId}`
                 );
                 const data = await res.json();
 
@@ -112,7 +112,7 @@ export default function FieldMapperReview() {
         setConfirmError(null);
         try {
             const response = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/mapping/confirm/${mappingId}`,
+                `${API}/letters/mapping/confirm/${mappingId}`,
                 { method: 'PUT', body: JSON.stringify(fields) }
             );
             if (!response.ok) {

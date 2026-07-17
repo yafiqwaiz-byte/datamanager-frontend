@@ -4,7 +4,7 @@ import { authService } from "../services/authService";
 import StaffLayout from "../components/StaffLayout";
 import '../styles/TemplateUpload.css';
 
-const BASE_URL = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 export default function StaffTemplateLetterUpload() {
 
@@ -57,7 +57,7 @@ export default function StaffTemplateLetterUpload() {
         setTemplatesLoading(true);
         setTemplatesError(null);
         try {
-            const res = await authService.fetchWithAuth(`${BASE_URL}/letters/templates/all`);
+            const res = await authService.fetchWithAuth(`${API}/letters/templates/all`);
             if (!res.ok) throw new Error('Failed to fetch templates');
             const data = await res.json();
             setTemplates(data);
@@ -88,7 +88,7 @@ export default function StaffTemplateLetterUpload() {
             formData.append("file", file);
 
             const uploadRes = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/templates/upload`,
+                `${API}/letters/templates/upload`,
                 { method: 'POST', headers: {}, body: formData }
             );
             if (!uploadRes.ok) throw new Error('Upload failed');
@@ -96,7 +96,7 @@ export default function StaffTemplateLetterUpload() {
             setLetterTemplateId(savedTemplate.letterTemplateId);
 
             const previewRes = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/templates/preview/${savedTemplate.letterTemplateId}`
+                `${API}/letters/templates/preview/${savedTemplate.letterTemplateId}`
             );
             if (!previewRes.ok) throw new Error('Preview failed');
             const previewData = await previewRes.json();
@@ -146,7 +146,7 @@ export default function StaffTemplateLetterUpload() {
         setLoading(true);
         try {
             const res = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/templates/placeholders/${letterTemplateId}`,
+                `${API}/letters/templates/placeholders/${letterTemplateId}`,
                 { method: 'POST', body: JSON.stringify(placeholders) }
             );
             if (!res.ok) throw new Error('Save failed');
@@ -200,7 +200,7 @@ export default function StaffTemplateLetterUpload() {
             }
 
             const res = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/templates/${templateId}`,
+                `${API}/letters/templates/${templateId}`,
                 { method: 'PUT', headers: {}, body: formData }
             );
             if (!res.ok) {
@@ -235,7 +235,7 @@ export default function StaffTemplateLetterUpload() {
         setLoading(true);
         try {
             const previewRes = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/templates/preview/${templateId}`
+                `${API}/letters/templates/preview/${templateId}`
             );
             if (!previewRes.ok) throw new Error('Preview failed');
             const previewData = await previewRes.json();
@@ -263,7 +263,7 @@ export default function StaffTemplateLetterUpload() {
         setDeleteError(null);
         try {
             const res = await authService.fetchWithAuth(
-                `${BASE_URL}/letters/templates/${templateId}`,
+                `${API}/letters/templates/${templateId}`,
                 { method: 'DELETE' }
             );
             if (res.status === 409) {

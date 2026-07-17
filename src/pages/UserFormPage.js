@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import { authService } from '../services/authService';
 
-const API = 'http://localhost:8080/api';
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 // Fallback grouping when a template has no explicit category from the API.
 // Keeps the "group related fields" principle working even on unmigrated data.

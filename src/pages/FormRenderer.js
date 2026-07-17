@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { authService } from '../services/authService';
 import '../styles/Dashboard.css';
 
-const API = 'http://localhost:8080/api';
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 /* ── Labeled Images field ──────────────────────────────────────────
    Uploads each image immediately when selected (one request per label),

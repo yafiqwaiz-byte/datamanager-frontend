@@ -4,7 +4,7 @@ import { authService } from "../services/authService";
 import StaffLayout from "../components/StaffLayout";
 import '../styles/StaffLetterQueue.css';
 
-const API = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 const STATUS_CONFIG = {
     pending_review: { label: 'Pending Review', className: 'slq-badge slq-badge--pending'  },

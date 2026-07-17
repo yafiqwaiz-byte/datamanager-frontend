@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StaffLayout from '../components/StaffLayout';
 import { authService } from '../services/authService';
 
-const API = "http://localhost:8080/api";
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
 var FEATURE_CARDS = [
   { id: 'fetch-data', icon: '📋', iconColor: 'blue',   name: 'Fetch User Data',    desc: 'View and manage data submitted by users via forms or OCR input', path: '/staff/fetch-data' },
