@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/OcrUpload.css';
 import { authService } from "../services/authService";
+import { formatDateTime } from "../utils/dateUtils";
 
 const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
@@ -296,7 +297,7 @@ export default function UserOcrPage() {
                                     />
 
                                     <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>
-                                        🕐 {new Date(result.processedAt).toLocaleString('en-MY')}
+                                        🕐 {formatDateTime(result.processedAt) || result.processedAt}
                                     </p>
 
                                     <button

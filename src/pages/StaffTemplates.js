@@ -7,6 +7,7 @@ import {
     getTemplateSubmissions
 } from '../services/templateService';
 import { authService } from '../services/authService';
+import { formatDateTime } from '../utils/dateUtils';
 import ExcelJS from 'exceljs';
 import StaffLayout from '../components/StaffLayout';
 
@@ -124,15 +125,15 @@ export default function StaffTemplates() {
      */
     const parseImagePaths = (val) => {
         if (!val) return null;
-        val = val.trim();
+        const trimmed = String(val).trim();
 
         // Try JSON object (Labeled Images field type)
-        if (val.startsWith('{')) {
+        if (trimmed.startsWith('{')) {
             try {
-                const obj = JSON.parse(val);
+                const obj = JSON.parse(trimmed);
                 const entries = Object.entries(obj)
                     .filter(([, v]) => /\.(png|jpg|jpeg|webp)$/i.test((v || '').trim()))
-                    .map(([label, path]) => ({ label, path: path.trim() }));
+                    .map(([label, path]) => ({ label, path: String(path || '').trim() }));
                 return entries.length > 0 ? entries : null;
             } catch {
                 // not valid JSON — fall through
@@ -140,12 +141,115 @@ export default function StaffTemplates() {
         }
 
         // Try comma-separated plain paths
-        const parts = val.split(',').map(p => p.trim()).filter(Boolean);
+        const parts = trimmed.split(',').map(p => p.trim()).filter(Boolean);
         if (parts.length > 0 && parts.every(p => /\.(png|jpg|jpeg|webp)$/i.test(p))) {
             return parts.map((path, i) => ({ label: `Image ${i + 1}`, path }));
         }
 
         return null; // plain text
+    };
+
+    const parseLocationAddress = (val) => {
+        if (!val) return null;
+        const trimmed = String(val).trim();
+
+        try {
+            const obj = JSON.parse(trimmed);
+            if (obj?.formattedAddress) return obj.formattedAddress;
+            if (obj?.address) return obj.address;
+            if (obj?.location?.formattedAddress) return obj.location.formattedAddress;
+        } catch {
+            // Not JSON.
+        }
+
+        return null;
+    };
+
+    const buildImageUrl = (path) => {
+        const cleanPath = String(path || '').replace(/\/\//g, '/').replace(/^\//, '');
+        return `http://localhost:8080/${cleanPath}`;
+    };
+
+    const formatDateTimeAnswer = (value) => formatDateTime(value);
+
+    function ImagePreviewCell({ images }) {
+        const [expanded, setExpanded] = useState(false);
+        const first = images[0];
+        const remaining = images.slice(1);
+        const previewUrl = buildImageUrl(first.path);
+
+        return (
+            <div style={{ display: 'grid', gap: 8 }}>
+                <button
+                    type="button"
+                    onClick={() => setExpanded(prev => !prev)}
+                    style={{
+                        border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden',
+                        background: '#fff', padding: 0, cursor: 'pointer', textAlign: 'left'
+                    }}>
+                    <div style={{ position: 'relative', width: '100%', minHeight: 120 }}>
+                        <img
+                            src={previewUrl}
+                            alt={first.label}
+                            style={{ width: '100%', height: 120, objectFit: 'cover', display: 'block' }}
+                        />
+                        <div style={{
+                            position: 'absolute', left: 0, right: 0, bottom: 0,
+                            background: 'rgba(15, 23, 42, 0.72)', color: '#fff',
+                            fontSize: 12, fontWeight: 600, padding: '6px 8px'
+                        }}>
+                            {first.label}
+                        </div>
+                    </div>
+                    <div style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '8px 10px', fontSize: 12, color: '#475569'
+                    }}>
+                        <span>
+                            1 preview{remaining.length > 0 ? ` · ${remaining.length} more` : ''}
+                        </span>
+                        <span style={{ fontWeight: 700 }}>{expanded ? 'Hide' : 'Show'}</span>
+                    </div>
+                </button>
+                {expanded && remaining.length > 0 && (
+                    <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}>
+                        {remaining.map(({ label, path }, idx) => (
+                            <div key={`${label}-${idx}`} style={{ border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden', background: '#fff' }}>
+                                <img
+                                    src={buildImageUrl(path)}
+                                    alt={label}
+                                    style={{ width: '100%', height: 100, objectFit: 'cover', display: 'block' }}
+                                />
+                                <div style={{ padding: '6px 8px', fontSize: 11, color: '#4b5563' }}>
+                                    {label}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    const renderAnswerValue = (value) => {
+        if (value == null || value === '') return '—';
+
+        const imagePaths = parseImagePaths(value);
+        if (imagePaths) {
+            return <ImagePreviewCell images={imagePaths} />;
+        }
+
+        const dateTime = formatDateTimeAnswer(value);
+        if (dateTime) {
+            return <span>{dateTime}</span>;
+        }
+
+        const address = parseLocationAddress(value);
+        if (address) {
+            return <span>{address}</span>;
+        }
+
+        return String(value);
     };
 
     const handleExportExcel = async () => {
@@ -240,8 +344,7 @@ export default function StaffTemplates() {
 
                 // Text answers only on first row of submission
                 if (isFirst) {
-                    rowData.submittedAt = new Date(sub.submittedAt)
-                        .toLocaleString('en-MY');
+                    rowData.submittedAt = formatDateTime(sub.submittedAt) || sub.submittedAt;
                     rowData.status = sub.status;
                     textFields.forEach(f => {
                         rowData[f] = answerMap[f] || '—';
@@ -521,7 +624,7 @@ export default function StaffTemplates() {
                                                     <tr key={sub.submissionId}
                                                         style={{ background: i % 2 === 0 ? 'white' : '#f9fafb' }}>
                                                         <td style={tdStyle}>
-                                                            {new Date(sub.submittedAt).toLocaleString('en-MY')}
+                                                            {formatDateTime(sub.submittedAt) || sub.submittedAt}
                                                         </td>
                                                         <td style={tdStyle}>
                                                             <span className={`sl-status ${sub.status === 'submitted' ? 'active' : 'pending'}`}>
@@ -531,7 +634,7 @@ export default function StaffTemplates() {
                                                         </td>
                                                         {selectedTemplate.fields.map(f => (
                                                             <td key={f.fieldId} style={tdStyle}>
-                                                                {answerMap[f.fieldLabel] || '—'}
+                                                                {renderAnswerValue(answerMap[f.fieldLabel])}
                                                             </td>
                                                         ))}
                                                     </tr>

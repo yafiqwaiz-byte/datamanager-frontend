@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { formatDateTime } from '../utils/dateUtils';
 import StaffLayout from "../components/StaffLayout";
 import '../styles/TemplateUpload.css';
 
@@ -548,7 +549,7 @@ export default function StaffTemplateLetterUpload() {
                                                         </p>
                                                         <p className="template-manage-date">
                                                             Created: {t.createdAt
-                                                                ? new Date(t.createdAt).toLocaleString('en-MY')
+                                                                ? formatDateTime(t.createdAt)
                                                                 : '—'}
                                                         </p>
                                                         {t._needsPlaceholders && (

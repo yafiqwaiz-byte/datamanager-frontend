@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { formatDateTime } from '../utils/dateUtils';
 import '../styles/AdminDashboard.css';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
@@ -189,7 +190,7 @@ export default function AdminDashboard() {
                         <div className="admin-invite-code-display">
                             <code>{generatedCode.code}</code>
                             <span className="expires">
-                                Expires: {new Date(generatedCode.expiresAt).toLocaleString('en-MY')}
+                                Expires: {formatDateTime(generatedCode.expiresAt) || generatedCode.expiresAt}
                             </span>
                             <button
                                 className="admin-btn admin-btn-ghost"

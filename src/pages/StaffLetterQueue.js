@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { formatDateTime } from '../utils/dateUtils';
 import StaffLayout from "../components/StaffLayout";
 import '../styles/StaffLetterQueue.css';
 
@@ -161,8 +162,7 @@ export default function StaffLetterQueue() {
                                             </td>
                                             <td className="muted">
                                                 {item.processedAt
-                                                    ? new Date(item.processedAt)
-                                                        .toLocaleString('en-MY')
+                                                    ? formatDateTime(item.processedAt)
                                                     : '—'}
                                             </td>
                                             <td>

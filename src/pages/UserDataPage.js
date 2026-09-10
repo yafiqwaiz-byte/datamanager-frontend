@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 import { authService } from '../services/authService';
+import { formatDateTime } from '../utils/dateUtils';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 const FILE_BASE = process.env.REACT_APP_FILE_BASE_URL || 'http://localhost:8080/';
@@ -231,10 +232,8 @@ export default function UserDataPage() {
     }, []);
 
     const formatDate = (dateString) => {
-        if (!dateString) return '—';
-        return new Date(dateString).toLocaleDateString('en-MY', {
-            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-        });
+        const formatted = formatDateTime(dateString);
+        return formatted || '—';
     };
 
     const pageNumbers = useMemo(() => {

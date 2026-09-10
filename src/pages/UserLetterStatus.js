@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { formatDateTime } from '../utils/dateUtils';
 import '../styles/UserLetterStatus.css';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
@@ -205,8 +206,7 @@ export default function UserLetterStatus() {
                                     {statusData.generatedAt && (
                                         <p className="uls-muted" style={{ marginBottom: 16 }}>
                                             Generated on{' '}
-                                            {new Date(statusData.generatedAt)
-                                                .toLocaleString('en-MY')}
+                                            {formatDateTime(statusData.generatedAt) || statusData.generatedAt}
                                         </p>
                                     )}
                                     <div className="uls-download-row">

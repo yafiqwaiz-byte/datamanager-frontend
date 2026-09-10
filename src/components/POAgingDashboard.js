@@ -88,12 +88,17 @@ function formatRM(value) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function POAgingDashboard() {
-    const [dashboard,   setDashboard]   = useState(null);
-    const [uploadId,    setUploadId]    = useState(null);
-    const [activeTab,   setActiveTab]   = useState('overview');
-    const [loading,     setLoading]     = useState(true);
-    const [error,       setError]       = useState(null);
-    const [cacheLoaded, setCacheLoaded] = useState(false);
+    const [dashboard,      setDashboard]      = useState(null);
+    const [uploadId,       setUploadId]       = useState(null);
+    const [activeTab,      setActiveTab]      = useState('overview');
+    const [loading,        setLoading]        = useState(true);
+    const [error,          setError]          = useState(null);
+    const [cacheLoaded,    setCacheLoaded]    = useState(false);
+    const [filterSubzone,  setFilterSubzone]  = useState('All');
+    const [filterSize,     setFilterSize]     = useState('All');
+    const [filterMark,     setFilterMark]     = useState('All');
+    const [sortKey,        setSortKey]        = useState('updatedCountPOOver180');
+    const [sortDirection,  setSortDirection]  = useState('desc');
 
     useEffect(() => { loadFromCache(); }, []);
 
@@ -172,6 +177,41 @@ export default function POAgingDashboard() {
     const hasClearedData = dashboard &&
         ((dashboard.totalPOCleared || 0) > 0 || (dashboard.totalPOPartiallyPaid || 0) > 0);
 
+    const stationData = dashboard?.stationData || [];
+    const subzoneOptions = ['All', ...Array.from(new Set(stationData.map(s => s.subzone || 'Unknown'))).sort()];
+    const sizeOptions = ['All', ...Array.from(new Set(stationData.map(s => s.sizeBracket || 'Unknown'))).sort()];
+    const markOptions = ['All', '1', '2', '3'];
+
+    const filteredStationData = stationData
+        .filter(row => filterSubzone === 'All' || (row.subzone || 'Unknown') === filterSubzone)
+        .filter(row => filterSize === 'All' || (row.sizeBracket || 'Unknown') === filterSize)
+        .filter(row => filterMark === 'All' || String(row.updatedMarks || row.marks) === filterMark);
+
+    const sorters = {
+        stationName: (a,b) => (a.stationName || '').localeCompare(b.stationName || ''),
+        subzone:     (a,b) => (a.subzone || '').localeCompare(b.subzone || ''),
+        sizeBracket: (a,b) => (a.sizeBracket || '').localeCompare(b.sizeBracket || ''),
+        updatedCountPOOver180: (a,b) => (b.updatedCountPOOver180 || 0) - (a.updatedCountPOOver180 || 0),
+        updatedOutstandingValue: (a,b) => (b.updatedOutstandingValue || 0) - (a.updatedOutstandingValue || 0),
+        updatedPercentAging: (a,b) => (b.updatedPercentAging || 0) - (a.updatedPercentAging || 0),
+        updatedMarks: (a,b) => (a.updatedMarks || 0) - (b.updatedMarks || 0),
+    };
+
+    const sortedStationData = [...filteredStationData].sort((a,b) => {
+        const result = sorters[sortKey]?.(a,b) ?? 0;
+        return sortDirection === 'asc' ? result * -1 : result;
+    });
+
+    const sortOptions = [
+        { value: 'updatedCountPOOver180', label: 'PO > 180' },
+        { value: 'updatedOutstandingValue', label: 'Outstanding' },
+        { value: 'updatedPercentAging', label: '% Aging' },
+        { value: 'updatedMarks', label: 'Mark' },
+        { value: 'stationName', label: 'Station' },
+        { value: 'subzone', label: 'Subzone' },
+        { value: 'sizeBracket', label: 'Size' },
+    ];
+
     return (
         <>
             {/* ── Upload Row ──────────────────────────────────────── */}
@@ -235,6 +275,55 @@ export default function POAgingDashboard() {
                     padding: '8px 16px', borderRadius: 8, fontSize: 13, marginBottom: 8
                 }}>
                     ✅ Dashboard loaded from your last session. Re-upload to refresh with new data.
+                </div>
+            )}
+
+            {dashboard && !loading && (
+                <div className="poa-filter-row">
+                    <div className="poa-filter-group">
+                        <label>Subzone</label>
+                        <select value={filterSubzone}
+                                onChange={e => setFilterSubzone(e.target.value)}>
+                            {subzoneOptions.map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="poa-filter-group">
+                        <label>Size</label>
+                        <select value={filterSize}
+                                onChange={e => setFilterSize(e.target.value)}>
+                            {sizeOptions.map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="poa-filter-group">
+                        <label>Mark</label>
+                        <select value={filterMark}
+                                onChange={e => setFilterMark(e.target.value)}>
+                            {markOptions.map(option => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="poa-filter-group">
+                        <label>Sort by</label>
+                        <select value={sortKey}
+                                onChange={e => setSortKey(e.target.value)}>
+                            {sortOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="poa-filter-group">
+                        <label>Direction</label>
+                        <select value={sortDirection}
+                                onChange={e => setSortDirection(e.target.value)}>
+                            <option value="desc">Descending</option>
+                            <option value="asc">Ascending</option>
+                        </select>
+                    </div>
                 </div>
             )}
 
@@ -304,10 +393,10 @@ export default function POAgingDashboard() {
                     </div>
 
                     {activeTab === 'overview' && <OverviewTab dashboard={dashboard} />}
-                    {activeTab === 'stations' && <StationsTab data={dashboard.stationData} />}
-                    {activeTab === 'map'      && <MapTab      data={dashboard.stationData} />}
+                    {activeTab === 'stations' && <StationsTab data={sortedStationData} />}
+                    {activeTab === 'map'      && <MapTab      data={sortedStationData} />}
                     {activeTab === 'subzone'  && <SubzoneTab  data={dashboard.subzoneSummary} />}
-                    {activeTab === 'table'    && <TableTab    data={dashboard.stationData} />}
+                    {activeTab === 'table'    && <TableTab    data={sortedStationData} />}
                     {activeTab === 'ai'       && (
                         <AITab
                             analysis={dashboard.aiAnalysis}

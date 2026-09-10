@@ -4,6 +4,7 @@ import StaffLayout from '../components/StaffLayout';
 import { getAllSubmissions } from '../services/templateService';
 import '../styles/Stafffetchdata.css';
 import ExcelJS from 'exceljs';
+import { formatDateTime } from '../utils/dateUtils';
 
 export default function StaffFetchData() {
   const navigate = useNavigate();
@@ -116,12 +117,14 @@ export default function StaffFetchData() {
     rows.forEach(sub => {
       const row = worksheet.addRow({
         template:    sub.templateName,
-        submittedAt: new Date(sub.submittedAt).toLocaleString('en-MY'),
+        submittedAt: formatDateTime(sub.submittedAt) || sub.submittedAt,
         status:      sub.status,
         inputMethod: sub.inputMethod,
         answers:     sub.answers.map(a => `${a.fieldLabel}: ${formatAnswerForExport(a)}`).join(' | '),
       });
-      row.eachCell(cell => { cell.alignment = { vertical: 'middle', wrapText: true }; });
+      row.eachCell(cell => {
+        cell.alignment = { vertical: 'middle', wrapText: true };
+      });
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
@@ -171,18 +174,32 @@ export default function StaffFetchData() {
     }
   };
 
+  const formatDateTimeForExport = (value) => {
+    const formatted = formatDateTime(value);
+    if (!formatted) return String(value || '');
+    return formatted.replace(' ', '\n');
+  };
+
   const formatAnswerForExport = (answer) => {
     const location = tryParseLocation(answer.answerValue);
     if (location) {
-      return `${location.formattedAddress} (${location.lat}, ${location.lng})`;
+      return location.formattedAddress || '';
     }
+
+    const normalizedLabel = String(answer.fieldLabel || '').replace(/\W+/g, '').toLowerCase();
+    const dateTimeCandidate = formatDateTime(answer.answerValue);
+    if (['clockin', 'clockout'].includes(normalizedLabel) && dateTimeCandidate) {
+      return formatDateTimeForExport(answer.answerValue);
+    }
+
     const labeledImages = tryParseLabeledImages(answer.answerValue);
     if (labeledImages) {
       return Object.entries(labeledImages)
         .map(([label, path]) => `${label}: ${path}`)
         .join('; ');
     }
-    return answer.answerValue || '';
+
+    return String(answer.answerValue || '');
   };
 
   /* ── Render answer value ── */
@@ -435,7 +452,7 @@ export default function StaffFetchData() {
                       </td>
                       <td className="sfd-cell-template">{sub.templateName}</td>
                       <td className="sfd-cell-date">
-                        {new Date(sub.submittedAt).toLocaleString('en-MY')}
+                        {formatDateTime(sub.submittedAt) || sub.submittedAt}
                       </td>
                       <td>
                         <span className={`sfd-badge ${statusKey}`}>

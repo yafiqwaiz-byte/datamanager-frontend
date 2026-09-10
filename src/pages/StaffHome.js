@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StaffLayout from '../components/StaffLayout';
 import { authService } from '../services/authService';
+import { formatDateTime } from '../utils/dateUtils';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
 
@@ -215,7 +216,7 @@ export default function StaffHome() {
                   <tr key={row.activityId || i}>
                     <td className="muted">
                       {row.createdAt
-                        ? new Date(row.createdAt).toLocaleString('en-MY')
+                        ? formatDateTime(row.createdAt)
                         : '—'}
                     </td>
                     <td><span className="sl-type-badge">{row.type}</span></td>

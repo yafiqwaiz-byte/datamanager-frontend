@@ -84,7 +84,41 @@
   margin-bottom: 16px;
   border: 0.5px solid;
 }
+.poa-filter-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
 
+.poa-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.poa-filter-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.poa-filter-group select {
+  width: 100%;
+  border: 0.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #111827;
+  background: #ffffff;
+  appearance: none;
+}
+
+.poa-filter-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
 .poa-alert.error {
   background: #fef2f2;
   border-color: #fecaca;

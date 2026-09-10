@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { formatDateTime } from '../utils/dateUtils';
 import '../styles/GeneratedLetter.css';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
@@ -120,8 +121,7 @@ export default function GeneratedLetters() {
                         <p style={{ fontSize: 13, color: '#6b7280',
                                     marginBottom: 20 }}>
                             🕐 Generated at:{" "}
-                            {new Date(letter.generatedAt)
-                                .toLocaleString('en-MY')}
+                            {formatDateTime(letter.generatedAt) || letter.generatedAt}
                         </p>
 
                         <div className="generated-letters-download-row">

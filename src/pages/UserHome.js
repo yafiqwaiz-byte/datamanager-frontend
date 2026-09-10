@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
+import { formatDateTime } from '../utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
@@ -272,7 +273,7 @@ export default function UserHome() {
                                         </p>
                                         <p className="uh-letter-date">
                                             {sub.processedAt
-                                                ? new Date(sub.processedAt).toLocaleString('en-MY')
+                                                ? formatDateTime(sub.processedAt)
                                                 : '—'}
                                         </p>
                                     </div>
