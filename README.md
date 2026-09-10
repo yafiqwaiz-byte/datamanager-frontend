@@ -57,6 +57,7 @@ src/
 ├── components/      # Reusable UI components (StaffLayout, TemplateFormModal, POAgingDashboard...)
 ├── pages/           # Route pages (SignIn, UserHome, StaffHome, AdminDashboard...)
 ├── services/        # API client modules (authService, templateService, letterApi)
+├── utils/           # Page and component for constants format(time,date)
 ├── styles/          # Page and component CSS files
 ├── App.js           # Route definitions and top-level layouts
 └── index.js         # App bootstrap
